@@ -1,0 +1,401 @@
+:host {
+    display: block;
+    height: 100%;
+    min-height: 0;
+    background-color: #ffffff;
+}
+
+.sidebar {
+    height: 100%;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    scroll-behavior: smooth;
+    scrollbar-color: transparent transparent;
+    scrollbar-width: thin;
+    padding: 1.5rem 1rem 2rem;
+    background-color: #ffffff;
+    border-right: 1px solid #e9eef0;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+.sidebar:hover {
+    scrollbar-color: #cbd5d5 transparent;
+}
+
+.sidebar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background-color: transparent;
+    transition: background-color 180ms ease;
+}
+
+.sidebar:hover::-webkit-scrollbar-thumb {
+    background-color: #cbd5d5;
+}
+
+/* Brand Section */
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0 0 1.25rem;
+    padding: 0 0.5rem;
+    color: #0f2e2b;
+    text-decoration: none;
+}
+
+.brand-mark {
+    display: grid;
+    width: 2.5rem;
+    height: 2.5rem;
+    place-items: center;
+    border-radius: 0.75rem;
+    background: linear-gradient(135deg, #0ab39c 0%, #059669 100%);
+    color: #ffffff;
+    font-size: 1.35rem;
+    box-shadow: 0 4px 12px rgba(10, 179, 156, 0.25);
+    flex-shrink: 0;
+}
+
+.brand-info {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.brand-label {
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: #113430;
+}
+
+.brand-sub {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #0ab39c;
+    margin-top: 0.15rem;
+}
+
+/* Facility Badge Card */
+.facility-badge-card {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.65rem 0.85rem;
+    margin-bottom: 1.5rem;
+    background: #f0fdf9;
+    border: 1px solid #bbf7d0;
+    border-radius: 0.625rem;
+}
+
+.badge-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+    flex-shrink: 0;
+    animation: pulse-dot 2s infinite ease-in-out;
+}
+
+@keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.9); }
+}
+
+.badge-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.facility-name {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #065f46;
+}
+
+.facility-sia {
+    font-size: 0.68rem;
+    color: #047857;
+    margin-top: 0.1rem;
+}
+
+/* Navigation Groups */
+nav {
+    flex: 1;
+}
+
+.menu-group + .menu-group {
+    margin-top: 1.35rem;
+}
+
+.menu-heading {
+    margin: 0 0 0.45rem;
+    padding: 0 0.75rem;
+    color: #8c9ba0;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.menu-link {
+    display: flex;
+    min-height: 2.65rem;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0.125rem 0;
+    padding: 0.55rem 0.75rem;
+    border-radius: 0.625rem;
+    color: #55696d;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 150ms ease, color 150ms ease, transform 150ms ease;
+}
+
+.menu-link > i {
+    font-size: 1.15rem;
+    color: #7b8f94;
+    transition: color 150ms ease;
+    flex-shrink: 0;
+}
+
+.menu-text {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.menu-link:hover {
+    background-color: #f0fdf9;
+    color: #087f6e;
+}
+
+.menu-link:hover > i {
+    color: #0ab39c;
+}
+
+.menu-link.active {
+    background-color: #e6f7f3;
+    color: #087f6e;
+    font-weight: 600;
+}
+
+.menu-link.active > i {
+    color: #0ab39c;
+}
+
+/* Badges on links */
+.menu-pill {
+    padding: 0.15rem 0.45rem;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.02em;
+}
+
+.pill-amber {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.pill-teal {
+    background: #ccfbf1;
+    color: #0f766e;
+}
+
+/* Compliance / Cold Chain Widget */
+.sidebar-compliance-widget {
+    margin-top: 1.5rem;
+    padding: 0.75rem 0.85rem;
+    border-radius: 0.75rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.compliance-header {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #0284c7;
+}
+
+.compliance-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.temp-indicator {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.text-safe {
+    font-size: 0.68rem;
+    color: #10b981;
+    font-weight: 600;
+}
+
+.chiller-name {
+    font-size: 0.68rem;
+    color: #64748b;
+}
+
+/* Compact Sidebar States */
+:host(.sidebar-compact) .sidebar {
+    padding: 1.25rem 0.5rem;
+}
+
+:host(.sidebar-compact) .sidebar-brand {
+    justify-content: center;
+    padding: 0;
+}
+
+:host(.sidebar-compact) .brand-info,
+:host(.sidebar-compact) .facility-badge-card,
+:host(.sidebar-compact) .menu-heading,
+:host(.sidebar-compact) .menu-text,
+:host(.sidebar-compact) .menu-pill,
+:host(.sidebar-compact) .sidebar-compliance-widget {
+    display: none;
+}
+
+:host(.sidebar-compact) .menu-link {
+    justify-content: center;
+    padding: 0.65rem 0;
+}
+
+:host(.sidebar-compact) .menu-link > i {
+    font-size: 1.3rem;
+}
+
+/* Dark Theme Overrides */
+:host-context(html.dark-theme) .sidebar,
+:host-context(html.dark-theme) {
+    border-right-color: #29383d;
+    background-color: #172327;
+}
+
+:host-context(html.dark-theme) .sidebar:hover {
+    scrollbar-color: #526568 transparent;
+}
+
+:host-context(html.dark-theme) .sidebar:hover::-webkit-scrollbar-thumb {
+    background-color: #526568;
+}
+
+:host-context(html.dark-theme) .sidebar-brand {
+    color: #e4ebed;
+}
+
+:host-context(html.dark-theme) .brand-label {
+    color: #e4ebed;
+}
+
+:host-context(html.dark-theme) .facility-badge-card {
+    background: #1e3337;
+    border-color: #2a474d;
+}
+
+:host-context(html.dark-theme) .facility-name {
+    color: #34d399;
+}
+
+:host-context(html.dark-theme) .facility-sia {
+    color: #a7f3d0;
+}
+
+:host-context(html.dark-theme) .menu-heading {
+    color: #8fa2a6;
+}
+
+:host-context(html.dark-theme) .menu-link {
+    color: #c4cecf;
+}
+
+:host-context(html.dark-theme) .menu-link > i {
+    color: #92a4a7;
+}
+
+:host-context(html.dark-theme) .menu-link:hover {
+    background-color: #203539;
+    color: #39c6ad;
+}
+
+:host-context(html.dark-theme) .menu-link:hover > i {
+    color: #39c6ad;
+}
+
+:host-context(html.dark-theme) .menu-link.active {
+    background-color: #263b3e;
+    color: #39c6ad;
+}
+
+:host-context(html.dark-theme) .menu-link.active > i {
+    color: #39c6ad;
+}
+
+:host-context(html.dark-theme) .sidebar-compliance-widget {
+    background: #1c2a2e;
+    border-color: #2c3f44;
+}
+
+:host-context(html.dark-theme) .temp-indicator {
+    color: #e2e8f0;
+}
+
+:host-context(html.dark-theme) .chiller-name {
+    color: #94a3b8;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    :host(.sidebar-compact) .sidebar {
+        padding: 1.5rem 1rem;
+    }
+
+    :host(.sidebar-compact) .sidebar-brand {
+        justify-content: flex-start;
+        padding: 0 0.5rem;
+    }
+
+    :host(.sidebar-compact) .brand-info,
+    :host(.sidebar-compact) .facility-badge-card,
+    :host(.sidebar-compact) .menu-heading,
+    :host(.sidebar-compact) .menu-text,
+    :host(.sidebar-compact) .menu-pill,
+    :host(.sidebar-compact) .sidebar-compliance-widget {
+        display: flex;
+    }
+
+    :host(.sidebar-compact) .menu-heading {
+        display: block;
+    }
+
+    :host(.sidebar-compact) .menu-link {
+        justify-content: flex-start;
+        padding: 0.55rem 0.75rem;
+    }
+}

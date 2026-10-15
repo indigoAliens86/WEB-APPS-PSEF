@@ -1,0 +1,43 @@
+<div class="bantuan-container">
+  <!-- Sub Navigation Tabs -->
+  <div class="sub-nav-wrapper">
+    <nav class="sub-tabs-nav" aria-label="Menu Bantuan">
+      <button
+        type="button"
+        class="sub-tab-btn"
+        [class.active]="activeSubTab() === 'cara-pesan'"
+        (click)="setSubTab('cara-pesan')"
+      >
+        <i class="ri-guide-line"></i>
+        <span>Panduan Cara Pesan</span>
+      </button>
+
+      <button
+        type="button"
+        class="sub-tab-btn"
+        [class.active]="activeSubTab() === 'cs'"
+        (click)="setSubTab('cs')"
+      >
+        <i class="ri-customer-service-2-line"></i>
+        <span>Customer Service (CS)</span>
+      </button>
+
+      <button
+        type="button"
+        class="sub-tab-btn"
+        [class.active]="activeSubTab() === 'faq'"
+        (click)="setSubTab('faq')"
+      >
+        <i class="ri-questionnaire-line"></i>
+        <span>Tanya Jawab (FAQ)</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Sub Content Area -->
+  <div class="sub-content-area">
+    <app-cara-pesan *ngIf="activeSubTab() === 'cara-pesan'"></app-cara-pesan>
+    <app-cs *ngIf="activeSubTab() === 'cs'"></app-cs>
+    <app-faq *ngIf="activeSubTab() === 'faq'"></app-faq>
+  </div>
+</div>

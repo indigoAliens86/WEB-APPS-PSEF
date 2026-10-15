@@ -1,0 +1,436 @@
+<div class="perizinan-wrapper">
+  <!-- Sub Header -->
+  <div class="sub-header">
+    <div class="sub-header-info">
+      <h3 class="sub-title">Dokumen Izin & Regulasi Resmi Penyelenggara PSEF</h3>
+      <p class="sub-desc">
+        Penyimpanan berkas legalitas operasional, Tanda Daftar PSEF Kementerian Kesehatan RI, Tanda Daftar PSE Kominfo, Surat Izin Apotek (SIA), dan Surat Izin Praktik Apoteker (SIPA).
+      </p>
+    </div>
+    <button type="button" class="btn btn-primary" (click)="openAddModal()" id="btn-tambah-izin">
+      <i class="ri-add-line"></i>
+      <span>Unggah Dokumen Izin</span>
+    </button>
+  </div>
+
+  <!-- KPI Summary Cards -->
+  <div class="kpi-grid">
+    <div *ngFor="let stat of kpiStats" class="kpi-card" [class]="'kpi-' + stat.color">
+      <div class="kpi-icon-box">
+        <i [class]="stat.icon"></i>
+      </div>
+      <div class="kpi-info">
+        <span class="kpi-value font-mono">{{ stat.value }}</span>
+        <span class="kpi-label">{{ stat.label }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Compliance Trust Banner -->
+  <div class="trust-banner">
+    <div class="trust-icon-box">
+      <i class="ri-verified-badge-fill"></i>
+    </div>
+    <div class="trust-info">
+      <h4 class="trust-title">Platform Farmasi Berlisensi Penuh Kemenkes RI & Kominfo</h4>
+      <p class="trust-desc">
+        Seluruh alur pelayanan resep elektronik, dispensing, dan konseling telefarmasi mematuhi Permenkes No. 14 Tahun 2021 dan Peraturan BPOM No. 8 Tahun 2020 tentang Pengawasan Obat dan Makanan yang Diedarkan Secara Daring.
+      </p>
+    </div>
+    <div class="trust-stat">
+      <span class="stat-number">100%</span>
+      <span class="stat-label">Kepatuhan Regulasi</span>
+    </div>
+  </div>
+
+  <!-- Search & Filter Bar -->
+  <div class="perizinan-toolbar">
+    <div class="search-box">
+      <i class="ri-search-line search-icon"></i>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Cari nomor SK, nama izin, instansi penerbit, atau apoteker penanggung jawab..."
+        [ngModel]="searchQuery()"
+        (ngModelChange)="searchQuery.set($event)"
+      />
+    </div>
+
+    <div class="filter-actions">
+      <select class="filter-select" [ngModel]="filterStatus()" (ngModelChange)="filterStatus.set($event)">
+        <option value="Semua">Semua Status Izin</option>
+        <option value="Aktif / Sah">Aktif / Sah Saja</option>
+        <option value="Masa Perpanjangan">Masa Perpanjangan</option>
+        <option value="Nonaktif / Kedaluwarsa">Nonaktif (Arsip)</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Licenses Grid Cards -->
+  <div class="licenses-grid">
+    <div *ngFor="let item of filteredPerizinanList()" class="license-card" [class.license-nonaktif]="item.status === 'Nonaktif / Kedaluwarsa'">
+      <div class="license-card-top">
+        <div class="license-icon-circle">
+          <i [class]="item.icon"></i>
+        </div>
+
+        <button
+          type="button"
+          class="status-pill-toggle"
+          [class.active]="item.status === 'Aktif / Sah'"
+          [class.warning]="item.status === 'Masa Perpanjangan'"
+          (click)="toggleStatus(item)"
+          [title]="item.status === 'Aktif / Sah' ? 'Klik untuk nonaktifkan dokumen izin' : 'Klik untuk aktifkan dokumen izin'"
+        >
+          <span class="dot"></span>
+          <span>{{ item.status }}</span>
+        </button>
+      </div>
+
+      <h4 class="license-title">{{ item.namaIzin }}</h4>
+      <div class="license-reg-no font-mono">{{ item.nomorRegistrasi }}</div>
+
+      <div class="license-details">
+        <div class="detail-row">
+          <span class="detail-lbl">Penerbit:</span>
+          <span class="detail-val">{{ item.instansiPenerbit }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-lbl">Masa Berlaku:</span>
+          <span class="detail-val">{{ item.masaBerlaku }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-lbl">Penanggung Jawab:</span>
+          <span class="detail-val font-semibold">{{ item.penanggungJawab }}</span>
+        </div>
+      </div>
+
+      <p class="license-desc">{{ item.keterangan }}</p>
+
+      <div class="license-card-bottom">
+        <button type="button" class="btn-file-download" (click)="downloadDoc(item.fileDoc)">
+          <i class="ri-file-pdf-2-line"></i>
+          <span>{{ item.fileDoc }}</span>
+        </button>
+
+        <div class="card-actions">
+          <button type="button" class="btn-icon" (click)="openEditModal(item)" title="Edit Detail Izin">
+            <i class="ri-edit-line"></i>
+          </button>
+          <button type="button" class="btn-icon btn-danger-hover" (click)="openDeleteModal(item)" title="Nonaktifkan / Hapus Izin">
+            <i class="ri-delete-bin-line"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="filteredPerizinanList().length === 0" class="empty-license">
+      <i class="ri-government-line"></i>
+      <p>Tidak ada dokumen izin yang cocok dengan filter pencarian.</p>
+    </div>
+  </div>
+
+  <!-- Modal Tambah / Edit Izin (Static Backdrop) -->
+  <div *ngIf="showModal()" class="modal-backdrop">
+    <div class="modal-dialog modal-lg" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-header-icon" [class.edit-mode]="isEditing()">
+          <i [class]="isEditing() ? 'ri-edit-line' : 'ri-file-shield-line'"></i>
+        </div>
+        <div>
+          <h4 class="modal-title">{{ isEditing() ? 'Edit Dokumen Perizinan #' + currentIzin.id : 'Unggah Legalitas Izin Baru' }}</h4>
+          <p class="modal-subtitle">Pastikan nomor SK dan tanggal masa berlaku sesuai dengan dokumen resmi instansi</p>
+        </div>
+        <button type="button" class="btn-close" (click)="closeModal()">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="inp-nama-izin">Nama Izin / Sertifikasi <span class="text-danger">*</span></label>
+          <input
+            id="inp-nama-izin"
+            type="text"
+            class="form-control"
+            placeholder="Contoh: Tanda Daftar Penyelenggara Sistem Elektronik Farmasi (PSEF)"
+            [(ngModel)]="currentIzin.namaIzin"
+            [class.is-invalid]="formSubmitted() && !currentIzin.namaIzin.trim()"
+          />
+          <span *ngIf="formSubmitted() && !currentIzin.namaIzin.trim()" class="form-error-msg">
+            <i class="ri-error-warning-fill"></i> Nama izin wajib diisi
+          </span>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label class="form-label" for="inp-no-reg">Nomor Registrasi / SK <span class="text-danger">*</span></label>
+            <input
+              id="inp-no-reg"
+              type="text"
+              class="form-control font-mono"
+              placeholder="Contoh: PSEF-912026/KMK/IV"
+              [(ngModel)]="currentIzin.nomorRegistrasi"
+              [class.is-invalid]="formSubmitted() && !currentIzin.nomorRegistrasi.trim()"
+            />
+            <span *ngIf="formSubmitted() && !currentIzin.nomorRegistrasi.trim()" class="form-error-msg">
+              <i class="ri-error-warning-fill"></i> Nomor registrasi SK wajib diisi
+            </span>
+          </div>
+          <div class="form-group flex-1">
+            <label class="form-label" for="inp-instansi">Instansi Penerbit</label>
+            <input
+              id="inp-instansi"
+              type="text"
+              class="form-control"
+              placeholder="Kementerian Kesehatan RI"
+              [(ngModel)]="currentIzin.instansiPenerbit"
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label class="form-label" for="inp-terbit">Tanggal Terbit</label>
+            <input
+              id="inp-terbit"
+              type="text"
+              class="form-control"
+              placeholder="Contoh: 14 April 2024"
+              [(ngModel)]="currentIzin.tanggalTerbit"
+            />
+          </div>
+          <div class="form-group flex-1">
+            <label class="form-label" for="inp-masa">Masa Berlaku</label>
+            <input
+              id="inp-masa"
+              type="text"
+              class="form-control"
+              placeholder="Contoh: 14 April 2029 (5 Tahun)"
+              [(ngModel)]="currentIzin.masaBerlaku"
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-2">
+            <label class="form-label" for="inp-pic-izin">Nama Penanggung Jawab / APJ Utama</label>
+            <input
+              id="inp-pic-izin"
+              type="text"
+              class="form-control"
+              placeholder="Contoh: apt. Rina Meilani, S.Farm (APJ Utama)"
+              [(ngModel)]="currentIzin.penanggungJawab"
+            />
+          </div>
+          <div class="form-group flex-1">
+            <label class="form-label" for="inp-icon-izin">Ikon Representasi</label>
+            <select id="inp-icon-izin" class="form-control" [(ngModel)]="currentIzin.icon">
+              <option value="ri-government-line">Gedung Pemerintah (Kemenkes)</option>
+              <option value="ri-global-line">Global Web (Kominfo)</option>
+              <option value="ri-hospital-line">Fasilitas Apotek (SIA)</option>
+              <option value="ri-nurse-line">Praktik Medis (SIPA)</option>
+              <option value="ri-shield-check-line">Sertifikasi Keamanan (ISO)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="inp-ket-izin">Keterangan Regulasi & Ruang Lingkup</label>
+          <textarea
+            id="inp-ket-izin"
+            rows="3"
+            class="form-control"
+            placeholder="Jelaskan dasar hukum izin dan fasilitas pelayanan yang dicakup..."
+            [(ngModel)]="currentIzin.keterangan"
+          ></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label class="form-label" for="inp-file-doc">Nama File Dokumen PDF</label>
+            <input
+              id="inp-file-doc"
+              type="text"
+              class="form-control font-mono"
+              placeholder="SK_PSEF_KEMENKES_2026.pdf"
+              [(ngModel)]="currentIzin.fileDoc"
+            />
+          </div>
+          <div class="form-group flex-1">
+            <label class="form-label" for="inp-status-izin">Status Legalitas</label>
+            <select id="inp-status-izin" class="form-control" [(ngModel)]="currentIzin.status">
+              <option value="Aktif / Sah">Aktif / Sah</option>
+              <option value="Masa Perpanjangan">Masa Perpanjangan</option>
+              <option value="Nonaktif / Kedaluwarsa">Nonaktif / Kedaluwarsa</option>
+              <option value="Menunggu Verifikasi">Menunggu Verifikasi</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" (click)="closeModal()">Batal</button>
+        <button type="button" class="btn btn-primary" (click)="saveIzin()" id="btn-save-izin">
+          <i [class]="isEditing() ? 'ri-save-line' : 'ri-check-line'"></i>
+          <span>{{ isEditing() ? 'Simpan Perubahan' : 'Simpan Dokumen Izin' }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Konfirmasi Nonaktifkan / Hapus Izin (Static Backdrop) -->
+  <div *ngIf="showDeleteModal() && selectedIzin() as targetIzin" class="modal-backdrop">
+    <div class="modal-dialog modal-delete-dialog" (click)="$event.stopPropagation()">
+      <div class="delete-modal-header">
+        <div class="delete-icon-pulse" [class.danger]="deleteMode() === 'permanent'">
+          <i [class]="deleteMode() === 'deactivate' ? 'ri-archive-line' : 'ri-delete-bin-line'"></i>
+        </div>
+        <div class="delete-header-titles">
+          <h4 class="modal-title" [class.text-amber]="deleteMode() === 'deactivate'" [class.text-danger]="deleteMode() === 'permanent'">
+            {{ deleteMode() === 'deactivate' ? 'Nonaktifkan Dokumen Legalitas?' : 'Hapus Dokumen Izin Permanen?' }}
+          </h4>
+          <p class="modal-subtitle">Pengelolaan status izin resmi dengan perlindungan data arsip Kemenkes</p>
+        </div>
+        <button type="button" class="btn-close" (click)="closeDeleteModal()" [disabled]="isProcessing()">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <div class="delete-modal-body">
+        <!-- Target License Preview Card -->
+        <div class="license-preview-card">
+          <div class="preview-header">
+            <span class="preview-cat-badge font-mono">{{ targetIzin.nomorRegistrasi }}</span>
+            <span class="preview-status-pill" [class.status-aktif]="targetIzin.status === 'Aktif / Sah'">
+              {{ targetIzin.status }}
+            </span>
+          </div>
+          <h5 class="preview-title">{{ targetIzin.namaIzin }}</h5>
+          <p class="preview-desc">{{ targetIzin.keterangan }}</p>
+
+          <div class="preview-stat-row">
+            <div class="stat-pill">
+              <i class="ri-government-line text-indigo"></i>
+              <span class="stat-lbl">Penerbit:</span>
+              <span class="stat-num">{{ targetIzin.instansiPenerbit }}</span>
+            </div>
+            <div class="stat-pill">
+              <i class="ri-calendar-line text-sky"></i>
+              <span class="stat-lbl">Masa Berlaku:</span>
+              <span class="stat-num">{{ targetIzin.masaBerlaku }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Audit Protection Notice Box -->
+        <div class="analytics-notice-box" [class.warning-border]="deleteMode() === 'permanent'">
+          <div class="notice-icon-box" [class.danger-bg]="deleteMode() === 'permanent'">
+            <i [class]="deleteMode() === 'deactivate' ? 'ri-shield-star-line' : 'ri-error-warning-fill'"></i>
+          </div>
+          <div class="notice-text-content">
+            <h6 class="notice-title">
+              {{ deleteMode() === 'deactivate' ? 'Perlindungan Histori Legalitas Kemenkes & Kominfo' : 'Peringatan Penghapusan Rekam Izin PSEF' }}
+            </h6>
+            <p class="notice-desc" *ngIf="deleteMode() === 'deactivate'">
+              Dengan <strong>menonaktifkan</strong>, dokumen ini tidak lagi dipublikasikan ke halaman legal publik, namun 
+              <strong>seluruh riwayat nomor SK, masa berlaku, dan nama penanggung jawab APJ tetap tersimpan</strong> 
+              sebagai arsip regulasi jika diperlukan pembuktian inspeksi farmasi.
+            </p>
+            <p class="notice-desc text-danger-text" *ngIf="deleteMode() === 'permanent'">
+              Menghapus permanen akan <strong>menghilangkan catatan nomor SK dan file PDF legalitas</strong> secara permanen. 
+              Tindakan ini tidak dapat dibatalkan!
+            </p>
+          </div>
+        </div>
+
+        <!-- Action Choice Cards -->
+        <div class="delete-options-group">
+          <div
+            class="action-choice-card"
+            role="button"
+            tabindex="0"
+            [class.selected]="deleteMode() === 'deactivate'"
+            (click)="setDeleteMode('deactivate')"
+            (keydown.enter)="setDeleteMode('deactivate')"
+          >
+            <div class="choice-indicator radio-amber"></div>
+            <div class="choice-content">
+              <div class="choice-header-row">
+                <span class="choice-title">Nonaktifkan / Arsipkan Dokumen Izin</span>
+                <span class="recommend-badge"><i class="ri-star-fill"></i> Disarankan</span>
+              </div>
+              <p class="choice-desc">Tarik dari publikasi publik tanpa merusak riwayat arsip legalitas PSEF.</p>
+            </div>
+          </div>
+
+          <div
+            class="action-choice-card"
+            role="button"
+            tabindex="0"
+            [class.selected]="deleteMode() === 'permanent'"
+            (click)="setDeleteMode('permanent')"
+            (keydown.enter)="setDeleteMode('permanent')"
+          >
+            <div class="choice-indicator radio-danger"></div>
+            <div class="choice-content">
+              <div class="choice-header-row">
+                <span class="choice-title text-danger">Hapus Dokumen Permanen</span>
+                <span class="danger-badge">Merusak Riwayat</span>
+              </div>
+              <p class="choice-desc">Hanya gunakan jika berkas izin salah input atau duplikat draft yang belum pernah disahkan.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="delete-modal-footer">
+        <button
+          type="button"
+          class="btn btn-outline"
+          (click)="closeDeleteModal()"
+          [disabled]="isProcessing()"
+        >
+          Batal
+        </button>
+
+        <button
+          *ngIf="deleteMode() === 'deactivate'"
+          type="button"
+          class="btn btn-warning-action"
+          (click)="confirmDeleteAction()"
+          [disabled]="isProcessing()"
+          id="btn-confirm-deactivate-izin"
+        >
+          <i [class]="isProcessing() ? 'ri-loader-4-line ri-spin' : 'ri-archive-line'"></i>
+          <span>{{ isProcessing() ? 'Memproses...' : 'Nonaktifkan Izin' }}</span>
+        </button>
+
+        <button
+          *ngIf="deleteMode() === 'permanent'"
+          type="button"
+          class="btn btn-danger-action"
+          (click)="confirmDeleteAction()"
+          [disabled]="isProcessing()"
+          id="btn-confirm-permanent-izin"
+        >
+          <i [class]="isProcessing() ? 'ri-loader-4-line ri-spin' : 'ri-delete-bin-line'"></i>
+          <span>{{ isProcessing() ? 'Menghapus...' : 'Ya, Hapus Permanen' }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Feedback -->
+  <div *ngIf="toastMessage()" class="perizinan-toast" [class]="'toast-' + toastType()">
+    <div class="toast-icon">
+      <i [class]="toastType() === 'success' ? 'ri-checkbox-circle-fill' : toastType() === 'danger' ? 'ri-error-warning-fill' : 'ri-information-fill'"></i>
+    </div>
+    <div class="toast-content">
+      <p class="toast-text">{{ toastMessage() }}</p>
+    </div>
+    <button type="button" class="toast-close" (click)="toastMessage.set('')">
+      <i class="ri-close-line"></i>
+    </button>
+  </div>
+</div>

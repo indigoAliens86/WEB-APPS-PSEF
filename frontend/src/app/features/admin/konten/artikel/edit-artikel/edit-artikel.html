@@ -1,0 +1,268 @@
+<div class="editor-page-container">
+  <!-- Top Navigation & Actions -->
+  <div class="top-nav-bar">
+    <div class="breadcrumb-group">
+      <button type="button" class="btn-back" (click)="goBack()">
+        <i class="ri-arrow-left-line"></i>
+        <span>Kembali ke Daftar</span>
+      </button>
+      <span class="breadcrumb-divider">/</span>
+      <span class="breadcrumb-item">Konten</span>
+      <span class="breadcrumb-divider">/</span>
+      <span class="breadcrumb-item">Artikel</span>
+      <span class="breadcrumb-divider">/</span>
+      <span class="breadcrumb-current">Sunting Artikel #{{ formData.id }}</span>
+    </div>
+
+    <div class="action-buttons-group">
+      <button type="button" class="btn btn-outline" (click)="goToDetail()">
+        <i class="ri-eye-line"></i>
+        <span class="hide-mobile">Lihat Detail</span>
+      </button>
+      <button type="button" class="btn btn-outline" (click)="saveArticle('Draf')">
+        <i class="ri-draft-line"></i>
+        <span>Simpan Draf</span>
+      </button>
+      <button type="button" class="btn btn-primary" (click)="saveArticle('Diterbitkan')">
+        <i class="ri-save-3-fill"></i>
+        <span>Perbarui Artikel</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Success Notification -->
+  <div *ngIf="successAlert()" class="alert-banner success-banner">
+    <i class="ri-checkbox-circle-fill"></i>
+    <span>Perubahan artikel berhasil disimpan ke sistem PSEF! Mengalihkan...</span>
+  </div>
+
+  <!-- Error Alert Banner -->
+  <div *ngIf="errorMessage()" class="alert-banner">
+    <i class="ri-error-warning-fill"></i>
+    <span>{{ errorMessage() }}</span>
+    <button type="button" class="btn-close-alert" (click)="errorMessage.set('')">
+      <i class="ri-close-line"></i>
+    </button>
+  </div>
+
+  <!-- Form Layout Grid -->
+  <form class="editor-form-layout" (ngSubmit)="saveArticle()">
+    <!-- Left Column: Main Form Fields -->
+    <div class="editor-main-col">
+      <!-- Card: Informasi Utama Artikel -->
+      <div class="form-card">
+        <div class="card-header-row">
+          <div class="card-icon-title">
+            <i class="ri-edit-line"></i>
+            <h4>Sunting Konten & Naskah Edukasi</h4>
+          </div>
+          <span class="badge-doc-id">Dokumen #ART-{{ formData.id }}</span>
+        </div>
+
+        <div class="form-fields-group">
+          <!-- Judul -->
+          <div class="form-group">
+            <label class="form-label" for="inp-edit-judul">
+              Judul Artikel Edukasi <span class="required">*</span>
+            </label>
+            <input
+              id="inp-edit-judul"
+              type="text"
+              class="form-control form-control-lg"
+              placeholder="Judul artikel kesehatan..."
+              [(ngModel)]="formData.judul"
+              name="judul"
+              required
+            />
+          </div>
+
+          <!-- Slug -->
+          <div class="form-group">
+            <label class="form-label" for="inp-edit-slug">
+              Slug URL Publik (SEO Friendly)
+            </label>
+            <div class="slug-input-wrapper">
+              <span class="slug-prefix">psef.id/artikel/</span>
+              <input
+                id="inp-edit-slug"
+                type="text"
+                class="form-control form-control-slug"
+                placeholder="slug-artikel"
+                [(ngModel)]="formData.slug"
+                name="slug"
+              />
+            </div>
+          </div>
+
+          <!-- Ringkasan -->
+          <div class="form-group">
+            <label class="form-label" for="inp-edit-ringkasan">
+              Ringkasan / Meta Description <span class="required">*</span>
+            </label>
+            <textarea
+              id="inp-edit-ringkasan"
+              class="form-control"
+              rows="3"
+              placeholder="Ringkasan artikel untuk cuplikan pembaca..."
+              [(ngModel)]="formData.ringkasan"
+              name="ringkasan"
+              required
+            ></textarea>
+          </div>
+
+          <!-- Naskah Lengkap -->
+          <div class="form-group">
+            <div class="editor-toolbar-header">
+              <label class="form-label mb-0" for="inp-edit-konten">
+                Naskah Lengkap Artikel <span class="required">*</span>
+              </label>
+              <div class="editor-quick-helpers">
+                <span class="helper-pill"><i class="ri-paragraph"></i> Format Paragraf</span>
+                <span class="helper-pill"><i class="ri-shield-check-line"></i> Terverifikasi APJ</span>
+              </div>
+            </div>
+            <textarea
+              id="inp-edit-konten"
+              class="form-control font-body"
+              rows="12"
+              placeholder="Tuliskan naskah lengkap artikel..."
+              [(ngModel)]="formData.konten"
+              name="konten"
+              required
+            ></textarea>
+          </div>
+
+          <!-- Tags -->
+          <div class="form-group">
+            <label class="form-label">
+              Tag Topik Kesehatan
+            </label>
+            <div class="tags-editor-box">
+              <div class="active-tags-list">
+                <span *ngFor="let t of formData.tags; let idx = index" class="tag-badge">
+                  #{{ t }}
+                  <button type="button" class="btn-remove-tag" (click)="removeTag(idx)">
+                    <i class="ri-close-line"></i>
+                  </button>
+                </span>
+              </div>
+              <div class="tag-input-row">
+                <input
+                  type="text"
+                  class="form-control form-control-sm"
+                  placeholder="Ketik tag lalu tekan Tambah..."
+                  [ngModel]="newTagInput()"
+                  (ngModelChange)="newTagInput.set($event)"
+                  (keydown.enter)="$event.preventDefault(); addTag()"
+                  name="tagInput"
+                />
+                <button type="button" class="btn btn-outline btn-sm" (click)="addTag()">
+                  <i class="ri-add-line"></i>
+                  <span>Tambah Tag</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Sidebar Metadata & Controls -->
+    <div class="editor-sidebar-col">
+      <!-- Card: Status & Publikasi -->
+      <div class="form-card">
+        <h4 class="sidebar-section-title">
+          <i class="ri-settings-4-line"></i>
+          <span>Pengaturan Publikasi</span>
+        </h4>
+
+        <div class="form-group">
+          <label class="form-label" for="sel-edit-status">Status Publikasi</label>
+          <select id="sel-edit-status" class="form-control" [(ngModel)]="formData.status" name="status">
+            <option value="Diterbitkan">Diterbitkan (Tayang ke Pasien)</option>
+            <option value="Draf">Draf Internal</option>
+            <option value="Menunggu Review">Menunggu Review Medis</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="sel-edit-kategori">Kategori Artikel</label>
+          <select id="sel-edit-kategori" class="form-control" [(ngModel)]="formData.kategori" name="kategori">
+            <option *ngFor="let kat of kategoriOptions" [value]="kat">{{ kat }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="inp-edit-waktu">Estimasi Waktu Baca</label>
+          <input
+            id="inp-edit-waktu"
+            type="text"
+            class="form-control"
+            placeholder="Contoh: 4 Menit"
+            [(ngModel)]="formData.waktuBaca"
+            name="waktuBaca"
+          />
+        </div>
+      </div>
+
+      <!-- Card: Penulis & Lisensi Nakes -->
+      <div class="form-card">
+        <h4 class="sidebar-section-title">
+          <i class="ri-user-star-line"></i>
+          <span>Penulis & Verifikator</span>
+        </h4>
+
+        <div class="form-group">
+          <label class="form-label" for="inp-edit-penulis">Nama Penulis & Gelar</label>
+          <input
+            id="inp-edit-penulis"
+            type="text"
+            class="form-control"
+            placeholder="apt. Rina Meilani, S.Farm"
+            [(ngModel)]="formData.penulis"
+            name="penulis"
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="inp-edit-peran">Peran / Nomor SIPA / SIP</label>
+          <input
+            id="inp-edit-peran"
+            type="text"
+            class="form-control"
+            placeholder="Apoteker Penanggung Jawab PSEF (SIPA: ...)"
+            [(ngModel)]="formData.peranPenulis"
+            name="peranPenulis"
+          />
+        </div>
+      </div>
+
+      <!-- Card: Gambar Sampul & Live Preview -->
+      <div class="form-card">
+        <h4 class="sidebar-section-title">
+          <i class="ri-image-line"></i>
+          <span>Gambar Sampul (Cover)</span>
+        </h4>
+
+        <div class="form-group">
+          <label class="form-label" for="inp-edit-cover">URL Gambar</label>
+          <input
+            id="inp-edit-cover"
+            type="text"
+            class="form-control"
+            placeholder="https://images.unsplash.com/..."
+            [(ngModel)]="formData.coverUrl"
+            name="coverUrl"
+          />
+        </div>
+
+        <div class="cover-preview-card">
+          <span class="preview-label">Pratinjau Sampul:</span>
+          <div class="cover-img-wrapper">
+            <img [src]="formData.coverUrl" alt="Cover Preview" class="cover-preview-img" (error)="formData.coverUrl = 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&auto=format&fit=crop&q=80'" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

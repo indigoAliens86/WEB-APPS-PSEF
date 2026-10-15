@@ -1,0 +1,308 @@
+<div class="detail-telemedisin-page-container">
+  <!-- Top Bar: Title & Back Button -->
+  <header class="detail-top-nav-bar">
+    <div class="title-meta-block">
+      <h1 class="page-main-title">Detail Konsultasi</h1>
+      <p class="page-sub-title">Informasi Lengkap mengenai konsultasi telemedicine</p>
+    </div>
+
+    <button
+      type="button"
+      class="btn-back-nav"
+      (click)="goBack()"
+      aria-label="Kembali ke Daftar Telemedicine"
+    >
+      <i class="ri-arrow-left-line" aria-hidden="true"></i>
+      <span>Kembali</span>
+    </button>
+  </header>
+
+  <!-- Top Consultation Summary Card (3 Columns) -->
+  <section class="consultation-summary-card" aria-label="Ringkasan Konsultasi">
+    <div class="summary-columns-layout">
+      <!-- Col 1: ID Konsultasi -->
+      <div class="summary-col col-consultation-id">
+        <div class="consultation-icon-box">
+          <i class="ri-video-chat-line" aria-hidden="true"></i>
+        </div>
+        <div class="summary-meta-content">
+          <span class="meta-field-label">ID Konsultasi</span>
+          <strong class="meta-field-value">{{ detail.id }}</strong>
+          <div class="consultation-sub-meta">
+            <span class="sub-item">
+              <i class="ri-video-line" aria-hidden="true"></i> {{ detail.metode }}
+            </span>
+            <span class="sub-item">
+              <i class="ri-calendar-line" aria-hidden="true"></i> {{ detail.waktuKonsultasi }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Col 2: Pasien -->
+      <div class="summary-col col-patient">
+        <div class="summary-avatar-wrapper">
+          <img [src]="detail.pasien.avatar" [alt]="detail.pasien.nama" class="summary-avatar-img" />
+        </div>
+        <div class="summary-meta-content">
+          <span class="meta-field-label">Pasien</span>
+          <strong class="meta-field-value">{{ detail.pasien.nama }}</strong>
+          <div class="consultation-sub-meta">
+            <span class="sub-item text-muted-sub">{{ detail.pasien.genderAge }}</span>
+            <span class="sub-item text-muted-sub">{{ detail.pasien.alamat }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Col 3: Dokter -->
+      <div class="summary-col col-doctor">
+        <div class="summary-avatar-wrapper doc-avatar">
+          <img [src]="detail.dokter.avatar" [alt]="detail.dokter.nama" class="summary-avatar-img" />
+        </div>
+        <div class="summary-meta-content">
+          <span class="meta-field-label">Dokter</span>
+          <strong class="meta-field-value">{{ detail.dokter.nama }}</strong>
+          <div class="consultation-sub-meta">
+            <span class="sub-item text-muted-sub">{{ detail.dokter.spesialisasi }}</span>
+            <span class="sub-item text-muted-sub">{{ detail.dokter.sip }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Two-Column Body Grid -->
+  <div class="detail-two-columns-grid">
+    <!-- LEFT COLUMN: Main Clinical Panel -->
+    <div class="col-left-clinical">
+      <section class="clinical-panel-card">
+        <!-- Section: Keluhan Utama -->
+        <div class="clinical-section-block">
+          <h2 class="clinical-section-title">Keluhan Utama</h2>
+          <p class="clinical-body-text">{{ detail.keluhanUtama }}</p>
+        </div>
+
+        <!-- Section: Ringkasan Konsultasi -->
+        <div class="clinical-section-block">
+          <h2 class="clinical-section-title">Ringkasan Konsultasi</h2>
+          <p class="clinical-body-text">{{ detail.ringkasanKonsultasi }}</p>
+        </div>
+
+        <!-- Section: Hasil Anamnesis -->
+        <div class="clinical-section-block">
+          <h2 class="clinical-section-title">Hasil Anamnesis</h2>
+          <ul class="clinical-bullet-list">
+            @for (item of detail.hasilAnamnesis; track item) {
+              <li>{{ item }}</li>
+            }
+          </ul>
+        </div>
+
+        <!-- Section: Kesimpulan -->
+        <div class="clinical-section-block">
+          <h2 class="clinical-section-title">Kesimpulan</h2>
+          <p class="clinical-body-text">{{ detail.kesimpulan }}</p>
+        </div>
+
+        <!-- Section: Saran Dokter -->
+        <div class="clinical-section-block">
+          <h2 class="clinical-section-title">Saran Dokter</h2>
+          <ul class="clinical-bullet-list">
+            @for (saran of detail.saranDokter; track saran) {
+              <li>{{ saran }}</li>
+            }
+          </ul>
+        </div>
+
+        <!-- Section: Lampiran -->
+        <div class="clinical-section-block">
+          <h2 class="clinical-section-title">Lampiran</h2>
+          <div class="attachment-file-card">
+            <div class="attachment-icon-box">
+              <i class="ri-file-pdf-2-line" aria-hidden="true"></i>
+            </div>
+            <div class="attachment-file-info">
+              <strong class="attachment-file-name">{{ detail.lampiran.nama }}</strong>
+              <span class="attachment-file-size">{{ detail.lampiran.ukuran }}</span>
+            </div>
+            <div class="attachment-actions-group">
+              <button
+                type="button"
+                class="btn-outline-file"
+                (click)="lihatDokumen()"
+                aria-label="Lihat Dokumen"
+              >
+                <i class="ri-eye-line" aria-hidden="true"></i>
+                <span>Lihat Dokumen</span>
+              </button>
+              <button
+                type="button"
+                class="btn-outline-file"
+                (click)="downloadPdf()"
+                aria-label="Download Dokumen PDF"
+              >
+                <i class="ri-download-2-line" aria-hidden="true"></i>
+                <span>Download PDF</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Informasi Tambahan & Rekaman Konsultasi -->
+        <div class="clinical-footer-dual-grid">
+          <!-- Subcolumn 1: Informasi Tambahan -->
+          <div class="additional-info-subcol">
+            <h3 class="subcol-heading">Informasi Tambahan</h3>
+            <div class="additional-meta-list">
+              <div class="meta-entry-row">
+                <span class="entry-label">Metode Konsultasi</span>
+                <span class="entry-val">{{ detail.metode }}</span>
+              </div>
+              <div class="meta-entry-row">
+                <span class="entry-label">Durasi Konsultasi</span>
+                <span class="entry-val">{{ detail.durasi }}</span>
+              </div>
+              <div class="meta-entry-row">
+                <span class="entry-label">Status Konsultasi</span>
+                <span class="entry-val">
+                  <span class="status-badge-green">{{ detail.status }}</span>
+                </span>
+              </div>
+              <div class="meta-entry-row">
+                <span class="entry-label">Dibuat pada</span>
+                <span class="entry-val text-muted">{{ detail.dibuatPada }}</span>
+              </div>
+              <div class="meta-entry-row">
+                <span class="entry-label">Selesai Pada</span>
+                <span class="entry-val text-muted">{{ detail.selesaiPada }}</span>
+              </div>
+              <div class="meta-entry-row">
+                <span class="entry-label">Dibuat Oleh</span>
+                <span class="entry-val text-muted">{{ detail.dokter.nama }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Subcolumn 2: Rekaman Konsultasi -->
+          <div class="recording-info-subcol">
+            <h3 class="subcol-heading">Rekaman Konsultasi</h3>
+            <p class="recording-notice-text">
+              Rekaman video konsultasi tersedia selama 7 hari sejak konsultasi selesai
+            </p>
+            <button
+              type="button"
+              class="btn-watch-recording"
+              (click)="lihatRekaman()"
+              aria-label="Lihat Rekaman Video Konsultasi"
+            >
+              <i class="ri-play-circle-line" aria-hidden="true"></i>
+              <span>Lihat Rekaman (Jika Tersedia)</span>
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- RIGHT COLUMN: Resep, Pembayaran, Timeline -->
+    <div class="col-right-sidebar">
+      <!-- Card 1: Resep / Rekomendasi -->
+      <section class="sidebar-panel-card" aria-labelledby="resep-heading">
+        <header class="panel-top-header">
+          <h2 id="resep-heading" class="panel-card-title">Resep / Rekomendasi</h2>
+        </header>
+        <div class="panel-card-body p-0">
+          <div class="table-resep-wrap">
+            <table class="table-resep-clean" aria-label="Tabel Resep Obat">
+              <thead>
+                <tr>
+                  <th class="th-no">No</th>
+                  <th class="th-name">Nama Obat / Rekomendasi</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (r of detail.resep; track r.no) {
+                  <tr>
+                    <td class="td-no">{{ r.no }}</td>
+                    <td class="td-name">
+                      <div class="resep-drug-item">
+                        <strong class="drug-name-bold">{{ r.nama }}</strong>
+                        <span class="drug-instruction">{{ r.instruksi }}</span>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Card 2: Ringkasan Pembayaran Konsultasi -->
+      <section class="sidebar-panel-card" aria-labelledby="pembayaran-heading">
+        <header class="panel-top-header header-with-badge">
+          <h2 id="pembayaran-heading" class="panel-card-title">Ringkasan Pembayaran Konsultasi</h2>
+          <span class="badge-lunas-pill">{{ detail.pembayaran.status }}</span>
+        </header>
+        <div class="panel-card-body">
+          <div class="payment-rows-list">
+            <div class="pay-row">
+              <span class="pay-label">Subtotal</span>
+              <span class="pay-value">{{ detail.pembayaran.subtotal }}</span>
+            </div>
+            <div class="pay-row">
+              <span class="pay-label">Diskon Produk</span>
+              <span class="pay-value text-discount">{{ detail.pembayaran.diskon }}</span>
+            </div>
+            <div class="pay-row">
+              <span class="pay-label">Voucher</span>
+              <span class="pay-value text-discount">{{ detail.pembayaran.voucher }}</span>
+            </div>
+
+            <div class="pay-divider"></div>
+
+            <div class="pay-row pay-total-row">
+              <span class="pay-label-bold">Total Pembayaran</span>
+              <strong class="pay-total-highlight">{{ detail.pembayaran.total }}</strong>
+            </div>
+
+            <div class="pay-row meta-bottom">
+              <span class="pay-label">Metode Pembayaran</span>
+              <span class="pay-value font-medium">{{ detail.pembayaran.metode }}</span>
+            </div>
+            <div class="pay-row meta-bottom">
+              <span class="pay-label">Waktu Pembayaran</span>
+              <span class="pay-value font-medium">{{ detail.pembayaran.waktu }}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Card 3: Timeline Pesanan -->
+      <section class="sidebar-panel-card" aria-labelledby="timeline-heading">
+        <header class="panel-top-header">
+          <h2 id="timeline-heading" class="panel-card-title">Timeline Pesanan</h2>
+        </header>
+        <div class="panel-card-body">
+          <div class="order-timeline-stepper">
+            @for (step of detail.timeline; track step.judul; let isLast = $last) {
+              <div class="timeline-step-item" [class.step-last]="isLast">
+                <div class="step-icon-axis">
+                  <div class="step-check-circle">
+                    <i class="ri-checkbox-circle-fill" aria-hidden="true"></i>
+                  </div>
+                  @if (!isLast) {
+                    <div class="step-line-track"></div>
+                  }
+                </div>
+                <div class="step-text-row">
+                  <span class="step-title-text">{{ step.judul }}</span>
+                  <span class="step-time-text">{{ step.waktu }}</span>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

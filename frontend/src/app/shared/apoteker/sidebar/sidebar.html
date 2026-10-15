@@ -1,0 +1,96 @@
+<aside class="sidebar">
+    <!-- Brand Section -->
+    <a class="sidebar-brand" routerLink="/apoteker/dashboard">
+        <span class="brand-mark" aria-hidden="true">
+            <i class="ri-nurse-line"></i>
+        </span>
+        <div class="brand-info">
+            <span class="brand-label">Portal Apoteker</span>
+            <span class="brand-sub">Praktik Kefarmasian & PSEF</span>
+        </div>
+    </a>
+
+    <!-- Apoteker Practitioner Card -->
+    <div class="practitioner-badge-card">
+        <div class="badge-status-dot"></div>
+        <div class="badge-text">
+            <span class="practitioner-name">apt. Farhan Pratama, S.Farm</span>
+            <span class="practitioner-sipa font-mono">SIPA: 35.79/25/1235 (APJ)</span>
+        </div>
+    </div>
+
+    <!-- Navigation Menu -->
+    <nav aria-label="Menu Apoteker">
+        <!-- Menu Utama -->
+        <section class="menu-group">
+            <h2 class="menu-heading">Menu Utama</h2>
+            <a class="menu-link" title="Dashboard Apoteker" aria-label="Dashboard" routerLink="/apoteker/dashboard" routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }">
+                <i class="ri-dashboard-3-line" aria-hidden="true"></i>
+                <span class="menu-text">Dashboard</span>
+            </a>
+        </section>
+
+        <!-- Pelayanan Farmasi Klinis -->
+        <section class="menu-group">
+            <h2 class="menu-heading">Pelayanan Farmasi</h2>
+            <a class="menu-link" title="Telaah Resep & Skrining Klinis" aria-label="Skrining Resep" routerLink="/apoteker/resep" routerLinkActive="active">
+                <i class="ri-file-list-3-line" aria-hidden="true"></i>
+                <span class="menu-text">Skrining Resep</span>
+                <span class="menu-pill pill-amber" aria-hidden="true">Telaah</span>
+            </a>
+            <a class="menu-link" title="Konseling Telefarmasi & PIO" aria-label="Telefarmasi" routerLink="/apoteker/telefarmasi" routerLinkActive="active">
+                <i class="ri-customer-service-2-line" aria-hidden="true"></i>
+                <span class="menu-text">Telefarmasi (PIO)</span>
+                <span class="menu-pill pill-teal" aria-hidden="true">Live</span>
+            </a>
+            <a class="menu-link" title="Rekam Medis & Riwayat Pasien" aria-label="Pasien" routerLink="/apoteker/pasien" routerLinkActive="active">
+                <i class="ri-user-heart-line" aria-hidden="true"></i>
+                <span class="menu-text">Data Pasien</span>
+            </a>
+        </section>
+
+        <!-- Sediaan & Logistik -->
+        <section class="menu-group">
+            <h2 class="menu-heading">Sediaan & Dispensing</h2>
+            <a class="menu-link" title="Katalog Obat & Stok Sediaan" aria-label="Katalog Obat" routerLink="/apoteker/produk" routerLinkActive="active">
+                <i class="ri-capsule-line" aria-hidden="true"></i>
+                <span class="menu-text">Katalog Obat</span>
+            </a>
+            <a class="menu-link" title="Pesanan & Dispensing Obat" aria-label="Pesanan" routerLink="/apoteker/pesanan" routerLinkActive="active">
+                <i class="ri-shopping-bag-3-line" aria-hidden="true"></i>
+                <span class="menu-text">Pesanan Dispensing</span>
+            </a>
+        </section>
+
+        <!-- Regulasi & Kepatuhan SIPNAP -->
+        <section class="menu-group">
+            <h2 class="menu-heading">Kepatuhan & Regulasi</h2>
+            <a class="menu-link" title="Laporan SIPNAP Kemenkes" aria-label="Laporan SIPNAP" routerLink="/apoteker/laporan" routerLinkActive="active">
+                <i class="ri-bar-chart-box-line" aria-hidden="true"></i>
+                <span class="menu-text">Laporan SIPNAP</span>
+            </a>
+            <a class="menu-link" title="Profil & Legalitas Apoteker" aria-label="Profil Apoteker" routerLink="/apoteker/profil" routerLinkActive="active">
+                <i class="ri-shield-user-line" aria-hidden="true"></i>
+                <span class="menu-text">Legalitas SIPA & STRA</span>
+            </a>
+            <a class="menu-link" title="Pengaturan Akun & Praktik" aria-label="Pengaturan" routerLink="/apoteker/pengaturan" routerLinkActive="active">
+                <i class="ri-settings-3-line" aria-hidden="true"></i>
+                <span class="menu-text">Pengaturan</span>
+            </a>
+        </section>
+    </nav>
+
+    <!-- Bottom Legalitas SIPA Widget -->
+    <div class="sidebar-compliance-widget">
+        <div class="compliance-header">
+            <i class="ri-shield-check-fill" aria-hidden="true"></i>
+            <span>Legalitas Apoteker Aktif</span>
+        </div>
+        <div class="compliance-body">
+            <span class="sipa-indicator font-mono">STRA: 317129/25/1002</span>
+            <span class="sipa-validity">Berlaku s/d: <strong>14 Okt 2028</strong></span>
+            <span class="facility-sub">Apotek Kimia Sehat PSEF</span>
+        </div>
+    </div>
+</aside>

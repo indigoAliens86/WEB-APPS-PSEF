@@ -1,0 +1,788 @@
+/* ============================================================
+   DETAIL TELEFARMASI COMPONENT STYLES
+   ============================================================ */
+
+.detail-telefarmasi-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+/* ============================================================
+   1. TOP HEADER & BACK BUTTON
+   ============================================================ */
+.detail-top-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.header-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.page-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary, #1e293b);
+  margin: 0;
+}
+
+.page-subtitle {
+  font-size: 13px;
+  color: var(--text-secondary, #64748b);
+  margin: 0;
+}
+
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 8px;
+  background-color: var(--surface-card, #ffffff);
+  border: 1px solid var(--border-color, #cbd5e1);
+  color: var(--text-primary, #334155);
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-back:hover {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+/* ============================================================
+   2. TOP 3-COLUMN SUMMARY CARD
+   ============================================================ */
+.summary-card {
+  background-color: var(--surface-card, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 12px;
+  padding: 24px 28px;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1.2fr;
+  gap: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.summary-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.summary-col.col-id {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 16px;
+  border-right: 1px solid var(--border-color, #e2e8f0);
+  padding-right: 24px;
+}
+
+.consult-icon-box {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background-color: #e2e8f0;
+  color: #3b82f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  flex-shrink: 0;
+}
+
+.col-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.col-caption {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary, #64748b);
+  margin-bottom: 2px;
+}
+
+.consult-code {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.sub-detail-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-secondary, #64748b);
+}
+
+.sub-detail-item i {
+  font-size: 14px;
+  color: #94a3b8;
+}
+
+.summary-col.col-pasien {
+  border-right: 1px solid var(--border-color, #e2e8f0);
+  padding-right: 24px;
+}
+
+.person-profile {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 2px;
+}
+
+.person-avatar {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
+.person-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.person-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  margin: 0;
+}
+
+.person-detail {
+  font-size: 12px;
+  color: var(--text-secondary, #64748b);
+}
+
+.person-location {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+/* ============================================================
+   3. TWO-COLUMN MAIN GRID LAYOUT
+   ============================================================ */
+.detail-main-grid {
+  display: grid;
+  grid-template-columns: 1.55fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+/* ============================================================
+   4. LEFT PANEL: CLINICAL & CONSULTATION
+   ============================================================ */
+.clinical-panel {
+  background-color: var(--surface-card, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 12px;
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.clinical-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-bottom: 1px solid var(--border-color, #f1f5f9);
+  padding-bottom: 18px;
+}
+
+.clinical-section:last-of-type {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  margin: 0;
+}
+
+.section-text {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-primary, #475569);
+  margin: 0;
+}
+
+.bullet-list {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.bullet-list li {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-primary, #475569);
+}
+
+/* Lampiran Card */
+.attachment-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 14px 18px;
+  background-color: #f8fafc;
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 10px;
+}
+
+.attachment-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pdf-icon-badge {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  background-color: #fee2e2;
+  color: #ef4444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.attachment-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.file-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+}
+
+.file-size {
+  font-size: 11.5px;
+  color: #94a3b8;
+}
+
+.attachment-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-action-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-size: 12.5px;
+  font-weight: 500;
+  background-color: #ffffff;
+  border: 1px solid var(--border-color, #cbd5e1);
+  color: var(--text-primary, #334155);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-action-outline:hover {
+  border-color: #0ab39c;
+  color: #0ab39c;
+}
+
+/* Bottom Split: Informasi Tambahan & Rekaman Konsultasi */
+.bottom-split-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  padding-top: 6px;
+}
+
+.sub-info-col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.info-meta-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12.5px;
+  gap: 8px;
+}
+
+.meta-label {
+  color: var(--text-secondary, #64748b);
+}
+
+.meta-val {
+  font-weight: 500;
+  color: var(--text-primary, #1e293b);
+  text-align: right;
+}
+
+.badge-status-selesai {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 11.5px;
+  font-weight: 600;
+  background-color: #dcfce7;
+  color: #059669;
+}
+
+.recording-desc {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--text-secondary, #64748b);
+  margin: 0;
+}
+
+.btn-recording {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 16px;
+  background-color: #83889e;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: all 0.2s ease;
+}
+
+.btn-recording:hover {
+  background-color: #6b7280;
+}
+
+/* ============================================================
+   5. RIGHT PANEL: SIDEBAR CARDS
+   ============================================================ */
+.sidebar-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sidebar-card {
+  background-color: var(--surface-card, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 12px;
+  padding: 20px 22px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sidebar-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  margin: 0;
+}
+
+/* 1. Resep Table */
+.resep-table-wrapper {
+  overflow-x: auto;
+  border-radius: 6px;
+}
+
+.resep-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.resep-table thead {
+  background-color: #f8fafc;
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+}
+
+.resep-table th {
+  padding: 10px 10px;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-secondary, #475569);
+  white-space: nowrap;
+}
+
+.resep-table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--border-color, #f1f5f9);
+  vertical-align: middle;
+  color: var(--text-primary, #334155);
+}
+
+.th-res-no, .td-res-no {
+  width: 30px;
+  text-align: center;
+  color: #94a3b8;
+}
+
+.medicine-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 140px;
+}
+
+.medicine-thumb {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  object-fit: contain;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
+.medicine-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.medicine-name {
+  font-weight: 600;
+  color: var(--text-primary, #0f172a);
+}
+
+.medicine-form {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.td-res-aturan {
+  font-size: 11.5px;
+  color: var(--text-primary, #475569);
+  line-height: 1.4;
+  min-width: 120px;
+}
+
+.td-res-jumlah {
+  white-space: nowrap;
+  color: var(--text-primary, #334155);
+}
+
+.td-res-harga {
+  font-weight: 600;
+  color: var(--text-primary, #0f172a);
+  white-space: nowrap;
+}
+
+/* 2. Payment Card */
+.payment-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.badge-lunas {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11.5px;
+  font-weight: 600;
+  background-color: #dcfce7;
+  color: #059669;
+}
+
+.payment-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  font-size: 13px;
+}
+
+.pay-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pay-label {
+  color: var(--text-secondary, #64748b);
+}
+
+.pay-value {
+  font-weight: 500;
+  color: var(--text-primary, #1e293b);
+}
+
+.text-red {
+  color: #ef4444;
+}
+
+.text-dark {
+  color: var(--text-primary, #1e293b);
+  font-weight: 500;
+}
+
+.pay-divider {
+  height: 1px;
+  background-color: var(--border-color, #e2e8f0);
+  margin: 6px 0;
+}
+
+.total-row {
+  margin-bottom: 4px;
+}
+
+.font-bold {
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+}
+
+.total-highlight {
+  font-size: 15px;
+  font-weight: 700;
+  color: #059669;
+}
+
+.meta-bottom {
+  font-size: 12px;
+}
+
+/* 3. Timeline Stepper */
+.timeline-stepper {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.stepper-item {
+  display: flex;
+  gap: 12px;
+  position: relative;
+  min-height: 48px;
+}
+
+.stepper-item.is-last {
+  min-height: 24px;
+}
+
+.stepper-icon-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 20px;
+}
+
+.icon-checked {
+  color: #059669;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.stepper-track-line {
+  width: 2px;
+  flex: 1;
+  background-color: #cbd5e1;
+  margin: 4px 0;
+}
+
+.stepper-text-col {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex: 1;
+  padding-bottom: 14px;
+  gap: 8px;
+}
+
+.stepper-label {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text-primary, #1e293b);
+}
+
+.stepper-time {
+  font-size: 11.5px;
+  color: var(--text-secondary, #64748b);
+  white-space: nowrap;
+}
+
+/* ============================================================
+   6. DARK THEME OVERRIDES
+   ============================================================ */
+:host-context(html.dark-theme) .summary-card,
+:host-context(html.dark-theme) .clinical-panel,
+:host-context(html.dark-theme) .sidebar-card,
+:host-context(html.dark-theme) .btn-back {
+  background-color: #1e293b;
+  border-color: #334155;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+:host-context(html.dark-theme) .page-title,
+:host-context(html.dark-theme) .consult-code,
+:host-context(html.dark-theme) .person-name,
+:host-context(html.dark-theme) .section-title,
+:host-context(html.dark-theme) .sidebar-card-title,
+:host-context(html.dark-theme) .file-name,
+:host-context(html.dark-theme) .medicine-name,
+:host-context(html.dark-theme) .td-res-harga,
+:host-context(html.dark-theme) .stepper-label,
+:host-context(html.dark-theme) .font-bold {
+  color: #f1f5f9;
+}
+
+:host-context(html.dark-theme) .page-subtitle,
+:host-context(html.dark-theme) .col-caption,
+:host-context(html.dark-theme) .sub-detail-item,
+:host-context(html.dark-theme) .person-detail,
+:host-context(html.dark-theme) .person-location,
+:host-context(html.dark-theme) .section-text,
+:host-context(html.dark-theme) .bullet-list li,
+:host-context(html.dark-theme) .recording-desc,
+:host-context(html.dark-theme) .meta-label,
+:host-context(html.dark-theme) .medicine-form,
+:host-context(html.dark-theme) .td-res-aturan,
+:host-context(html.dark-theme) .pay-label,
+:host-context(html.dark-theme) .stepper-time {
+  color: #94a3b8;
+}
+
+:host-context(html.dark-theme) .summary-col.col-id,
+:host-context(html.dark-theme) .summary-col.col-pasien,
+:host-context(html.dark-theme) .clinical-section,
+:host-context(html.dark-theme) .pay-divider,
+:host-context(html.dark-theme) .resep-table thead,
+:host-context(html.dark-theme) .resep-table td {
+  border-color: #334155;
+}
+
+:host-context(html.dark-theme) .consult-icon-box {
+  background-color: #334155;
+  color: #60a5fa;
+}
+
+:host-context(html.dark-theme) .person-avatar,
+:host-context(html.dark-theme) .medicine-thumb {
+  background-color: #334155;
+  border-color: #475569;
+}
+
+:host-context(html.dark-theme) .attachment-card {
+  background-color: #0f172a;
+  border-color: #334155;
+}
+
+:host-context(html.dark-theme) .btn-action-outline {
+  background-color: #1e293b;
+  border-color: #334155;
+  color: #cbd5e1;
+}
+
+:host-context(html.dark-theme) .btn-action-outline:hover {
+  border-color: #2dd4bf;
+  color: #2dd4bf;
+}
+
+:host-context(html.dark-theme) .meta-val,
+:host-context(html.dark-theme) .pay-value,
+:host-context(html.dark-theme) .text-dark,
+:host-context(html.dark-theme) .td-res-jumlah {
+  color: #e2e8f0;
+}
+
+:host-context(html.dark-theme) .resep-table thead {
+  background-color: #0f172a;
+}
+
+:host-context(html.dark-theme) .resep-table th {
+  color: #94a3b8;
+}
+
+:host-context(html.dark-theme) .stepper-track-line {
+  background-color: #475569;
+}
+
+/* ============================================================
+   7. MULTI-DEVICE RESPONSIVENESS
+   ============================================================ */
+@media (max-width: 1200px) {
+  .detail-main-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-card {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .summary-col.col-id,
+  .summary-col.col-pasien {
+    border-right: none;
+    border-bottom: 1px solid var(--border-color, #e2e8f0);
+    padding-right: 0;
+    padding-bottom: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .summary-card,
+  .clinical-panel,
+  .sidebar-card {
+    padding: 16px;
+  }
+
+  .bottom-split-row {
+    grid-template-columns: 1fr;
+  }
+
+  .attachment-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .attachment-actions {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+}

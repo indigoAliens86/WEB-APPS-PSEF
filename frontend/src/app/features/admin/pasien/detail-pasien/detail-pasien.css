@@ -1,0 +1,3601 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.detail-page-container {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+  padding-bottom: 48px;
+  color: #334155;
+  font-family: inherit;
+}
+
+/* ============================================================
+   TOP NAVIGATION BAR
+   ============================================================ */
+.top-nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  color: #475569;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.btn-back:hover {
+  background-color: #f1f5f9;
+  color: #0ab39c;
+}
+
+.btn-back i {
+  font-size: 18px;
+}
+
+.header-action-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-outline-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-outline-action:hover {
+  background-color: #f8fafc;
+  border-color: #0ab39c;
+  color: #0ab39c;
+}
+
+.btn-edit-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 18px;
+  background-color: #0ab39c;
+  border: 1px solid #0ab39c;
+  color: #ffffff;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(10, 179, 156, 0.25);
+  transition: all 0.2s ease;
+}
+
+.btn-edit-action:hover {
+  background-color: #099885;
+  border-color: #099885;
+}
+
+/* ============================================================
+   PROFILE HEADER CARD (4 Balanced Columns matching Mockup)
+   ============================================================ */
+.profile-header-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 24px 28px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  width: 100%;
+}
+
+.profile-main-layout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+/* Col 1: Combined Patient Profile (Avatar + Identity) */
+.patient-profile-combo {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-shrink: 0;
+}
+
+.patient-avatar-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.patient-avatar-wrapper {
+  width: 86px;
+  height: 86px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid #e2e8f0;
+  background-color: #f8fafc;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.patient-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.status-indicator-badge {
+  background-color: #ecfdf5;
+  color: #059669;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 14px;
+  border-radius: 9999px;
+  border: 1px solid #a7f3d0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.patient-identity-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 170px;
+}
+
+.name-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.profile-name {
+  font-size: 21px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.gender-pill {
+  padding: 2px 10px;
+  border-radius: 9999px;
+  font-size: 11.5px;
+  font-weight: 500;
+  background-color: #e0f2fe;
+  color: #0284c7;
+}
+
+.age-pill {
+  padding: 2px 10px;
+  border-radius: 9999px;
+  font-size: 11.5px;
+  font-weight: 500;
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.nik-line {
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 400;
+  margin-top: 2px;
+}
+
+.tipe-line .tipe-tag {
+  display: inline-block;
+  font-size: 12.5px;
+  color: #0d9488;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+/* Col 2: Health Points Section */
+.health-points-col {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  flex-shrink: 0;
+}
+
+.points-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background-color: #fef3c7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #d97706;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.points-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.points-label {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.points-num-row {
+  display: flex;
+  align-items: baseline;
+}
+
+.points-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.2;
+}
+
+.points-growth {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  color: #10b981;
+  font-weight: 600;
+}
+
+.growth-sub {
+  font-weight: 400;
+  color: #94a3b8;
+}
+
+/* Col 3: Contacts Info Column */
+.patient-contacts-col {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 12.5px;
+  color: #475569;
+  max-width: 320px;
+}
+
+.contact-line {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  line-height: 1.4;
+}
+
+.contact-line i {
+  color: #64748b;
+  font-size: 14.5px;
+  width: 16px;
+  flex-shrink: 0;
+}
+
+.contact-line span {
+  word-break: break-word;
+}
+
+/* Col 4: Right 3 Metric Stat Cards */
+.profile-stats-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.stat-metric-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.stat-icon-wrapper {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
+}
+
+.stat-icon-wrapper.stat-teal {
+  background-color: #e6f7f5;
+  color: #0ab39c;
+}
+
+.stat-icon-wrapper.stat-blue {
+  background-color: #e0f2fe;
+  color: #0284c7;
+}
+
+.stat-icon-wrapper.stat-amber {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.stat-text-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 400;
+}
+
+.stat-number {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* ============================================================
+   PRIMARY NAVIGATION TABS (Underline Active Style matching Mockup)
+   ============================================================ */
+.primary-tabs-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 4px;
+  border-bottom: 1px solid #e2e8f0;
+  background: transparent;
+  overflow-x: auto;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.nav-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.nav-tab-btn:hover {
+  color: #0ab39c;
+}
+
+.nav-tab-btn.active {
+  color: #0ab39c;
+  font-weight: 600;
+}
+
+.nav-tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2.5px;
+  background-color: #0ab39c;
+  border-radius: 2px 2px 0 0;
+}
+
+.nav-tab-btn i {
+  font-size: 16px;
+}
+
+/* ============================================================
+   CONTENT PANELS & FULL WIDTH GRID LAYOUT
+   ============================================================ */
+.tab-pane-content {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+}
+
+.grid-two-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1.9fr) minmax(360px, 1.1fr);
+  gap: 20px;
+  align-items: start;
+  width: 100%;
+}
+
+.col-main-content,
+.col-sidebar-content {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+}
+
+/* ============================================================
+   TAB 1: RIWAYAT KESEHATAN - FILTER CARD
+   ============================================================ */
+.timeline-filter-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 16px 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  width: 100%;
+}
+
+.filter-controls-grid {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.filter-item-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 180px;
+}
+
+.filter-item-col.filter-col-search {
+  flex: 1.4;
+  min-width: 220px;
+}
+
+.filter-field-label {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #475569;
+}
+
+.filter-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.filter-control-input,
+.filter-control-select {
+  width: 100%;
+  height: 38px;
+  padding: 8px 34px 8px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #334155;
+  background-color: #ffffff;
+  outline: none;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.filter-control-select {
+  appearance: none;
+  cursor: pointer;
+}
+
+.filter-control-input:focus,
+.filter-control-select:focus {
+  border-color: #0ab39c;
+  box-shadow: 0 0 0 3px rgba(10, 179, 156, 0.12);
+}
+
+.filter-icon-end {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: 15px;
+  pointer-events: none;
+}
+
+.filter-actions-col {
+  flex: 0 0 auto;
+  min-width: auto;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-dark-filter-apply {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 18px;
+  background-color: #313f64;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-dark-filter-apply:hover {
+  background-color: #242f4c;
+}
+
+.btn-export-outline-teal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 38px;
+  width: 42px;
+  background-color: #ffffff;
+  color: #0ab39c;
+  border: 1.5px solid #0ab39c;
+  border-radius: 6px;
+  font-size: 17px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-export-outline-teal:hover {
+  background-color: #e8f9f5;
+}
+
+/* ============================================================
+   TAB 1: HEALTH TIMELINE TRACK & CARDS
+   ============================================================ */
+.health-timeline-container {
+  width: 100%;
+  padding-top: 4px;
+}
+
+.timeline-items-track {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
+}
+
+.timeline-row-entry {
+  display: flex;
+  align-items: stretch;
+  gap: 20px;
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.timeline-row-entry:last-child {
+  margin-bottom: 0;
+}
+
+.timeline-node-axis {
+  position: relative;
+  width: 20px;
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.timeline-line-track {
+  position: absolute;
+  top: 0;
+  bottom: -16px;
+  width: 2px;
+  background-color: #cbd5e1;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.timeline-row-entry:last-child .timeline-line-track {
+  bottom: calc(100% - 32px);
+}
+
+.timeline-marker-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  position: relative;
+  z-index: 2;
+  margin-top: 26px;
+  transition: all 0.2s ease;
+}
+
+.timeline-marker-dot.marker-active {
+  background-color: #0ab39c;
+  box-shadow: 0 0 0 4px rgba(10, 179, 156, 0.2);
+}
+
+.timeline-marker-dot.marker-normal {
+  background-color: #ffffff;
+  border: 2.5px solid #94a3b8;
+}
+
+.timeline-record-card {
+  flex: 1;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 16px 24px;
+  display: grid;
+  grid-template-columns: minmax(75px, auto) minmax(110px, auto) minmax(180px, 1.2fr) minmax(200px, 1.6fr) minmax(150px, 1.1fr) auto;
+  gap: 24px;
+  align-items: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  transition: all 0.2s ease;
+}
+
+.timeline-record-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.card-col-date,
+.card-col-facility,
+.card-col-doctor,
+.card-col-complaints {
+  border-right: 1px solid #f1f5f9;
+  padding-right: 20px;
+}
+
+.card-col-date {
+  display: flex;
+  flex-direction: column;
+}
+
+.day-large-num {
+  font-size: 26px;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1.1;
+}
+
+.month-year-text {
+  font-size: 13px;
+  font-weight: 500;
+  color: #475569;
+  margin-top: 2px;
+}
+
+.time-text {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.card-col-facility {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.facility-title {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #0ab39c;
+}
+
+.facility-city {
+  font-size: 12.5px;
+  color: #64748b;
+}
+
+.micro-section-label {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.doctor-thumb-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.doctor-avatar-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
+.doctor-thumb-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.doctor-name-strong {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.doctor-spec-span {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.card-col-complaints {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.complaint-subgroup,
+.diagnosis-subgroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.complaint-body-text {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1e293b;
+  margin: 0;
+}
+
+.diagnosis-body-text {
+  font-size: 12.5px;
+  color: #64748b;
+  margin: 0;
+}
+
+.card-col-actions-presc {
+  display: flex;
+  flex-direction: column;
+}
+
+.actions-bullet-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 12.5px;
+  color: #334155;
+  line-height: 1.5;
+}
+
+.card-col-button {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.btn-lihat-detail-outline {
+  border: 1px solid #0ab39c;
+  background-color: #ffffff;
+  color: #0ab39c;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 7px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.btn-lihat-detail-outline:hover {
+  background-color: #0ab39c;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(10, 179, 156, 0.25);
+}
+
+/* ============================================================
+   TAB 1: DETAIL VIEW (Detail Riwayat Kesehatan)
+   ============================================================ */
+.detail-header-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.btn-back-to-list {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-back-to-list:hover {
+  background-color: #f8fafc;
+  border-color: #0ab39c;
+  color: #0ab39c;
+}
+
+.detail-dual-columns-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(280px, 1fr);
+  gap: 28px;
+}
+
+.detail-subcol-clinical {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border-right: 1px solid #f1f5f9;
+  padding-right: 24px;
+}
+
+.tindakan-simple-bullets {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13px;
+  color: #334155;
+  line-height: 1.6;
+}
+
+.detail-resep-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-top: 4px;
+}
+
+.detail-resep-mini-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.detail-resep-mini-table th {
+  background-color: #f8fafc;
+  padding: 9px 12px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.detail-resep-mini-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+}
+
+.detail-resep-mini-table tr:last-child td {
+  border-bottom: none;
+}
+
+.detail-resep-mini-table .th-right,
+.detail-resep-mini-table .td-right {
+  text-align: right;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.text-italic {
+  font-style: italic;
+}
+
+.detail-subcol-vitals {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.vitals-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.vitals-section-heading {
+  font-size: 15px;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0;
+}
+
+.badge-saat-kunjungan {
+  background-color: #e6f7f5;
+  color: #0ab39c;
+  font-size: 11.5px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.vitals-vertical-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.vital-list-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background-color: #f8fafc;
+  border: 1px solid #f1f5f9;
+}
+
+.vital-list-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.icon-teal-soft { background-color: #e6f7f5; color: #0ab39c; }
+.icon-rose-soft { background-color: #ffe4e6; color: #e11d48; }
+.icon-blue-soft { background-color: #e0f2fe; color: #0284c7; }
+.icon-cyan-soft { background-color: #cffafe; color: #0891b2; }
+.icon-amber-soft { background-color: #fef3c7; color: #d97706; }
+.icon-indigo-soft { background-color: #e0e7ff; color: #4f46e5; }
+.icon-red-soft { background-color: #fee2e2; color: #dc2626; }
+
+.vital-list-label {
+  font-size: 13px;
+  color: #64748b;
+  flex: 1;
+}
+
+.vital-list-val {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.doctor-creator-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.doc-creator-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #e2e8f0;
+}
+
+.doc-creator-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.doc-creator-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.doc-creator-spec {
+  font-size: 11.5px;
+  color: #64748b;
+}
+
+.past-visits-table-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.past-visit-row-item {
+  display: grid;
+  grid-template-columns: 85px 1.2fr 110px auto;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 12px;
+  background-color: #f8fafc;
+  border: 1px solid #f1f5f9;
+  border-radius: 6px;
+  font-size: 12.5px;
+}
+
+.pvi-date {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.pvi-complaint {
+  color: #1e293b;
+  font-weight: 500;
+}
+
+.pvi-doctor {
+  color: #64748b;
+}
+
+.status-badge-green {
+  background-color: #def7ec;
+  color: #0e9f6e;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.content-panel-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  width: 100%;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.panel-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0;
+}
+
+.panel-title i {
+  color: #0ab39c;
+  font-size: 18px;
+}
+
+.panel-subtitle {
+  display: block;
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 3px;
+}
+
+.panel-body {
+  padding: 20px;
+}
+
+/* Info Blocks */
+.info-block-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.info-block-item:last-child {
+  margin-bottom: 0;
+}
+
+.block-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #64748b;
+}
+
+.block-value-highlight {
+  font-size: 15px;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0;
+}
+
+.block-value-text {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: #334155;
+  margin: 0;
+}
+
+.note-style {
+  padding: 12px 14px;
+  background-color: #f8fafc;
+  border-left: 3px solid #0ab39c;
+  border-radius: 0 8px 8px 0;
+}
+
+.diagnosa-action-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.diagnosa-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #15803d;
+  font-weight: 600;
+  font-size: 13.5px;
+}
+
+.tindakan-tags-wrap {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tindakan-pill {
+  padding: 5px 12px;
+  border-radius: 20px;
+  background-color: #e0f2fe;
+  color: #0369a1;
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+/* ============================================================
+   VITALS MATRIX GRID
+   ============================================================ */
+.vitals-matrix-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 14px;
+}
+
+.vital-tile-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.vital-tile-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.icon-amber {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.icon-teal {
+  background-color: #e6f7f5;
+  color: #0ab39c;
+}
+
+.icon-blue {
+  background-color: #e0f2fe;
+  color: #0284c7;
+}
+
+.icon-slate {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.vital-tile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.vital-tile-label {
+  font-size: 11.5px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.vital-tile-val-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.vital-val {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.badge-status-sub {
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.badge-status-sub.warning {
+  background-color: #fef3c7;
+  color: #b45309;
+}
+
+.badge-status-sub.success {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+/* ============================================================
+   PRESCRIPTION ITEMS & NOTES
+   ============================================================ */
+.prescription-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.prescription-row-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.presc-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.presc-icon-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background-color: #e6f7f5;
+  color: #0ab39c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.presc-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.presc-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.presc-dosage {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.presc-price {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #0ab39c;
+}
+
+.doctor-note-box {
+  display: flex;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
+}
+
+.note-icon {
+  color: #2563eb;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.note-text strong {
+  display: block;
+  font-size: 13px;
+  color: #1e3a8a;
+  margin-bottom: 2px;
+}
+
+.note-text p {
+  font-size: 12.5px;
+  color: #1e40af;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ============================================================
+   SIDEBAR VISIT METADATA & PAST VISITS
+   ============================================================ */
+.visit-meta-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.visit-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed #e2e8f0;
+  font-size: 13px;
+}
+
+.visit-meta-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.meta-label {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.meta-val {
+  font-weight: 500;
+  color: #0f172a;
+}
+
+.badge-method-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 6px;
+  background-color: #e0f2fe;
+  color: #0284c7;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.doctor-inline-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.sub-spesialisasi {
+  font-size: 11.5px;
+  color: #64748b;
+}
+
+.past-visits-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.past-visit-item {
+  padding: 12px;
+  border-radius: 10px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.visit-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.visit-date {
+  font-size: 12px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.visit-status-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 8px;
+  border-radius: 12px;
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.visit-complaint {
+  font-size: 12.5px;
+  color: #475569;
+}
+
+.visit-doctor {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  color: #64748b;
+}
+
+.btn-full-outline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  background-color: transparent;
+  border: 1px solid #cbd5e1;
+  color: #0ab39c;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-full-outline:hover {
+  background-color: #e6f7f5;
+  border-color: #0ab39c;
+}
+
+/* ============================================================
+   TABLE STYLES & FILTERS
+   ============================================================ */
+.table-panel-header {
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.table-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.search-input-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  background-color: #f8fafc;
+  border: 1px solid #cbd5e1;
+}
+
+.search-input-box i {
+  color: #94a3b8;
+  font-size: 16px;
+}
+
+.search-input-box input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 13px;
+  color: #0f172a;
+  min-width: 170px;
+}
+
+.filter-select {
+  padding: 7px 12px;
+  border-radius: 8px;
+  background-color: #f8fafc;
+  border: 1px solid #cbd5e1;
+  font-size: 13px;
+  color: #334155;
+  outline: none;
+  cursor: pointer;
+}
+
+.btn-export-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-export-outline:hover {
+  background-color: #f1f5f9;
+  color: #0ab39c;
+  border-color: #0ab39c;
+}
+
+.table-responsive-wrapper {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.custom-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  text-align: left;
+}
+
+.custom-data-table thead tr {
+  background-color: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.custom-data-table th {
+  padding: 12px 16px;
+  font-weight: 600;
+  color: #64748b;
+  font-size: 11.5px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.custom-data-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+  vertical-align: middle;
+}
+
+.custom-data-table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+.trans-id-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.id-primary {
+  font-weight: 600;
+  color: #0ab39c;
+}
+
+.id-sub {
+  font-size: 11.5px;
+  color: #94a3b8;
+}
+
+.pill-tipe {
+  display: inline-flex;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.pill-tipe.tipe-resep {
+  background-color: #e0f2fe;
+  color: #0284c7;
+}
+
+.pill-tipe.tipe-non {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.resep-cell-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.resep-num {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.resep-doc {
+  font-size: 11.5px;
+  color: #64748b;
+}
+
+.resep-date {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.status-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.badge-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 600;
+  width: fit-content;
+}
+
+.badge-status-pill .dot-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.badge-status-pill.success {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.badge-status-pill.success .dot-indicator {
+  background-color: #22c55e;
+}
+
+.badge-status-pill.warning {
+  background-color: #fef3c7;
+  color: #b45309;
+}
+
+.badge-status-pill.warning .dot-indicator {
+  background-color: #f59e0b;
+}
+
+.badge-status-pill.danger {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+.badge-status-pill.danger .dot-indicator {
+  background-color: #ef4444;
+}
+
+.badge-status-pill.info {
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+
+.status-time {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.payment-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pay-amount {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.pay-method {
+  font-size: 11.5px;
+  color: #64748b;
+}
+
+.btn-icon-action {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background-color: #f1f5f9;
+  border: none;
+  color: #475569;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-icon-action:hover {
+  background-color: #0ab39c;
+  color: #ffffff;
+}
+
+.table-pagination-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-top: 1px solid #f1f5f9;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pagination-info {
+  font-size: 12.5px;
+  color: #64748b;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.page-nav-btn,
+.page-num-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background-color: #ffffff;
+  color: #475569;
+  font-size: 12.5px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.page-num-btn.active {
+  background-color: #0ab39c;
+  border-color: #0ab39c;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.page-nav-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============================================================
+   DETAIL PESANAN VIEW SPECIFICS
+   ============================================================ */
+.detail-pesanan-view-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.sub-nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+  width: 100%;
+}
+
+.btn-back-sub {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: transparent;
+  color: #475569;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-back-sub:hover {
+  color: #0ab39c;
+}
+
+.detail-title-badge-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sub-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.sub-actions-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.product-item-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.prod-name {
+  color: #0f172a;
+  font-size: 13.5px;
+}
+
+.prod-cat {
+  font-size: 11.5px;
+  color: #64748b;
+}
+
+.prod-rx-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #0ab39c;
+}
+
+.order-summary-box {
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 10px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sum-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #475569;
+}
+
+.sum-row.text-success {
+  color: #16a34a;
+}
+
+.sum-row.grand-total {
+  border-top: 1px dashed #cbd5e1;
+  padding-top: 10px;
+  font-size: 15px;
+  color: #0f172a;
+}
+
+.total-highlight {
+  font-size: 18px;
+  color: #0ab39c;
+}
+
+.pharmacist-verify-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  border-radius: 10px;
+  background-color: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  margin-top: 16px;
+}
+
+.verify-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background-color: #d1fae5;
+  color: #059669;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.verify-text strong {
+  display: block;
+  font-size: 13.5px;
+  color: #065f46;
+}
+
+.verify-text p {
+  font-size: 12.5px;
+  color: #047857;
+  margin: 2px 0 0;
+}
+
+.shipping-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ship-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.ship-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.ship-label {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.ship-val {
+  font-size: 13.5px;
+  color: #0f172a;
+}
+
+.badge-resi {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #f1f5f9;
+  padding: 4px 10px;
+  border-radius: 6px;
+  width: fit-content;
+  font-family: monospace;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Vertical Stepper Timeline */
+.vertical-stepper {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  position: relative;
+  padding-left: 10px;
+}
+
+.step-item {
+  display: flex;
+  gap: 16px;
+  position: relative;
+}
+
+.step-item:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  top: 32px;
+  left: 15px;
+  bottom: -18px;
+  width: 2px;
+  background-color: #e2e8f0;
+}
+
+.step-item.completed:not(:last-child)::before {
+  background-color: #0ab39c;
+}
+
+.step-bullet {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.step-item.completed .step-bullet {
+  background-color: #0ab39c;
+  color: #ffffff;
+}
+
+.step-item.active .step-bullet {
+  background-color: #0284c7;
+  color: #ffffff;
+  box-shadow: 0 0 0 4px #e0f2fe;
+}
+
+.step-item.pending .step-bullet {
+  background-color: #f1f5f9;
+  color: #94a3b8;
+  border: 1px solid #cbd5e1;
+}
+
+.step-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.step-content strong {
+  font-size: 13.5px;
+  color: #0f172a;
+}
+
+.step-time {
+  font-size: 11.5px;
+  color: #64748b;
+}
+
+.step-desc {
+  font-size: 12.5px;
+  color: #475569;
+  margin: 2px 0 0;
+}
+
+/* ============================================================
+   TAB 3: RESEP & DOCTOR HIGHLIGHT
+   ============================================================ */
+.faskes-info-cell,
+.doctor-cell-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.faskes-name,
+.doc-name {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.faskes-loc,
+.doc-spec {
+  font-size: 11.5px;
+  color: #64748b;
+}
+
+.detail-header-side {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.detail-header-side > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.resep-card-top-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 14px;
+}
+
+.info-duo {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+.table-mini-clean {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  margin-top: 8px;
+}
+
+.table-mini-clean th {
+  padding: 8px 10px;
+  background-color: #f8fafc;
+  color: #64748b;
+  font-weight: 600;
+  font-size: 11px;
+  text-align: left;
+}
+
+.table-mini-clean td {
+  padding: 10px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+}
+
+.mt-3 {
+  margin-top: 14px;
+}
+
+.mt-4 {
+  margin-top: 18px;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+.action-buttons-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ============================================================
+   TAB 4: PEMBAYARAN, DONUT CHART & METRICS
+   ============================================================ */
+.source-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.badge-source-pill {
+  display: inline-flex;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background-color: #f1f5f9;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 600;
+  width: fit-content;
+}
+
+.source-no {
+  font-size: 11.5px;
+  color: #64748b;
+}
+
+.method-brand-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.method-badge-pill {
+  display: inline-flex;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.badge-bca {
+  background-color: #005baa;
+}
+
+.badge-ovo {
+  background-color: #4c2a86;
+}
+
+.badge-gopay {
+  background-color: #00aed6;
+}
+
+.badge-dana {
+  background-color: #118eea;
+}
+
+.badge-bri {
+  background-color: #08549e;
+}
+
+.badge-bni {
+  background-color: #f15a24;
+}
+
+.badge-qris {
+  background-color: #ed1c24;
+}
+
+.method-detail-text {
+  font-size: 12px;
+  color: #64748b;
+}
+
+/* Quad Stat Cards (2x2 Grid) */
+.metrics-quad-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.quad-stat-card {
+  padding: 14px;
+  border-radius: 12px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.quad-stat-card.border-teal {
+  border-left: 4px solid #0ab39c;
+}
+
+.quad-stat-card.border-blue {
+  border-left: 4px solid #0284c7;
+}
+
+.quad-stat-card.border-amber {
+  border-left: 4px solid #f59e0b;
+}
+
+.quad-stat-card.border-green {
+  border-left: 4px solid #10b981;
+}
+
+.quad-label {
+  font-size: 11.5px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.quad-value {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.text-teal {
+  color: #0ab39c !important;
+}
+
+.text-blue {
+  color: #0284c7 !important;
+}
+
+.text-amber {
+  color: #f59e0b !important;
+}
+
+.text-green {
+  color: #10b981 !important;
+}
+
+.text-muted {
+  color: #94a3b8 !important;
+}
+
+.text-bold {
+  font-weight: 600 !important;
+}
+
+/* SVG Donut Chart */
+.donut-chart-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.donut-svg-wrapper {
+  position: relative;
+  width: 170px;
+  height: 170px;
+}
+
+.donut-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.donut-base {
+  fill: none;
+  stroke: #f1f5f9;
+  stroke-width: 24;
+}
+
+.donut-segment {
+  fill: none;
+  stroke-width: 24;
+  transition: stroke-dashoffset 0.5s ease;
+}
+
+.segment-1 {
+  stroke: #0d9488; /* Bank 45% */
+}
+
+.segment-2 {
+  stroke: #0284c7; /* E-Wallet 30% */
+}
+
+.segment-3 {
+  stroke: #f97316; /* COD 15% */
+}
+
+.segment-4 {
+  stroke: #334155; /* CC 10% */
+}
+
+.donut-center-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.donut-center-title {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.donut-center-val {
+  font-size: 17px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.donut-legend-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.legend-row-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12.5px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background-color: #f8fafc;
+}
+
+.legend-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend-color-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.legend-name {
+  font-weight: 500;
+  color: #334155;
+}
+
+.legend-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-amount {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.legend-pct {
+  font-size: 11.5px;
+  color: #64748b;
+}
+
+/* ============================================================
+   DOCTOR & PHARMACIST HIGHLIGHT BOX (TELEMEDICINE & TELEFARMASI)
+   ============================================================ */
+.doctor-highlight-box {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  border-radius: 12px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.doctor-highlight-box.border-teal {
+  border-color: #0ab39c;
+}
+
+.doctor-avatar-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #e0f2fe;
+  color: #0284c7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.doctor-avatar-circle.apoteker-circle {
+  background-color: #e6f7f5;
+  color: #0ab39c;
+}
+
+.doctor-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.doctor-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.doctor-specialty {
+  font-size: 12px;
+  color: #0ab39c;
+  font-weight: 500;
+}
+
+.doctor-sip {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+/* ============================================================
+   TAB 7: REKAM MEDIS SUB-TABS & VIEWS
+   ============================================================ */
+.sub-tabs-pills-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px;
+  background-color: #f1f5f9;
+  border-radius: 10px;
+  width: fit-content;
+  flex-wrap: wrap;
+}
+
+.sub-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sub-pill-btn:hover {
+  color: #0f172a;
+}
+
+.sub-pill-btn.active {
+  background-color: #ffffff;
+  color: #0ab39c;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Medical Records Timeline */
+.medical-records-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: relative;
+  padding-left: 20px;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.medical-records-timeline::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  left: 36px;
+  width: 2px;
+  background-color: #e2e8f0;
+}
+
+.med-timeline-card {
+  display: flex;
+  gap: 20px;
+  position: relative;
+}
+
+.med-timeline-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.med-timeline-badge.badge-konsultasi {
+  background-color: #e6f7f5;
+  color: #0ab39c;
+  box-shadow: 0 0 0 4px #ffffff;
+}
+
+.med-timeline-badge.badge-lab {
+  background-color: #e0f2fe;
+  color: #0284c7;
+  box-shadow: 0 0 0 4px #ffffff;
+}
+
+.med-timeline-badge.badge-resep {
+  background-color: #fef3c7;
+  color: #d97706;
+  box-shadow: 0 0 0 4px #ffffff;
+}
+
+.med-timeline-body {
+  flex: 1;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.med-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.med-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.med-time {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.med-doctor {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: #64748b;
+  margin-right: 12px;
+}
+
+.med-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.med-row {
+  display: flex;
+  font-size: 13px;
+  gap: 8px;
+}
+
+.med-row-label {
+  color: #64748b;
+  min-width: 110px;
+}
+
+.med-row-val {
+  color: #0f172a;
+}
+
+.med-drugs-wrap {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.drug-pill {
+  padding: 2px 8px;
+  border-radius: 6px;
+  background-color: #f1f5f9;
+  font-size: 11.5px;
+  color: #334155;
+  font-weight: 500;
+}
+
+/* Consultation Stepper Flow (Ringkasan Sub-tab) */
+.consultation-stepper-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.flow-step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.step-clock-col {
+  width: 50px;
+  text-align: right;
+  flex-shrink: 0;
+  padding-top: 6px;
+}
+
+.clock-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.step-icon-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.step-icon-circle {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background-color: #e6f7f5;
+  color: #0ab39c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  z-index: 1;
+}
+
+.step-line {
+  width: 2px;
+  height: 32px;
+  background-color: #cbd5e1;
+  margin: 4px 0;
+}
+
+.step-text-col {
+  flex: 1;
+  padding-top: 4px;
+}
+
+.flow-step-title {
+  font-size: 13.5px;
+  color: #0f172a;
+}
+
+.flow-step-sub {
+  font-size: 12px;
+  color: #64748b;
+  margin: 2px 0 0;
+}
+
+.medical-summary-box {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sum-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sum-block p {
+  font-size: 13px;
+  color: #334155;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Lab Results Grid */
+.lab-results-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.module-tag {
+  display: inline-flex;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background-color: #f1f5f9;
+  color: #475569;
+  font-size: 11.5px;
+  font-weight: 500;
+}
+
+/* ============================================================
+   DARK THEME OVERRIDES
+   ============================================================ */
+:host-context(html.dark-theme) {
+  color: #e2e8f0;
+}
+
+:host-context(html.dark-theme) .profile-header-card,
+:host-context(html.dark-theme) .content-panel-card,
+:host-context(html.dark-theme) .sub-nav-bar,
+:host-context(html.dark-theme) .med-timeline-body,
+:host-context(html.dark-theme) .quad-stat-card {
+  background-color: #1e293b;
+  border-color: #334155;
+}
+
+:host-context(html.dark-theme) .primary-tabs-bar {
+  border-color: #334155;
+}
+
+:host-context(html.dark-theme) .profile-name,
+:host-context(html.dark-theme) .panel-title,
+:host-context(html.dark-theme) .sub-title,
+:host-context(html.dark-theme) .stat-number,
+:host-context(html.dark-theme) .med-title,
+:host-context(html.dark-theme) .flow-step-title,
+:host-context(html.dark-theme) .block-value-highlight,
+:host-context(html.dark-theme) .doctor-title,
+:host-context(html.dark-theme) .faskes-name,
+:host-context(html.dark-theme) .doc-name,
+:host-context(html.dark-theme) .resep-num,
+:host-context(html.dark-theme) .prod-name,
+:host-context(html.dark-theme) .presc-name,
+:host-context(html.dark-theme) .donut-center-val,
+:host-context(html.dark-theme) .visit-date,
+:host-context(html.dark-theme) .pay-amount,
+:host-context(html.dark-theme) .vital-val,
+:host-context(html.dark-theme) .meta-val {
+  color: #f8fafc;
+}
+
+:host-context(html.dark-theme) .btn-back,
+:host-context(html.dark-theme) .btn-back-sub {
+  color: #94a3b8;
+}
+
+:host-context(html.dark-theme) .btn-back:hover,
+:host-context(html.dark-theme) .btn-back-sub:hover {
+  background-color: #334155;
+  color: #0ab39c;
+}
+
+:host-context(html.dark-theme) .btn-outline-action,
+:host-context(html.dark-theme) .btn-export-outline,
+:host-context(html.dark-theme) .page-nav-btn,
+:host-context(html.dark-theme) .page-num-btn {
+  background-color: #1e293b;
+  border-color: #475569;
+  color: #e2e8f0;
+}
+
+:host-context(html.dark-theme) .btn-outline-action:hover,
+:host-context(html.dark-theme) .btn-export-outline:hover {
+  background-color: #334155;
+  border-color: #0ab39c;
+  color: #0ab39c;
+}
+
+:host-context(html.dark-theme) .nav-tab-btn {
+  color: #94a3b8;
+}
+
+:host-context(html.dark-theme) .nav-tab-btn:hover {
+  color: #0ab39c;
+}
+
+:host-context(html.dark-theme) .nav-tab-btn.active {
+  color: #0ab39c;
+}
+
+:host-context(html.dark-theme) .vital-tile-box,
+:host-context(html.dark-theme) .past-visit-item,
+:host-context(html.dark-theme) .prescription-row-item,
+:host-context(html.dark-theme) .order-summary-box,
+:host-context(html.dark-theme) .doctor-highlight-box,
+:host-context(html.dark-theme) .legend-row-item {
+  background-color: #0f172a;
+  border-color: #334155;
+}
+
+:host-context(html.dark-theme) .panel-header,
+:host-context(html.dark-theme) .custom-data-table td,
+:host-context(html.dark-theme) .table-mini-clean td,
+:host-context(html.dark-theme) .table-pagination-footer,
+:host-context(html.dark-theme) .visit-meta-row,
+:host-context(html.dark-theme) .resep-card-top-info,
+:host-context(html.dark-theme) .ship-row,
+:host-context(html.dark-theme) .med-card-header {
+  border-color: #334155;
+}
+
+:host-context(html.dark-theme) .custom-data-table thead tr,
+:host-context(html.dark-theme) .table-mini-clean th {
+  background-color: #0f172a;
+  border-color: #334155;
+  color: #94a3b8;
+}
+
+:host-context(html.dark-theme) .custom-data-table tbody tr:hover {
+  background-color: #1e293b;
+}
+
+:host-context(html.dark-theme) .search-input-box,
+:host-context(html.dark-theme) .filter-select {
+  background-color: #0f172a;
+  border-color: #475569;
+  color: #f8fafc;
+}
+
+:host-context(html.dark-theme) .search-input-box input {
+  color: #f8fafc;
+}
+
+:host-context(html.dark-theme) .health-points-col {
+  background: transparent;
+  border: none;
+}
+
+:host-context(html.dark-theme) .points-icon-box {
+  background-color: rgba(217, 119, 6, 0.25);
+  color: #fbbf24;
+}
+
+:host-context(html.dark-theme) .points-label {
+  color: #94a3b8;
+}
+
+:host-context(html.dark-theme) .points-value {
+  color: #f8fafc;
+}
+
+:host-context(html.dark-theme) .points-growth {
+  color: #4ade80;
+}
+
+:host-context(html.dark-theme) .growth-sub {
+  color: #64748b;
+}
+
+:host-context(html.dark-theme) .patient-avatar-wrapper {
+  border-color: #334155;
+  background-color: #0f172a;
+}
+
+:host-context(html.dark-theme) .status-indicator-badge {
+  background-color: rgba(5, 150, 105, 0.15);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: #34d399;
+}
+
+:host-context(html.dark-theme) .gender-pill {
+  background-color: rgba(2, 132, 199, 0.15);
+  color: #38bdf8;
+}
+
+:host-context(html.dark-theme) .age-pill {
+  background-color: #334155;
+  color: #cbd5e1;
+}
+
+:host-context(html.dark-theme) .nik-line {
+  color: #94a3b8;
+}
+
+:host-context(html.dark-theme) .tipe-line .tipe-tag {
+  color: #0ab39c;
+}
+
+:host-context(html.dark-theme) .patient-contacts-col {
+  color: #cbd5e1;
+}
+
+:host-context(html.dark-theme) .contact-line i {
+  color: #94a3b8;
+}
+
+:host-context(html.dark-theme) .stat-icon-wrapper.stat-teal {
+  background-color: rgba(10, 179, 156, 0.15);
+  color: #0ab39c;
+}
+
+:host-context(html.dark-theme) .stat-icon-wrapper.stat-blue {
+  background-color: rgba(2, 132, 199, 0.15);
+  color: #38bdf8;
+}
+
+:host-context(html.dark-theme) .stat-icon-wrapper.stat-amber {
+  background-color: rgba(217, 119, 6, 0.15);
+  color: #fbbf24;
+}
+
+:host-context(html.dark-theme) .stat-label {
+  color: #94a3b8;
+}
+
+:host-context(html.dark-theme) .stat-number {
+  color: #f8fafc;
+}
+
+:host-context(html.dark-theme) .block-value-text,
+:host-context(html.dark-theme) .note-style,
+:host-context(html.dark-theme) .sum-block p,
+:host-context(html.dark-theme) .legend-name {
+  color: #cbd5e1;
+}
+
+:host-context(html.dark-theme) .note-style {
+  background-color: #0f172a;
+}
+
+:host-context(html.dark-theme) .doctor-note-box {
+  background-color: #172554;
+  border-color: #1e40af;
+}
+
+:host-context(html.dark-theme) .doctor-note-box strong {
+  color: #93c5fd;
+}
+
+:host-context(html.dark-theme) .doctor-note-box p {
+  color: #bfdbfe;
+}
+
+:host-context(html.dark-theme) .pharmacist-verify-banner {
+  background-color: #064e3b;
+  border-color: #059669;
+}
+
+:host-context(html.dark-theme) .verify-icon {
+  background-color: #065f46;
+  color: #6ee7b7;
+}
+
+:host-context(html.dark-theme) .verify-text strong {
+  color: #a7f3d0;
+}
+
+:host-context(html.dark-theme) .verify-text p {
+  color: #d1fae5;
+}
+
+:host-context(html.dark-theme) .donut-base {
+  stroke: #334155;
+}
+
+:host-context(html.dark-theme) .sub-tabs-pills-bar {
+  background-color: #0f172a;
+}
+
+:host-context(html.dark-theme) .sub-pill-btn.active {
+  background-color: #1e293b;
+  color: #0ab39c;
+}
+
+:host-context(html.dark-theme) .badge-resi,
+:host-context(html.dark-theme) .drug-pill,
+:host-context(html.dark-theme) .module-tag,
+:host-context(html.dark-theme) .gender-pill,
+:host-context(html.dark-theme) .age-pill,
+:host-context(html.dark-theme) .badge-source-pill {
+  background-color: #334155;
+  color: #e2e8f0;
+}
+
+:host-context(html.dark-theme) .btn-icon-action {
+  background-color: #334155;
+  color: #e2e8f0;
+}
+
+:host-context(html.dark-theme) .btn-icon-action:hover {
+  background-color: #0ab39c;
+  color: #ffffff;
+}
+
+/* Dark Theme for Timeline & Detail View */
+:host-context(html.dark-theme) .timeline-filter-card,
+:host-context(html.dark-theme) .timeline-record-card {
+  background-color: #19262b;
+  border-color: #26383f;
+  box-shadow: none;
+}
+
+:host-context(html.dark-theme) .filter-field-label {
+  color: #94a3b8;
+}
+
+:host-context(html.dark-theme) .filter-control-input,
+:host-context(html.dark-theme) .filter-control-select {
+  background-color: #111c20;
+  border-color: #2d4047;
+  color: #e4ebed;
+}
+
+:host-context(html.dark-theme) .day-large-num,
+:host-context(html.dark-theme) .doctor-name-strong,
+:host-context(html.dark-theme) .complaint-body-text,
+:host-context(html.dark-theme) .vitals-section-heading,
+:host-context(html.dark-theme) .vital-list-val,
+:host-context(html.dark-theme) .doc-creator-name,
+:host-context(html.dark-theme) .pvi-complaint {
+  color: #f1f5f9;
+}
+
+:host-context(html.dark-theme) .card-col-date,
+:host-context(html.dark-theme) .card-col-facility,
+:host-context(html.dark-theme) .card-col-doctor,
+:host-context(html.dark-theme) .card-col-complaints,
+:host-context(html.dark-theme) .detail-subcol-clinical {
+  border-color: #26383f;
+}
+
+:host-context(html.dark-theme) .timeline-marker-dot.marker-normal {
+  background-color: #19262b;
+  border-color: #475569;
+}
+
+:host-context(html.dark-theme) .timeline-line-track {
+  background-color: #2d4047;
+}
+
+:host-context(html.dark-theme) .btn-lihat-detail-outline,
+:host-context(html.dark-theme) .btn-back-to-list,
+:host-context(html.dark-theme) .btn-export-outline-teal {
+  background-color: #111c20;
+}
+
+:host-context(html.dark-theme) .detail-resep-mini-table th {
+  background-color: #142126;
+  border-color: #26383f;
+  color: #94a3b8;
+}
+
+:host-context(html.dark-theme) .detail-resep-mini-table td,
+:host-context(html.dark-theme) .detail-resep-table-wrap {
+  border-color: #26383f;
+  color: #cbd5e1;
+}
+
+:host-context(html.dark-theme) .vital-list-item,
+:host-context(html.dark-theme) .past-visit-row-item {
+  background-color: #142126;
+  border-color: #26383f;
+}
+
+/* ============================================================
+   RESPONSIVE DESIGN BREAKPOINTS (MULTI-DEVICE OPTIMIZED)
+   ============================================================ */
+
+/* 1. Laptops and Medium Displays (max-width: 1400px) */
+@media (max-width: 1400px) {
+  .profile-header-card {
+    padding: 20px 24px;
+  }
+
+  .profile-main-layout {
+    gap: 20px;
+  }
+
+  .patient-profile-combo {
+    gap: 16px;
+  }
+
+  .patient-avatar-wrapper {
+    width: 80px;
+    height: 80px;
+  }
+
+  .timeline-record-card {
+    grid-template-columns: 75px 110px minmax(150px, 1.2fr) minmax(180px, 1.5fr) minmax(130px, 1fr) auto;
+    gap: 16px;
+    padding: 14px 20px;
+  }
+
+  .card-col-date,
+  .card-col-facility,
+  .card-col-doctor,
+  .card-col-complaints {
+    padding-right: 14px;
+  }
+}
+
+/* 2. Small Laptops & Large Tablets in Landscape (max-width: 1300px) */
+@media (max-width: 1300px) {
+  .profile-main-layout {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 20px 32px;
+    align-items: center;
+  }
+
+  .patient-profile-combo {
+    grid-column: 1;
+  }
+
+  .health-points-col {
+    grid-column: 2;
+    justify-self: end;
+  }
+
+  .patient-contacts-col {
+    grid-column: 1;
+    max-width: 100%;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 16px;
+  }
+
+  .profile-stats-col {
+    grid-column: 2;
+    justify-self: end;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 16px;
+    flex-direction: row;
+    gap: 20px;
+  }
+
+  .grid-two-columns {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .detail-dual-columns-body {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .detail-subcol-clinical {
+    border-right: none;
+    padding-right: 0;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 20px;
+  }
+
+  /* 4-column structured grid for timeline card on medium viewports */
+  .timeline-record-card {
+    grid-template-columns: 80px minmax(140px, 1fr) minmax(180px, 1.4fr) auto;
+    gap: 16px 20px;
+    align-items: start;
+    padding: 16px 20px;
+  }
+
+  .card-col-date {
+    grid-row: span 2;
+    border-right: 1px solid #f1f5f9;
+    padding-right: 16px;
+  }
+
+  .card-col-facility {
+    border-right: none;
+    padding-right: 0;
+  }
+
+  .card-col-doctor {
+    border-right: none;
+    padding-right: 0;
+  }
+
+  .card-col-complaints {
+    border-right: none;
+    padding-right: 0;
+  }
+
+  .card-col-actions {
+    border-right: none;
+    padding-right: 0;
+  }
+
+  .card-col-btn {
+    grid-row: span 2;
+    align-self: center;
+    justify-self: end;
+  }
+
+  .metrics-quad-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* 3. Tablets in Portrait (max-width: 992px) */
+@media (max-width: 992px) {
+  .profile-main-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+  }
+
+  .patient-profile-combo {
+    width: 100%;
+  }
+
+  .health-points-col {
+    width: 100%;
+    justify-content: flex-start;
+    background-color: #fffbeb;
+    border: 1px solid #fef08a;
+    padding: 12px 18px;
+    border-radius: 12px;
+  }
+
+  .patient-contacts-col {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .profile-stats-col {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    width: 100%;
+    justify-self: stretch;
+  }
+
+  .table-panel-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+
+  .table-filter-bar {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .search-input-box {
+    width: 100%;
+  }
+
+  .filter-select {
+    flex: 1;
+    min-width: 140px;
+  }
+
+  .filter-controls-grid {
+    gap: 12px;
+  }
+
+  .filter-item-col {
+    flex: 1 1 calc(50% - 12px);
+    min-width: 140px;
+  }
+
+  .filter-item-col.filter-col-search {
+    flex: 1 1 100%;
+    min-width: 100%;
+  }
+
+  .filter-actions-col {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .timeline-record-card {
+    grid-template-columns: 80px 1fr;
+    gap: 14px 18px;
+  }
+
+  .card-col-date {
+    grid-row: span 5;
+  }
+
+  .card-col-facility,
+  .card-col-doctor,
+  .card-col-complaints,
+  .card-col-actions {
+    grid-column: 2;
+  }
+
+  .card-col-btn {
+    grid-column: 2;
+    grid-row: auto;
+    width: 100%;
+    justify-self: stretch;
+    margin-top: 4px;
+  }
+
+  .btn-lihat-detail-outline {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+    padding: 9px;
+  }
+}
+
+/* 4. Small Tablets & Large Mobiles (max-width: 768px) */
+@media (max-width: 768px) {
+  .detail-page-container {
+    gap: 14px;
+  }
+
+  .top-nav-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .btn-back {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .header-action-group {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+  }
+
+  .btn-outline-action,
+  .btn-edit-action {
+    flex: 1;
+    justify-content: center;
+    padding: 9px 12px;
+    font-size: 13px;
+  }
+
+  .profile-header-card {
+    padding: 18px;
+    border-radius: 12px;
+  }
+
+  .patient-avatar-wrapper {
+    width: 72px;
+    height: 72px;
+  }
+
+  .profile-name {
+    font-size: 19px;
+  }
+
+  .profile-stats-col {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .primary-tabs-bar {
+    gap: 4px;
+    padding: 0;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .primary-tabs-bar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav-tab-btn {
+    padding: 10px 12px;
+    font-size: 13px;
+    gap: 6px;
+  }
+
+  .timeline-row-entry {
+    gap: 12px;
+  }
+
+  .timeline-node-axis {
+    width: 14px;
+  }
+
+  .timeline-marker-dot {
+    width: 12px;
+    height: 12px;
+    margin-top: 20px;
+  }
+
+  .timeline-record-card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 10px;
+  }
+
+  .card-col-date {
+    border-right: none;
+    padding-right: 0;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 10px;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  .day-large-num {
+    font-size: 22px;
+  }
+
+  .card-col-facility,
+  .card-col-doctor,
+  .card-col-complaints,
+  .card-col-actions {
+    border-right: none;
+    padding-right: 0;
+  }
+
+  .card-col-btn {
+    width: 100%;
+    margin-top: 4px;
+  }
+
+  .detail-header-between {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .btn-back-to-list {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .diagnosa-action-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .past-visit-row-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px;
+  }
+
+  .metrics-quad-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .table-filter-bar {
+    flex-direction: column;
+  }
+
+  .filter-select {
+    width: 100%;
+  }
+
+  .btn-export-outline {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .table-pagination-footer {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    text-align: center;
+  }
+}
+
+/* 5. Compact Mobile Phones (max-width: 480px) */
+@media (max-width: 480px) {
+  .profile-header-card {
+    padding: 14px;
+  }
+
+  .patient-profile-combo {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+  }
+
+  .name-badge-row {
+    justify-content: center;
+  }
+
+  .tipe-line .tipe-tag {
+    max-width: 100%;
+  }
+
+  .contact-line {
+    font-size: 12px;
+  }
+
+  .contact-line span {
+    word-break: break-word;
+  }
+
+  .timeline-node-axis {
+    display: none;
+  }
+
+  .timeline-row-entry {
+    gap: 0;
+  }
+
+  .filter-item-col {
+    flex: 1 1 100%;
+    min-width: 100%;
+  }
+
+  .filter-actions-col {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+  }
+
+  .btn-dark-filter-apply {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .btn-export-outline-teal {
+    flex: 0 0 42px;
+  }
+}
+
+/* Dark theme specific responsive adjustments */
+@media (max-width: 992px) {
+  :host-context(html.dark-theme) .health-points-col {
+    background-color: rgba(217, 119, 6, 0.12);
+    border-color: rgba(217, 119, 6, 0.25);
+  }
+}
+
+@media (max-width: 1300px) {
+  :host-context(html.dark-theme) .card-col-date,
+  :host-context(html.dark-theme) .detail-subcol-clinical,
+  :host-context(html.dark-theme) .patient-contacts-col,
+  :host-context(html.dark-theme) .profile-stats-col {
+    border-color: #26383f;
+  }
+}

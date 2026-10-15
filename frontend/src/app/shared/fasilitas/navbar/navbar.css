@@ -1,0 +1,663 @@
+:host {
+    display: block;
+}
+
+.navbar {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    min-height: 4.5rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.5rem 1.5rem;
+    border-bottom: 1px solid #edf0f2;
+    background-color: #ffffff;
+    box-sizing: border-box;
+}
+
+.navbar-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+/* Operational Status Bar */
+.pharmacy-status-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.status-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    border: 1px solid #bbf7d0;
+    background: #f0fdf4;
+    color: #166534;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.status-toggle-btn:hover {
+    background: #dcfce7;
+    border-color: #86efac;
+}
+
+.status-toggle-btn.is-closed {
+    background: #fffbeb;
+    border-color: #fde68a;
+    color: #92400e;
+}
+
+.status-toggle-btn.is-closed .status-pulse-dot {
+    background: #f59e0b;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.25);
+}
+
+.status-pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+    flex-shrink: 0;
+    animation: pulse-live 2s infinite ease-in-out;
+}
+
+@keyframes pulse-live {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.15); opacity: 0.7; }
+}
+
+.status-chevron {
+    font-size: 0.9rem;
+    color: inherit;
+    opacity: 0.7;
+}
+
+.compliance-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.65rem;
+    border-radius: 6px;
+    background: #f1f5f9;
+    color: #475569;
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+
+.text-emerald {
+    color: #059669;
+}
+
+.text-teal {
+    color: #0d9488;
+}
+
+.text-amber {
+    color: #d97706;
+}
+
+/* Navbar Right Actions */
+.navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.icon-button {
+    position: relative;
+    display: grid;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex: 0 0 auto;
+    place-items: center;
+    border: 0;
+    border-radius: 0.625rem;
+    background: transparent;
+    color: #55696d;
+    cursor: pointer;
+    font-size: 1.25rem;
+    transition: all 0.15s ease;
+}
+
+.icon-button:hover {
+    background-color: #f0fdf9;
+    color: #0ab39c;
+}
+
+.notification-badge {
+    position: absolute;
+    top: 0.25rem;
+    right: 0.25rem;
+    min-width: 1.15rem;
+    height: 1.15rem;
+    padding: 0 0.25rem;
+    border-radius: 999px;
+    background-color: #f59e0b;
+    color: #ffffff;
+    font-size: 0.68rem;
+    font-weight: 800;
+    line-height: 1.15rem;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(245, 158, 11, 0.4);
+}
+
+.notification-dot {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 0.5rem;
+    height: 0.5rem;
+    border: 1.5px solid #ffffff;
+    border-radius: 50%;
+    background-color: #0d9488;
+}
+
+/* Dropdown Container */
+.action-dropdown {
+    position: relative;
+}
+
+.action-menu {
+    position: absolute;
+    top: calc(100% + 0.65rem);
+    right: 0;
+    z-index: 25;
+    width: min(23rem, calc(100vw - 1.5rem));
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.875rem;
+    background: #ffffff;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+    display: flex;
+    flex-direction: column;
+}
+
+.action-menu[hidden] {
+    display: none;
+}
+
+.action-menu-heading {
+    display: flex;
+    min-height: 3.25rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.75rem 1.125rem;
+    border-bottom: 1px solid #edf2f7;
+    background: #f8fafc;
+}
+
+.heading-title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: #0f172a;
+}
+
+.menu-badge {
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.badge-amber {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+.badge-teal {
+    background: #ccfbf1;
+    color: #0f766e;
+}
+
+/* Resep Items in Menu */
+.resep-items-scroll,
+.messages-items-scroll {
+    max-height: 20rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.resep-item-card {
+    padding: 0.875rem 1.125rem;
+    border-bottom: 1px solid #f1f5f9;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    transition: background-color 0.15s ease;
+}
+
+.resep-item-card:hover {
+    background-color: #f8fafc;
+}
+
+.resep-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.resep-id {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #0284c7;
+    background: #e0f2fe;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+}
+
+.resep-time {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.resep-patient {
+    font-size: 0.84rem;
+    color: #0f172a;
+}
+
+.resep-drugs {
+    font-size: 0.78rem;
+    color: #64748b;
+    line-height: 1.4;
+}
+
+.resep-tag-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.2rem;
+}
+
+.rx-tag {
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    background: #fef3c7;
+    color: #b45309;
+}
+
+.rx-urgent {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #ef4444;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+/* Messages Item in Menu */
+.message-item-card {
+    padding: 0.875rem 1.125rem;
+    border-bottom: 1px solid #f1f5f9;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    transition: background-color 0.15s ease;
+}
+
+.message-item-card:hover {
+    background-color: #f8fafc;
+}
+
+.message-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #e0f2fe;
+    color: #0284c7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.message-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.msg-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.patient-name {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.msg-time {
+    font-size: 0.7rem;
+    color: #94a3b8;
+}
+
+.msg-text {
+    font-size: 0.76rem;
+    color: #475569;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.action-menu-footer {
+    padding: 0.65rem 1.125rem;
+    border-top: 1px solid #edf2f7;
+    background: #f8fafc;
+    text-align: center;
+}
+
+.footer-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: #0ab39c;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.footer-link:hover {
+    color: #087f6e;
+}
+
+/* Profile Section */
+.profile {
+    position: relative;
+    margin-left: 0.35rem;
+}
+
+.profile-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.35rem 0.65rem;
+    border: 1px solid transparent;
+    border-radius: 0.75rem;
+    background: transparent;
+    color: #0f172a;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.profile-toggle:hover {
+    background-color: #f0fdf9;
+    border-color: #ccfbf1;
+}
+
+.avatar-pharmacy {
+    display: grid;
+    width: 2.4rem;
+    height: 2.4rem;
+    flex: 0 0 auto;
+    place-items: center;
+    border-radius: 0.65rem;
+    background: linear-gradient(135deg, #0ab39c 0%, #059669 100%);
+    color: #ffffff;
+    font-size: 1.25rem;
+}
+
+.profile-details {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    line-height: 1.25;
+}
+
+.profile-name {
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.profile-role {
+    font-size: 0.72rem;
+    color: #0ab39c;
+    font-weight: 600;
+}
+
+.profile-chevron {
+    color: #94a3b8;
+    font-size: 1rem;
+}
+
+/* Profile Dropdown Menu */
+.profile-menu {
+    position: absolute;
+    top: calc(100% + 0.65rem);
+    right: 0;
+    z-index: 25;
+    width: 15rem;
+    padding: 0.5rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.875rem;
+    background: #ffffff;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+}
+
+.profile-menu[hidden] {
+    display: none;
+}
+
+.profile-menu-header {
+    padding: 0.5rem 0.75rem 0.35rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.pm-name {
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.pm-sub {
+    font-size: 0.68rem;
+    color: #64748b;
+}
+
+.profile-menu a,
+.profile-menu button {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    width: 100%;
+    padding: 0.55rem 0.75rem;
+    border: 0;
+    border-radius: 0.5rem;
+    background: transparent;
+    color: #334155;
+    cursor: pointer;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.15s ease;
+    box-sizing: border-box;
+}
+
+.profile-menu a i,
+.profile-menu button i {
+    font-size: 1rem;
+    color: #64748b;
+}
+
+.profile-menu a:hover,
+.profile-menu button:hover {
+    background: #f0fdf9;
+    color: #0ab39c;
+}
+
+.profile-menu a:hover i,
+.profile-menu button:hover i {
+    color: #0ab39c;
+}
+
+.profile-menu a.active {
+    background: #ecfdf5;
+    color: #047857;
+    font-weight: 600;
+}
+
+.profile-menu a.active i {
+    color: #059669;
+}
+
+.logout-btn:hover {
+    background: #fef2f2 !important;
+    color: #ef4444 !important;
+}
+
+.logout-btn:hover i {
+    color: #ef4444 !important;
+}
+
+.menu-divider {
+    height: 1px;
+    margin: 0.4rem 0;
+    background: #edf2f7;
+}
+
+/* Dark Theme Overrides */
+:host-context(html.dark-theme) .navbar {
+    border-bottom-color: #29383d;
+    background-color: #172327;
+}
+
+:host-context(html.dark-theme) .status-toggle-btn {
+    background: #1c3236;
+    border-color: #28474e;
+    color: #34d399;
+}
+
+:host-context(html.dark-theme) .compliance-chip {
+    background: #24353a;
+    color: #94a3b8;
+}
+
+:host-context(html.dark-theme) .icon-button {
+    color: #cbd5d5;
+}
+
+:host-context(html.dark-theme) .icon-button:hover {
+    background-color: #243438;
+    color: #39c6ad;
+}
+
+:host-context(html.dark-theme) .profile-toggle:hover {
+    background-color: #243438;
+    border-color: #2f454b;
+}
+
+:host-context(html.dark-theme) .profile-name {
+    color: #e4ebed;
+}
+
+:host-context(html.dark-theme) .action-menu,
+:host-context(html.dark-theme) .profile-menu {
+    border-color: #2f4247;
+    background: #1a272c;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+}
+
+:host-context(html.dark-theme) .action-menu-heading,
+:host-context(html.dark-theme) .action-menu-footer {
+    background: #152024;
+    border-color: #29383d;
+}
+
+:host-context(html.dark-theme) .heading-title-group {
+    color: #e4ebed;
+}
+
+:host-context(html.dark-theme) .resep-item-card,
+:host-context(html.dark-theme) .message-item-card {
+    border-color: #26363b;
+}
+
+:host-context(html.dark-theme) .resep-item-card:hover,
+:host-context(html.dark-theme) .message-item-card:hover {
+    background: #203137;
+}
+
+:host-context(html.dark-theme) .resep-patient,
+:host-context(html.dark-theme) .patient-name,
+:host-context(html.dark-theme) .pm-name {
+    color: #e4ebed;
+}
+
+:host-context(html.dark-theme) .resep-drugs,
+:host-context(html.dark-theme) .msg-text,
+:host-context(html.dark-theme) .pm-sub {
+    color: #94a3b8;
+}
+
+:host-context(html.dark-theme) .profile-menu a,
+:host-context(html.dark-theme) .profile-menu button {
+    color: #cbd5d5;
+}
+
+:host-context(html.dark-theme) .profile-menu a:hover,
+:host-context(html.dark-theme) .profile-menu button:hover {
+    background: #24363c;
+    color: #39c6ad;
+}
+
+:host-context(html.dark-theme) .profile-menu a.active {
+    background: rgba(10, 179, 156, 0.16);
+    color: #34d399;
+}
+
+:host-context(html.dark-theme) .profile-menu a.active i {
+    color: #34d399;
+}
+
+:host-context(html.dark-theme) .menu-divider {
+    background: #29383d;
+}
+
+/* Responsiveness */
+@media (max-width: 992px) {
+    .compliance-chip {
+        display: none;
+    }
+}
+
+@media (max-width: 640px) {
+    .navbar {
+        padding: 0.5rem 0.75rem;
+    }
+
+    .pharmacy-status-bar {
+        display: none;
+    }
+
+    .profile-details,
+    .profile-chevron {
+        display: none;
+    }
+}

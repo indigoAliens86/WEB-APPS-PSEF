@@ -1,0 +1,356 @@
+<div class="form-page-container">
+  <!-- Top Navigation & Header -->
+  <div class="header-nav-row">
+    <button
+      type="button"
+      class="btn-back"
+      (click)="goBack()"
+      aria-label="Kembali ke Daftar Promo"
+    >
+      <i class="ri-arrow-left-line" aria-hidden="true"></i>
+      <span>Kembali ke Daftar Promo</span>
+    </button>
+  </div>
+
+  <header class="page-title-card">
+    <div class="title-meta">
+      <div class="badge-row">
+        <span class="badge-role">
+          <i class="ri-price-tag-3-line" aria-hidden="true"></i> Program Promo
+        </span>
+        <span class="badge-id font-mono">{{ formData.id }}</span>
+        <span class="badge-status-pill" [ngClass]="formData.status.toLowerCase()">
+          {{ formData.status }}
+        </span>
+      </div>
+      <h1 class="page-title">Edit Program Promo: {{ formData.nama }}</h1>
+      <p class="page-subtitle">
+        Perbarui nilai diskon, kuota pemakaian, dan ketentuan promosi pada <strong>{{ promoService.currentFacilityName }}</strong>
+      </p>
+    </div>
+  </header>
+
+  <!-- Alert Messages -->
+  @if (errorMessage()) {
+    <div class="alert alert-danger" role="alert">
+      <i class="ri-error-warning-line" aria-hidden="true"></i>
+      <span>{{ errorMessage() }}</span>
+    </div>
+  }
+
+  @if (saveSuccess()) {
+    <div class="alert alert-success" role="alert">
+      <i class="ri-checkbox-circle-line" aria-hidden="true"></i>
+      <span>Perubahan program promo berhasil disimpan! Mengalihkan ke daftar promo...</span>
+    </div>
+  }
+
+  <!-- Main Form Layout -->
+  <form (ngSubmit)="save()" class="form-layout" novalidate>
+    <!-- Section 1: Tipe & Identitas Program -->
+    <section class="form-card" aria-labelledby="section-type">
+      <div class="card-section-header">
+        <div class="icon-circle purple">
+          <i class="ri-coupon-3-line" aria-hidden="true"></i>
+        </div>
+        <div>
+          <h2 id="section-type" class="section-title">1. Tipe & Identitas Program</h2>
+          <p class="section-desc">Mekanisme promosi dan nama program</p>
+        </div>
+      </div>
+
+      <!-- Type Selection Cards -->
+      <div class="type-picker-grid">
+        @for (pt of programTypes; track pt.value) {
+          <div
+            class="type-choice-card"
+            [class.selected]="formData.tipe === pt.value"
+            (click)="onTypeChange(pt.value)"
+            tabindex="0"
+            role="radio"
+            [attr.aria-checked]="formData.tipe === pt.value"
+          >
+            <div class="choice-icon">
+              <i [class]="pt.icon" aria-hidden="true"></i>
+            </div>
+            <div class="choice-text">
+              <strong class="choice-label">{{ pt.label }}</strong>
+              <span class="choice-desc">{{ pt.desc }}</span>
+            </div>
+            <i class="ri-checkbox-circle-fill check-indicator" aria-hidden="true"></i>
+          </div>
+        }
+      </div>
+
+      <div class="grid-2-col mt-4">
+        <!-- Nama Program -->
+        <div class="form-group full-width">
+          <label for="promo-name" class="form-label">
+            Nama Program Promo <span class="required">*</span>
+          </label>
+          <input
+            id="promo-name"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.nama"
+            name="nama"
+            required
+          />
+        </div>
+
+        <!-- Kode Voucher (Conditional) -->
+        @if (formData.tipe === 'Voucher') {
+          <div class="form-group">
+            <label for="voucher-code" class="form-label">
+              Kode Voucher Kupon <span class="required">*</span>
+            </label>
+            <div class="input-with-icon-wrapper">
+              <input
+                id="voucher-code"
+                type="text"
+                class="form-control text-uppercase font-mono"
+                [(ngModel)]="formData.kodeVoucher"
+                name="kodeVoucher"
+                maxlength="20"
+                required
+              />
+              <i class="ri-coupon-line input-right-icon" aria-hidden="true"></i>
+            </div>
+            <span class="field-hint">Pasien mengetikkan kode ini saat checkout.</span>
+          </div>
+        }
+
+        <!-- Deskripsi -->
+        <div class="form-group" [ngClass]="{'full-width': formData.tipe !== 'Voucher'}">
+          <label for="promo-desc" class="form-label">Deskripsi Singkat</label>
+          <input
+            id="promo-desc"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.deskripsi"
+            name="deskripsi"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Skema Diskon & Ketentuan Biaya -->
+    <section class="form-card" aria-labelledby="section-discount">
+      <div class="card-section-header">
+        <div class="icon-circle emerald">
+          <i class="ri-percent-line" aria-hidden="true"></i>
+        </div>
+        <div>
+          <h2 id="section-discount" class="section-title">2. Skema Nilai Diskon</h2>
+          <p class="section-desc">Aturan potongan biaya dan batas minimum belanja</p>
+        </div>
+      </div>
+
+      <div class="grid-2-col">
+        <!-- Tipe Diskon -->
+        <div class="form-group">
+          <label for="discount-type" class="form-label">Jenis Potongan Diskon</label>
+          <select
+            id="discount-type"
+            class="form-select"
+            [(ngModel)]="formData.diskonTipe"
+            name="diskonTipe"
+          >
+            <option value="Persentase">Persentase (%)</option>
+            <option value="Nominal">Nominal Potongan (Rp)</option>
+            <option value="Gratis Ongkir">Gratis Ongkos Kirim</option>
+          </select>
+        </div>
+
+        <!-- Nilai Diskon -->
+        @if (formData.diskonTipe !== 'Gratis Ongkir') {
+          <div class="form-group">
+            <label for="discount-val" class="form-label">
+              Besaran Nilai Diskon {{ formData.diskonTipe === 'Persentase' ? '(%)' : '(Rp)' }} <span class="required">*</span>
+            </label>
+            <input
+              id="discount-val"
+              type="number"
+              class="form-control font-mono"
+              [(ngModel)]="formData.nilaiDiskon"
+              name="nilaiDiskon"
+              min="1"
+              required
+            />
+          </div>
+        }
+
+        <!-- Maksimal Diskon (jika persentase) -->
+        @if (formData.diskonTipe === 'Persentase') {
+          <div class="form-group">
+            <label for="max-discount" class="form-label">Maksimal Nilai Diskon (Rp)</label>
+            <input
+              id="max-discount"
+              type="number"
+              class="form-control font-mono"
+              [(ngModel)]="formData.maxDiskon"
+              name="maxDiskon"
+            />
+            <span class="field-hint">Batas atas nilai potongan.</span>
+          </div>
+        }
+
+        <!-- Minimal Transaksi -->
+        <div class="form-group">
+          <label for="min-spend" class="form-label">Minimum Pembelian (Rp)</label>
+          <input
+            id="min-spend"
+            type="number"
+            class="form-control font-mono"
+            [(ngModel)]="formData.minTransaksi"
+            name="minTransaksi"
+          />
+          <span class="field-hint">Total belanja minimum sebelum diskon dapat digunakan.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Periode & Kuota -->
+    <section class="form-card" aria-labelledby="section-quota">
+      <div class="card-section-header">
+        <div class="icon-circle teal">
+          <i class="ri-calendar-check-line" aria-hidden="true"></i>
+        </div>
+        <div>
+          <h2 id="section-quota" class="section-title">3. Periode & Batas Kuota</h2>
+          <p class="section-desc">Masa berlaku promosi dan ketersediaan kuota klaim</p>
+        </div>
+      </div>
+
+      <div class="grid-2-col">
+        <!-- Total Kuota -->
+        <div class="form-group">
+          <label for="quota-total" class="form-label">Total Kuota Pemakaian</label>
+          <input
+            id="quota-total"
+            type="number"
+            class="form-control font-mono"
+            [(ngModel)]="formData.kuotaTotal"
+            name="kuotaTotal"
+          />
+          <span class="field-hint">Klaim saat ini: {{ formData.kuotaTerpakai }} dari {{ formData.kuotaTotal }}</span>
+        </div>
+
+        <!-- Status Program -->
+        <div class="form-group">
+          <label for="promo-status" class="form-label">Status Program</label>
+          <select
+            id="promo-status"
+            class="form-select"
+            [(ngModel)]="formData.status"
+            name="status"
+          >
+            <option value="Aktif">Aktif</option>
+            <option value="Segera Hadir">Segera Hadir</option>
+            <option value="Berakhir">Berakhir</option>
+            <option value="Nonaktif">Nonaktif</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Penugasan Fasilitas & Sasaran Layanan -->
+    <section class="form-card" aria-labelledby="section-facility">
+      <div class="card-section-header">
+        <div class="icon-circle blue">
+          <i class="ri-store-2-line" aria-hidden="true"></i>
+        </div>
+        <div>
+          <h2 id="section-facility" class="section-title">4. Fasilitas Penerbit & Sasaran Layanan</h2>
+          <p class="section-desc">Program promo otomatis terdaftar eksklusif untuk fasilitas Anda</p>
+        </div>
+      </div>
+
+      <div class="grid-2-col">
+        <!-- Fasilitas Penerbit -->
+        <div class="form-group">
+          <label for="facility-issuer" class="form-label">
+            Fasilitas Penyelenggara <span class="badge-lock"><i class="ri-lock-line" aria-hidden="true"></i> Fasilitas Anda</span>
+          </label>
+          <div class="input-with-icon-wrapper">
+            <input
+              id="facility-issuer"
+              type="text"
+              class="form-control readonly-input"
+              [value]="promoService.currentFacilityName"
+              readonly
+              tabindex="-1"
+            />
+            <i class="ri-building-line input-right-icon" aria-hidden="true"></i>
+          </div>
+          <span class="field-hint">Terkunci otomatis pada profil fasilitas Apotek Kimia Sehat PSEF.</span>
+        </div>
+
+        <!-- Target Layanan / Produk -->
+        <div class="form-group">
+          <label for="target-service" class="form-label">Sasaran Layanan / Kategori Produk</label>
+          <select
+            id="target-service"
+            class="form-select"
+            [(ngModel)]="formData.targetLayanan"
+            name="targetLayanan"
+          >
+            @for (ts of targetServices; track ts) {
+              <option [value]="ts">{{ ts }}</option>
+            }
+          </select>
+          <span class="field-hint">Ruang lingkup produk atau layanan yang berhak menerima diskon.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: Syarat & Ketentuan -->
+    <section class="form-card" aria-labelledby="section-tnc">
+      <div class="card-section-header">
+        <div class="icon-circle amber">
+          <i class="ri-file-text-line" aria-hidden="true"></i>
+        </div>
+        <div>
+          <h2 id="section-tnc" class="section-title">5. Syarat & Ketentuan</h2>
+          <p class="section-desc">Aturan detail yang ditampilkan kepada pasien (satu baris per poin)</p>
+        </div>
+      </div>
+
+      <div class="form-group full-width">
+        <textarea
+          id="promo-tnc"
+          rows="4"
+          class="form-control"
+          [(ngModel)]="formData.syaratKetentuan"
+          name="syaratKetentuan"
+        ></textarea>
+        <span class="field-hint">Setiap baris baru akan otomatis ditampilkan sebagai poin syarat di aplikasi pasien.</span>
+      </div>
+    </section>
+
+    <!-- Action Bar -->
+    <div class="form-action-bar">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="goBack()"
+        [disabled]="isSubmitting()"
+      >
+        Batal
+      </button>
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="isSubmitting()"
+      >
+        @if (isSubmitting()) {
+          <i class="ri-loader-4-line spin" aria-hidden="true"></i>
+          <span>Menyimpan Perubahan...</span>
+        } @else {
+          <i class="ri-save-line" aria-hidden="true"></i>
+          <span>Simpan Perubahan</span>
+        }
+      </button>
+    </div>
+  </form>
+</div>

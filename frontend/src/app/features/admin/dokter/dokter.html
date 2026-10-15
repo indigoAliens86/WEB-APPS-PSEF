@@ -1,0 +1,454 @@
+@if (!showingDetails()) {
+<div class="dokter-page-container">
+  <!-- Top Stat Cards (5 Cards) -->
+  <section class="stats-overview" aria-label="Ringkasan Statistik">
+    @for (card of statCards; track card.title) {
+      <article class="stat-card">
+        <div class="stat-icon-box" [ngClass]="card.color">
+          <i [class]="card.icon" aria-hidden="true"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">{{ card.title }}</span>
+          <strong class="stat-number">{{ card.value }}</strong>
+          <div class="stat-trend-row">
+            <span class="trend-pill" [ngClass]="card.color">
+              <i [class]="card.trendIcon || 'ri-arrow-up-line'" aria-hidden="true"></i> {{ card.percentage }}
+            </span>
+            <span class="trend-subtext">{{ card.period }}</span>
+          </div>
+        </div>
+      </article>
+    }
+  </section>
+
+  <!-- Main Directory Card -->
+  <section class="dokter-card" aria-labelledby="dokter-heading">
+    <!-- Header: Title & Main Action Buttons -->
+    <header class="card-header">
+      <h1 id="dokter-heading" class="card-title">Daftar Dokter</h1>
+      <div class="header-actions">
+        <button
+          type="button"
+          class="btn-icon-export"
+          (click)="exportData()"
+          title="Ekspor Data Excel"
+          aria-label="Ekspor data"
+        >
+          <i class="ri-file-excel-line" aria-hidden="true"></i>
+        </button>
+        <button
+          type="button"
+          class="btn-add-apoteker"
+          (click)="openAdd()"
+          aria-label="Tambah Dokter"
+        >
+          <i class="ri-user-add-line" aria-hidden="true"></i>
+          <span>Tambah Dokter</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Toolbar: Search, Select Filters & Filter Button -->
+    <div class="card-toolbar">
+      <div class="search-box">
+        <i class="ri-search-line search-icon" aria-hidden="true"></i>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Cari Pasien..."
+          aria-label="Cari Pasien"
+          [value]="search()"
+          (input)="onSearch($event)"
+        />
+      </div>
+
+      <div class="select-wrapper">
+        <select
+          class="filter-select"
+          aria-label="Filter Spesialisasi"
+          [(ngModel)]="specialtyFilter"
+          (ngModelChange)="onFilterChange()"
+        >
+          <option value="">Pilih Spesialisasi/Bidang</option>
+          @for (spec of specialties; track spec) {
+            <option [value]="spec">{{ spec }}</option>
+          }
+        </select>
+        <i class="ri-arrow-down-s-line select-arrow" aria-hidden="true"></i>
+      </div>
+
+      <div class="select-wrapper">
+        <select
+          class="filter-select"
+          aria-label="Filter Verifikasi"
+          [(ngModel)]="verificationFilter"
+          (ngModelChange)="onFilterChange()"
+        >
+          <option value="">Pilih Verifikasi</option>
+          @for (verif of verifications; track verif) {
+            <option [value]="verif">{{ verif }}</option>
+          }
+        </select>
+        <i class="ri-arrow-down-s-line select-arrow" aria-hidden="true"></i>
+      </div>
+
+      <div class="select-wrapper">
+        <select
+          class="filter-select"
+          aria-label="Filter Status"
+          [(ngModel)]="statusFilter"
+          (ngModelChange)="onFilterChange()"
+        >
+          <option value="">Pilih Status</option>
+          @for (stat of statuses; track stat) {
+            <option [value]="stat">{{ stat }}</option>
+          }
+        </select>
+        <i class="ri-arrow-down-s-line select-arrow" aria-hidden="true"></i>
+      </div>
+
+      <button
+        type="button"
+        class="btn-filters"
+        (click)="resetFilters()"
+        title="Reset / Toggle Filters"
+      >
+        <i class="ri-equalizer-line" aria-hidden="true"></i>
+        <span>Filters</span>
+      </button>
+    </div>
+
+    <!-- Table Container -->
+    <div class="table-container">
+      <table class="dokter-table directory-table">
+        <thead>
+          <tr>
+            <th scope="col" class="th-no">No</th>
+            <th scope="col" class="th-nama">Nama</th>
+            <th scope="col" class="th-kontak">Kontak</th>
+            <th scope="col" class="th-spesialisasi">Spesialisasi</th>
+            <th scope="col" class="th-sip">SIP/STRA</th>
+            <th scope="col" class="th-bergabung">Bergabung</th>
+            <th scope="col" class="th-status">Status</th>
+            <th scope="col" class="th-verifikasi">Verifikasi</th>
+            <th scope="col" class="th-aksi">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (doctor of paginatedRecords(); track doctor.id; let idx = $index) {
+            <tr class="table-row">
+              <td class="td-no">{{ (page() - 1) * pageSize() + idx + 1 }}</td>
+              <td class="td-nama">
+                <div class="doctor-profile-cell">
+                  <img
+                    [src]="doctor.avatar"
+                    [alt]="doctor.name"
+                    class="doctor-avatar"
+                    (error)="onAvatarError($event)"
+                  />
+                  <div class="doctor-meta">
+                    <strong class="doctor-name">{{ doctor.name }}</strong>
+                    <span class="doctor-facility">{{ doctor.facility }}</span>
+                  </div>
+                </div>
+              </td>
+              <td class="td-kontak">
+                <div class="contact-cell">
+                  <span class="contact-email">{{ doctor.email }}</span>
+                  <span class="contact-phone">{{ doctor.phone }}</span>
+                </div>
+              </td>
+              <td class="td-spesialisasi">
+                <span class="specialty-text">{{ doctor.specialty }}</span>
+              </td>
+              <td class="td-sip">
+                <div class="license-cell">
+                  <span class="sip-line">SIP: {{ doctor.sip }}</span>
+                  <span class="stra-line">STR: {{ doctor.stra }}</span>
+                </div>
+              </td>
+              <td class="td-bergabung">
+                <div class="joined-cell">
+                  <span class="joined-date">{{ doctor.joinedDate }}</span>
+                  <span class="joined-time">{{ doctor.joinedTime }}</span>
+                </div>
+              </td>
+              <td class="td-status">
+                <span
+                  class="badge-status"
+                  [ngClass]="{
+                    'badge-aktif': doctor.status === 'Aktif',
+                    'badge-nonaktif': doctor.status === 'Non-Aktif',
+                    'badge-suspended': doctor.status === 'Suspended'
+                  }"
+                >
+                  {{ doctor.status }}
+                </span>
+              </td>
+              <td class="td-verifikasi">
+                <span
+                  class="badge-verifikasi"
+                  [ngClass]="{
+                    'badge-terverifikasi': doctor.verification === 'Terverifikasi',
+                    'badge-menunggu': doctor.verification === 'Menunggu Verifikasi',
+                    'badge-ditolak': doctor.verification === 'Ditolak'
+                  }"
+                >
+                  {{ doctor.verification }}
+                </span>
+              </td>
+              <td class="td-aksi">
+                <div class="actions-wrapper">
+                  <button
+                    type="button"
+                    class="btn-action-view"
+                    (click)="openDetail(doctor)"
+                    [attr.aria-label]="'Detail ' + doctor.name"
+                    title="Lihat Detail"
+                  >
+                    <i class="ri-eye-line" aria-hidden="true"></i>
+                  </button>
+                  <button
+                    type="button"
+                    class="btn-action-edit"
+                    (click)="openEdit(doctor)"
+                    [attr.aria-label]="'Edit ' + doctor.name"
+                    title="Edit Dokter"
+                  >
+                    <i class="ri-edit-line" aria-hidden="true"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="9" class="table-empty">
+                <div class="empty-state">
+                  <i class="ri-search-line empty-icon" aria-hidden="true"></i>
+                  <p class="empty-title">Data tidak ditemukan</p>
+                  <span class="empty-desc">Tidak ada dokter yang cocok dengan kriteria pencarian atau filter.</span>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination Footer -->
+    <footer class="card-pagination">
+      <div class="pagination-info">
+        Menampilkan 1-10 dari 12.458 pasien
+      </div>
+      <div class="pagination-controls">
+        <button
+          type="button"
+          class="page-btn page-arrow"
+          aria-label="Halaman sebelumnya"
+          [disabled]="page() <= 1"
+          (click)="setPage(page() - 1)"
+        >
+          <i class="ri-arrow-left-s-line" aria-hidden="true"></i>
+        </button>
+
+        <button
+          type="button"
+          class="page-btn"
+          [class.active]="page() === 1"
+          (click)="setPage(1)"
+        >
+          1
+        </button>
+
+        <button
+          type="button"
+          class="page-btn"
+          [class.active]="page() === 2"
+          (click)="setPage(2)"
+        >
+          2
+        </button>
+
+        <button
+          type="button"
+          class="page-btn"
+          [class.active]="page() === 3"
+          (click)="setPage(3)"
+        >
+          3
+        </button>
+
+        <button
+          type="button"
+          class="page-btn"
+          [class.active]="page() === 4"
+          (click)="setPage(4)"
+        >
+          4
+        </button>
+
+        <span class="page-ellipsis">...</span>
+
+        <button
+          type="button"
+          class="page-btn page-large"
+          (click)="setPage(1246)"
+        >
+          1.246
+        </button>
+
+        <button
+          type="button"
+          class="page-btn page-arrow"
+          aria-label="Halaman berikutnya"
+          (click)="setPage(page() + 1)"
+        >
+          <i class="ri-arrow-right-s-line" aria-hidden="true"></i>
+        </button>
+
+        <div class="page-size-picker">
+          <select class="select-page-size" aria-label="Jumlah per halaman">
+            <option value="10">10/halaman</option>
+            <option value="25">25/halaman</option>
+            <option value="50">50/halaman</option>
+          </select>
+          <i class="ri-arrow-down-s-line page-size-arrow" aria-hidden="true"></i>
+        </div>
+      </div>
+    </footer>
+  </section>
+</div>
+}
+
+<router-outlet (activate)="showingDetails.set(true)" (deactivate)="showingDetails.set(false)"></router-outlet>
+
+<!-- Modal Tambah Dokter/Apoteker -->
+@if (modal() === 'add') {
+  <div class="modal-backdrop" (click)="closeModal()">
+    <div class="modal-dialog modal-lg" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-header-text">
+          <h2 class="modal-title">Tambah Tenaga Medis / Apoteker</h2>
+          <span class="modal-subtitle">Lengkapi formulir di bawah ini untuk mendaftarkan data baru.</span>
+        </div>
+        <button type="button" class="btn-modal-close" (click)="closeModal()" aria-label="Tutup modal">
+          <i class="ri-close-line" aria-hidden="true"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        @if (formError()) {
+          <div class="form-alert-error">{{ formError() }}</div>
+        }
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label" for="add-name">Nama Lengkap & Gelar *</label>
+            <input
+              id="add-name"
+              type="text"
+              class="form-control"
+              placeholder="Contoh: dr. Sarah Aulia, Sp.OG"
+              [(ngModel)]="draftDoctor.name"
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="add-facility">Fasilitas Praktik *</label>
+            <input
+              id="add-facility"
+              type="text"
+              class="form-control"
+              placeholder="Contoh: RSIA Bunda Bandung"
+              [(ngModel)]="draftDoctor.facility"
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="add-spec">Spesialisasi / Bidang</label>
+            <select id="add-spec" class="form-control" [(ngModel)]="draftDoctor.specialty">
+              @for (spec of specialties; track spec) {
+                <option [value]="spec">{{ spec }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="add-gender">Jenis Kelamin</label>
+            <select id="add-gender" class="form-control" [(ngModel)]="draftDoctor.gender">
+              <option value="female">Perempuan</option>
+              <option value="male">Laki-laki</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="add-email">Email</label>
+            <input
+              id="add-email"
+              type="email"
+              class="form-control"
+              placeholder="email@healora.id"
+              [(ngModel)]="draftDoctor.email"
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="add-phone">No. Telepon / WhatsApp</label>
+            <input
+              id="add-phone"
+              type="tel"
+              class="form-control"
+              placeholder="0812-xxxx-xxxx"
+              [(ngModel)]="draftDoctor.phone"
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="add-sip">Nomor SIP</label>
+            <input
+              id="add-sip"
+              type="text"
+              class="form-control"
+              placeholder="SIP: NR62712412009799"
+              [(ngModel)]="draftDoctor.sip"
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="add-stra">Nomor STR / STRA</label>
+            <input
+              id="add-stra"
+              type="text"
+              class="form-control"
+              placeholder="STR: JC00001828429426"
+              [(ngModel)]="draftDoctor.stra"
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="add-status">Status</label>
+            <select id="add-status" class="form-control" [(ngModel)]="draftDoctor.status">
+              <option value="Aktif">Aktif</option>
+              <option value="Non-Aktif">Non-Aktif</option>
+              <option value="Suspended">Suspended</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="add-verif">Verifikasi</label>
+            <select id="add-verif" class="form-control" [(ngModel)]="draftDoctor.verification">
+              <option value="Terverifikasi">Terverifikasi</option>
+              <option value="Menunggu Verifikasi">Menunggu Verifikasi</option>
+              <option value="Ditolak">Ditolak</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" (click)="closeModal()">Batal</button>
+        <button type="button" class="btn-primary" (click)="saveDoctor()">Simpan Data</button>
+      </div>
+    </div>
+  </div>
+}

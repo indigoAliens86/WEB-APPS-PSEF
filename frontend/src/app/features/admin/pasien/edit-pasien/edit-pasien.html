@@ -1,0 +1,432 @@
+<div class="form-page-container">
+  <!-- Top Navigation & Header -->
+  <div class="header-nav-row">
+    <button
+      type="button"
+      class="btn-back"
+      (click)="goBack()"
+      aria-label="Kembali ke Daftar Pasien"
+    >
+      <i class="ri-arrow-left-line" aria-hidden="true"></i>
+      <span>Kembali ke Daftar Pasien</span>
+    </button>
+  </div>
+
+  <header class="page-title-card">
+    <div class="title-meta">
+      <span class="badge-role"><i class="ri-edit-line" aria-hidden="true"></i> Edit Data Pasien</span>
+      <h1 class="page-title">Edit Data Pasien: {{ formData.name }}</h1>
+      <p class="page-subtitle">
+        Perbarui informasi profil kependudukan, status penjamin BPJS/asuransi, dan kontak darurat pasien.
+      </p>
+    </div>
+  </header>
+
+  <!-- Alert Messages -->
+  @if (errorMessage()) {
+    <div class="alert alert-danger" role="alert">
+      <i class="ri-error-warning-line" aria-hidden="true"></i>
+      <span>{{ errorMessage() }}</span>
+    </div>
+  }
+
+  @if (saveSuccess()) {
+    <div class="alert alert-success" role="alert">
+      <i class="ri-checkbox-circle-line" aria-hidden="true"></i>
+      <span>Perubahan data pasien berhasil disimpan! Mengalihkan ke daftar pasien...</span>
+    </div>
+  }
+
+  <!-- Main Form -->
+  <form (ngSubmit)="save()" class="form-layout" novalidate>
+    <!-- Section 1: Data Identitas Pasien -->
+    <section class="form-card" aria-labelledby="section-personal">
+      <div class="card-section-header">
+        <div class="icon-circle teal">
+          <i class="ri-user-3-line" aria-hidden="true"></i>
+        </div>
+        <div>
+          <h2 id="section-personal" class="section-title">Data Pribadi & Identitas</h2>
+          <p class="section-desc">ID Pasien: {{ patientId() }}</p>
+        </div>
+      </div>
+
+      <div class="grid-2-col">
+        <div class="form-group">
+          <label for="edit-name" class="form-label">
+            Nama Lengkap <span class="required">*</span>
+          </label>
+          <input
+            id="edit-name"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.name"
+            name="name"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="edit-nik" class="form-label">
+            Nomor Induk Kependudukan (NIK) <span class="required">*</span>
+          </label>
+          <input
+            id="edit-nik"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.nik"
+            name="nik"
+            maxlength="16"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="edit-gender" class="form-label">Jenis Kelamin</label>
+          <select
+            id="edit-gender"
+            class="form-select"
+            [(ngModel)]="formData.gender"
+            name="gender"
+          >
+            @for (opt of genderOptions; track opt.value) {
+              <option [value]="opt.value">{{ opt.label }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-blood" class="form-label">Golongan Darah</label>
+          <select
+            id="edit-blood"
+            class="form-select"
+            [(ngModel)]="formData.bloodType"
+            name="bloodType"
+          >
+            @for (bt of bloodTypes; track bt) {
+              <option [value]="bt">{{ bt }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-birth-place" class="form-label">Tempat Lahir</label>
+          <input
+            id="edit-birth-place"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.birthPlace"
+            name="birthPlace"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="edit-birth-date" class="form-label">Tanggal Lahir</label>
+          <input
+            id="edit-birth-date"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.birthDate"
+            name="birthDate"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="edit-marital" class="form-label">Status Pernikahan</label>
+          <select
+            id="edit-marital"
+            class="form-select"
+            [(ngModel)]="formData.maritalStatus"
+            name="maritalStatus"
+          >
+            <option value="Belum Menikah">Belum Menikah</option>
+            <option value="Menikah">Menikah</option>
+            <option value="Cerai Hidup">Cerai Hidup</option>
+            <option value="Cerai Mati">Cerai Mati</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-religion" class="form-label">Agama</label>
+          <select
+            id="edit-religion"
+            class="form-select"
+            [(ngModel)]="formData.religion"
+            name="religion"
+          >
+            <option value="Islam">Islam</option>
+            <option value="Kristen Protestan">Kristen Protestan</option>
+            <option value="Katolik">Katolik</option>
+            <option value="Hindu">Hindu</option>
+            <option value="Buddha">Buddha</option>
+            <option value="Konghucu">Konghucu</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Kontak & Alamat Domisili -->
+    <section class="form-card" aria-labelledby="section-contact">
+      <div class="card-section-header">
+        <div class="icon-circle blue">
+          <i class="ri-map-pin-user-line" aria-hidden="true"></i>
+        </div>
+        <div>
+          <h2 id="section-contact" class="section-title">Kontak & Alamat Domisili</h2>
+          <p class="section-desc">Nomor telepon aktif dan alamat tempat tinggal pasien</p>
+        </div>
+      </div>
+
+      <div class="grid-2-col">
+        <div class="form-group">
+          <label for="edit-phone" class="form-label">
+            Nomor Handphone / WhatsApp <span class="required">*</span>
+          </label>
+          <input
+            id="edit-phone"
+            type="tel"
+            class="form-control"
+            [(ngModel)]="formData.phone"
+            name="phone"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="edit-email" class="form-label">Alamat Email</label>
+          <input
+            id="edit-email"
+            type="email"
+            class="form-control"
+            [(ngModel)]="formData.email"
+            name="email"
+          />
+        </div>
+
+        <div class="form-group full-width">
+          <label for="edit-address" class="form-label">Alamat Lengkap Domisili</label>
+          <input
+            id="edit-address"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.address"
+            name="address"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="edit-province" class="form-label">Provinsi</label>
+          <input
+            id="edit-province"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.province"
+            name="province"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="edit-city" class="form-label">Kota / Kabupaten</label>
+          <input
+            id="edit-city"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.city"
+            name="city"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Layanan Medis & Penjamin -->
+    <section class="form-card" aria-labelledby="section-insurance">
+      <div class="card-section-header">
+        <div class="icon-circle green">
+          <i class="ri-shield-check-line" aria-hidden="true"></i>
+        </div>
+        <div>
+          <h2 id="section-insurance" class="section-title">Layanan Medis & Asuransi</h2>
+          <p class="section-desc">Kategori pembiayaan dan fasilitas kesehatan rujukan</p>
+        </div>
+      </div>
+
+      <div class="grid-2-col">
+        <div class="form-group">
+          <label for="edit-type" class="form-label">Tipe Pasien / Penjamin</label>
+          <select
+            id="edit-type"
+            class="form-select"
+            [(ngModel)]="formData.patientType"
+            name="patientType"
+          >
+            @for (pt of patientTypes; track pt) {
+              <option [value]="pt">{{ pt }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-insurance-no" class="form-label">Nomor Kartu BPJS / Polis Asuransi</label>
+          <input
+            id="edit-insurance-no"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.insuranceNumber"
+            name="insuranceNumber"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="edit-faskes" class="form-label">Fasilitas Kesehatan Terdaftar</label>
+          <input
+            id="edit-faskes"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.faskesName"
+            name="faskesName"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="edit-status" class="form-label">Status Akun</label>
+          <select
+            id="edit-status"
+            class="form-select"
+            [(ngModel)]="formData.status"
+            name="status"
+          >
+            <option value="Aktif">Aktif</option>
+            <option value="Non-Aktif">Non-Aktif</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Kontak Darurat -->
+    <section class="form-card" aria-labelledby="section-emergency">
+      <div class="card-section-header">
+        <div class="icon-circle amber">
+          <i class="ri-alarm-warning-line" aria-hidden="true"></i>
+        </div>
+        <div>
+          <h2 id="section-emergency" class="section-title">Kontak Darurat (Wali / Keluarga)</h2>
+          <p class="section-desc">Kontak yang dapat dihubungi dalam situasi darurat medis</p>
+        </div>
+      </div>
+
+      <div class="grid-2-col">
+        <div class="form-group">
+          <label for="edit-em-name" class="form-label">Nama Kontak Darurat</label>
+          <input
+            id="edit-em-name"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.emergencyName"
+            name="emergencyName"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="edit-em-rel" class="form-label">Hubungan / Relasi</label>
+          <select
+            id="edit-em-rel"
+            class="form-select"
+            [(ngModel)]="formData.emergencyRelation"
+            name="emergencyRelation"
+          >
+            <option value="Keluarga">Keluarga</option>
+            <option value="Orang Tua">Orang Tua</option>
+            <option value="Pasangan">Pasangan (Suami/Istri)</option>
+            <option value="Anak">Anak</option>
+            <option value="Saudara">Saudara Kandung</option>
+          </select>
+        </div>
+
+        <div class="form-group full-width">
+          <label for="edit-em-phone" class="form-label">Nomor Telepon Darurat</label>
+          <input
+            id="edit-em-phone"
+            type="tel"
+            class="form-control"
+            [(ngModel)]="formData.emergencyPhone"
+            name="emergencyPhone"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: Riwayat Alergi & Catatan Khusus -->
+    <section class="form-card" aria-labelledby="section-notes">
+      <div class="card-section-header">
+        <div class="icon-circle red">
+          <i class="ri-heart-pulse-line" aria-hidden="true"></i>
+        </div>
+        <div>
+          <h2 id="section-notes" class="section-title">Alergi & Riwayat Kesehatan Khusus</h2>
+          <p class="section-desc">Peringatan medis untuk keamanan peresepan dan tindakan klinis</p>
+        </div>
+      </div>
+
+      <div class="grid-2-col">
+        <div class="form-group full-width">
+          <label for="edit-allergies" class="form-label">Riwayat Alergi Obat / Makanan</label>
+          <input
+            id="edit-allergies"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.allergies"
+            name="allergies"
+          />
+        </div>
+
+        <div class="form-group full-width">
+          <label for="edit-chronic" class="form-label">Penyakit Kronis / Bawaan</label>
+          <input
+            id="edit-chronic"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.chronicDiseases"
+            name="chronicDiseases"
+          />
+        </div>
+
+        <div class="form-group full-width">
+          <label for="edit-notes" class="form-label">Catatan Tambahan</label>
+          <textarea
+            id="edit-notes"
+            rows="3"
+            class="form-control"
+            [(ngModel)]="formData.notes"
+            name="notes"
+          ></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- Action Bar -->
+    <div class="form-action-bar">
+      <button
+        type="button"
+        class="btn-secondary"
+        (click)="goBack()"
+        [disabled]="isSubmitting()"
+      >
+        Batal
+      </button>
+
+      <button
+        type="submit"
+        class="btn-primary"
+        [disabled]="isSubmitting()"
+      >
+        @if (isSubmitting()) {
+          <i class="ri-loader-4-line spin" aria-hidden="true"></i>
+          <span>Menyimpan...</span>
+        } @else {
+          <i class="ri-save-line" aria-hidden="true"></i>
+          <span>Simpan Perubahan</span>
+        }
+      </button>
+    </div>
+  </form>
+</div>

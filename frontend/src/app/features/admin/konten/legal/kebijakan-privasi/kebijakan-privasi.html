@@ -1,0 +1,394 @@
+<div class="privasi-wrapper">
+  <!-- Document Metadata Card -->
+  <div class="doc-meta-card">
+    <div class="doc-meta-left">
+      <div class="doc-seal-icon">
+        <i class="ri-shield-keyhole-line"></i>
+      </div>
+      <div>
+        <div class="doc-badges-row">
+          <span class="badge-version">{{ dokumenInfo.versi }}</span>
+          <span class="badge-compliance"><i class="ri-checkbox-circle-fill"></i> {{ dokumenInfo.statusKepatuhan }}</span>
+        </div>
+        <h3 class="doc-title">Kebijakan Privasi & Perlindungan Data Pribadi (PDP)</h3>
+        <p class="doc-meta-sub">
+          No: <span class="font-mono text-dark">{{ dokumenInfo.nomorDokumen }}</span> • Berlaku Efektif: {{ dokumenInfo.tanggalBerlaku }} • PIC: {{ dokumenInfo.penanggungJawab }}
+        </p>
+      </div>
+    </div>
+    <div class="doc-meta-right">
+      <button type="button" class="btn btn-outline" (click)="downloadPdf()">
+        <i class="ri-file-pdf-line"></i>
+        <span>Unduh PDF</span>
+      </button>
+      <button type="button" class="btn btn-primary" (click)="openAddModal()" id="btn-tambah-pasal">
+        <i class="ri-add-line"></i>
+        <span>Tambah Pasal Baru</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- KPI Stats Summary Cards -->
+  <div class="kpi-grid">
+    <div *ngFor="let stat of kpiStats" class="kpi-card" [class]="'kpi-' + stat.color">
+      <div class="kpi-icon-box">
+        <i [class]="stat.icon"></i>
+      </div>
+      <div class="kpi-info">
+        <span class="kpi-value font-mono">{{ stat.value }}</span>
+        <span class="kpi-label">{{ stat.label }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search & Filter Toolbar -->
+  <div class="privasi-toolbar">
+    <div class="search-box">
+      <i class="ri-search-line search-icon"></i>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Cari nomor pasal, kata kunci privasi, atau ketentuan enkripsi..."
+        [ngModel]="searchQuery()"
+        (ngModelChange)="searchQuery.set($event)"
+      />
+    </div>
+
+    <div class="filter-actions">
+      <select class="filter-select" [ngModel]="filterKategori()" (ngModelChange)="filterKategori.set($event)">
+        <option value="Semua">Semua Kategori</option>
+        <option value="Data Pribadi & Medis">Data Pribadi & Medis</option>
+        <option value="Kerahasiaan Medis">Kerahasiaan Medis</option>
+        <option value="Keamanan Sistem & Server">Keamanan Sistem & Server</option>
+        <option value="Hak Pengguna">Hak Pengguna</option>
+        <option value="Integrasi Regulasi">Integrasi Regulasi</option>
+      </select>
+
+      <select class="filter-select" [ngModel]="filterStatus()" (ngModelChange)="filterStatus.set($event)">
+        <option value="Semua">Semua Status</option>
+        <option value="Aktif">Aktif Saja</option>
+        <option value="Nonaktif">Nonaktif (Arsip) Saja</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Clauses List -->
+  <div class="clauses-list">
+    <div *ngFor="let item of filteredKlausulList()" class="clause-card" [class.clause-nonaktif]="item.status === 'Nonaktif'">
+      <div class="clause-header">
+        <div class="clause-title-group">
+          <span class="pasal-chip">{{ item.pasal }}</span>
+          <h4 class="clause-title">{{ item.judul }}</h4>
+        </div>
+        <div class="clause-actions">
+          <span class="cat-pill">{{ item.kategori }}</span>
+
+          <span class="views-chip font-mono" title="Jumlah pembaca pasien terverifikasi">
+            <i class="ri-eye-line"></i> {{ item.viewsCount.toLocaleString('id-ID') }}x
+          </span>
+
+          <!-- Status toggle pill -->
+          <button
+            type="button"
+            class="status-pill-toggle"
+            [class.active]="item.status === 'Aktif'"
+            (click)="toggleStatus(item)"
+            [title]="item.status === 'Aktif' ? 'Klik untuk nonaktifkan klausul' : 'Klik untuk aktifkan klausul'"
+          >
+            <span class="dot"></span>
+            <span>{{ item.status }}</span>
+          </button>
+
+          <!-- Edit Button -->
+          <button type="button" class="btn-icon" (click)="openEditModal(item)" title="Edit Klausul Pasal">
+            <i class="ri-edit-line"></i>
+          </button>
+
+          <!-- Delete Button (Anti-Audit Loss) -->
+          <button type="button" class="btn-icon btn-danger-hover" (click)="openDeleteModal(item)" title="Nonaktifkan / Hapus Klausul">
+            <i class="ri-delete-bin-line"></i>
+          </button>
+        </div>
+      </div>
+
+      <p class="clause-content">{{ item.konten }}</p>
+
+      <div class="clause-footer">
+        <span class="last-edited"><i class="ri-time-line"></i> Terakhir Diperbarui: {{ item.terakhirDiubah }}</span>
+        <span class="compliance-tag font-mono">UU PDP 27/2022 • PSEF Validated</span>
+      </div>
+    </div>
+
+    <div *ngIf="filteredKlausulList().length === 0" class="empty-clause">
+      <i class="ri-shield-line"></i>
+      <p>Tidak ada pasal klausul yang cocok dengan filter pencarian.</p>
+    </div>
+  </div>
+
+  <!-- Modal Tambah / Edit Klausul (Static Backdrop) -->
+  <div *ngIf="showModal()" class="modal-backdrop">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-header-icon" [class.edit-mode]="isEditing()">
+          <i [class]="isEditing() ? 'ri-edit-line' : 'ri-shield-keyhole-line'"></i>
+        </div>
+        <div>
+          <h4 class="modal-title">{{ isEditing() ? 'Edit Pasal ' + currentKlausul.pasal : 'Tambah Pasal Kebijakan Baru' }}</h4>
+          <p class="modal-subtitle">Pastikan bahasa hukum jelas, lugas, dan sesuai amanat Undang-Undang PDP No. 27/2022</p>
+        </div>
+        <button type="button" class="btn-close" (click)="closeModal()">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label class="form-label" for="inp-pasal">Nomor Pasal <span class="text-danger">*</span></label>
+            <input
+              id="inp-pasal"
+              type="text"
+              class="form-control"
+              placeholder="Contoh: Pasal 6"
+              [(ngModel)]="currentKlausul.pasal"
+              [class.is-invalid]="formSubmitted() && !currentKlausul.pasal.trim()"
+            />
+            <span *ngIf="formSubmitted() && !currentKlausul.pasal.trim()" class="form-error-msg">
+              <i class="ri-error-warning-fill"></i> Nomor pasal wajib diisi
+            </span>
+          </div>
+          <div class="form-group flex-2">
+            <label class="form-label" for="inp-kategori">Kategori Regulasi <span class="text-danger">*</span></label>
+            <select id="inp-kategori" class="form-control" [(ngModel)]="currentKlausul.kategori">
+              <option value="Data Pribadi & Medis">Data Pribadi & Medis</option>
+              <option value="Kerahasiaan Medis">Kerahasiaan Medis</option>
+              <option value="Keamanan Sistem & Server">Keamanan Sistem & Server</option>
+              <option value="Hak Pengguna">Hak Pengguna</option>
+              <option value="Integrasi Regulasi">Integrasi Regulasi</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="form-label-row">
+            <label class="form-label" for="inp-judul-pasal">Judul Klausul <span class="text-danger">*</span></label>
+            <span class="char-counter font-mono">{{ currentKlausul.judul.length }} karakter</span>
+          </div>
+          <input
+            id="inp-judul-pasal"
+            type="text"
+            class="form-control"
+            placeholder="Contoh: Hak Pasien untuk Mengunduh Rekam Pengobatan Digital"
+            [(ngModel)]="currentKlausul.judul"
+            [class.is-invalid]="formSubmitted() && !currentKlausul.judul.trim()"
+          />
+          <span *ngIf="formSubmitted() && !currentKlausul.judul.trim()" class="form-error-msg">
+            <i class="ri-error-warning-fill"></i> Judul klausul wajib diisi
+          </span>
+        </div>
+
+        <div class="form-group">
+          <div class="form-label-row">
+            <label class="form-label" for="inp-isi-pasal">Uraian Klausul / Naskah Hukum <span class="text-danger">*</span></label>
+            <span class="char-counter font-mono">{{ currentKlausul.konten.length }} karakter</span>
+          </div>
+          <textarea
+            id="inp-isi-pasal"
+            rows="5"
+            class="form-control"
+            placeholder="Tuliskan naskah pasal secara lugas, jelas, dan dapat dipahami oleh pasien..."
+            [(ngModel)]="currentKlausul.konten"
+            [class.is-invalid]="formSubmitted() && !currentKlausul.konten.trim()"
+          ></textarea>
+          <span *ngIf="formSubmitted() && !currentKlausul.konten.trim()" class="form-error-msg">
+            <i class="ri-error-warning-fill"></i> Uraian klausul hukum wajib diisi
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Status Keberlakuan Klausul</label>
+          <div class="radio-options">
+            <label class="radio-card" [class.selected]="currentKlausul.status === 'Aktif'">
+              <input type="radio" name="pdp-status" value="Aktif" [(ngModel)]="currentKlausul.status" />
+              <div class="radio-card-content">
+                <span class="radio-title"><i class="ri-checkbox-circle-fill text-emerald"></i> Aktif Berlaku</span>
+                <span class="radio-sub">Tampil dalam dokumen publik di aplikasi & web pasien</span>
+              </div>
+            </label>
+            <label class="radio-card" [class.selected]="currentKlausul.status === 'Nonaktif'">
+              <input type="radio" name="pdp-status" value="Nonaktif" [(ngModel)]="currentKlausul.status" />
+              <div class="radio-card-content">
+                <span class="radio-title"><i class="ri-archive-line text-amber"></i> Nonaktif (Arsip)</span>
+                <span class="radio-sub">Disimpan sebagai arsip kepatuhan tanpa tayang di pasien</span>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" (click)="closeModal()">Batal</button>
+        <button type="button" class="btn btn-primary" (click)="saveKlausul()" id="btn-save-klausul">
+          <i [class]="isEditing() ? 'ri-save-line' : 'ri-check-line'"></i>
+          <span>{{ isEditing() ? 'Simpan Perubahan' : 'Terbitkan Pasal' }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Konfirmasi Nonaktifkan / Hapus Klausul (Static Backdrop) -->
+  <div *ngIf="showDeleteModal() && selectedKlausul() as targetKlausul" class="modal-backdrop">
+    <div class="modal-dialog modal-delete-dialog" (click)="$event.stopPropagation()">
+      <div class="delete-modal-header">
+        <div class="delete-icon-pulse" [class.danger]="deleteMode() === 'permanent'">
+          <i [class]="deleteMode() === 'deactivate' ? 'ri-archive-line' : 'ri-delete-bin-line'"></i>
+        </div>
+        <div class="delete-header-titles">
+          <h4 class="modal-title" [class.text-amber]="deleteMode() === 'deactivate'" [class.text-danger]="deleteMode() === 'permanent'">
+            {{ deleteMode() === 'deactivate' ? 'Nonaktifkan Klausul Kebijakan?' : 'Hapus Klausul Permanen?' }}
+          </h4>
+          <p class="modal-subtitle">Perlindungan jejak rekam audit hukum dan kepatuhan data kesehatan PSEF</p>
+        </div>
+        <button type="button" class="btn-close" (click)="closeDeleteModal()" [disabled]="isProcessing()">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <div class="delete-modal-body">
+        <!-- Target Clause Preview Card -->
+        <div class="klausul-preview-card">
+          <div class="preview-header">
+            <span class="pasal-chip">{{ targetKlausul.pasal }}</span>
+            <span class="preview-cat-badge">{{ targetKlausul.kategori }}</span>
+            <span class="preview-status-pill" [class.status-aktif]="targetKlausul.status === 'Aktif'">
+              {{ targetKlausul.status === 'Aktif' ? 'Aktif (Berlaku)' : 'Nonaktif (Arsip)' }}
+            </span>
+          </div>
+          <h5 class="preview-title">{{ targetKlausul.judul }}</h5>
+          <p class="preview-content">{{ targetKlausul.konten }}</p>
+
+          <div class="preview-stat-row">
+            <div class="stat-pill">
+              <i class="ri-eye-line text-indigo"></i>
+              <span class="stat-num font-mono">{{ targetKlausul.viewsCount.toLocaleString('id-ID') }}x</span>
+              <span class="stat-lbl">Pembaca Terverifikasi</span>
+            </div>
+            <div class="stat-pill">
+              <i class="ri-time-line text-sky"></i>
+              <span class="stat-num">{{ targetKlausul.terakhirDiubah }}</span>
+              <span class="stat-lbl">Pembaruan</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Audit Protection Notice Box -->
+        <div class="analytics-notice-box" [class.warning-border]="deleteMode() === 'permanent'">
+          <div class="notice-icon-box" [class.danger-bg]="deleteMode() === 'permanent'">
+            <i [class]="deleteMode() === 'deactivate' ? 'ri-shield-star-line' : 'ri-error-warning-fill'"></i>
+          </div>
+          <div class="notice-text-content">
+            <h6 class="notice-title">
+              {{ deleteMode() === 'deactivate' ? 'Perlindungan Audit Trail UU PDP & Kemenkes' : 'Peringatan Penghapusan Jejak Regulasi' }}
+            </h6>
+            <p class="notice-desc" *ngIf="deleteMode() === 'deactivate'">
+              Dengan <strong>menonaktifkan</strong>, pasal ini ditarik dari aplikasi pasien, namun 
+              <strong>{{ targetKlausul.viewsCount.toLocaleString('id-ID') }} riwayat pembaca</strong> serta 
+              <strong>catatan kepatuhan hukum tetap tersimpan utuh</strong> untuk kebutuhan audit berkala Kemenkes/BSSN.
+            </p>
+            <p class="notice-desc text-danger-text" *ngIf="deleteMode() === 'permanent'">
+              Menghapus permanen akan <strong>menghilangkan klausul dan jejak audit pembaca</strong> secara permanen. 
+              Tindakan ini tidak dapat dibatalkan!
+            </p>
+          </div>
+        </div>
+
+        <!-- Action Choice Cards -->
+        <div class="delete-options-group">
+          <div
+            class="action-choice-card"
+            role="button"
+            tabindex="0"
+            [class.selected]="deleteMode() === 'deactivate'"
+            (click)="setDeleteMode('deactivate')"
+            (keydown.enter)="setDeleteMode('deactivate')"
+          >
+            <div class="choice-indicator radio-amber"></div>
+            <div class="choice-content">
+              <div class="choice-header-row">
+                <span class="choice-title">Nonaktifkan / Arsipkan Klausul</span>
+                <span class="recommend-badge"><i class="ri-star-fill"></i> Disarankan</span>
+              </div>
+              <p class="choice-desc">Sembunyikan dari aplikasi pasien dengan menjaga riwayat audit legalitas tetap lengkap.</p>
+            </div>
+          </div>
+
+          <div
+            class="action-choice-card"
+            role="button"
+            tabindex="0"
+            [class.selected]="deleteMode() === 'permanent'"
+            (click)="setDeleteMode('permanent')"
+            (keydown.enter)="setDeleteMode('permanent')"
+          >
+            <div class="choice-indicator radio-danger"></div>
+            <div class="choice-content">
+              <div class="choice-header-row">
+                <span class="choice-title text-danger">Hapus Permanen dari Basis Data</span>
+                <span class="danger-badge">Merusak Jejak Audit</span>
+              </div>
+              <p class="choice-desc">Hanya gunakan jika pasal salah input atau duplikat yang belum pernah disahkan.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="delete-modal-footer">
+        <button
+          type="button"
+          class="btn btn-outline"
+          (click)="closeDeleteModal()"
+          [disabled]="isProcessing()"
+        >
+          Batal
+        </button>
+
+        <button
+          *ngIf="deleteMode() === 'deactivate'"
+          type="button"
+          class="btn btn-warning-action"
+          (click)="confirmDeleteAction()"
+          [disabled]="isProcessing()"
+          id="btn-confirm-deactivate-pdp"
+        >
+          <i [class]="isProcessing() ? 'ri-loader-4-line ri-spin' : 'ri-archive-line'"></i>
+          <span>{{ isProcessing() ? 'Memproses...' : 'Nonaktifkan Klausul' }}</span>
+        </button>
+
+        <button
+          *ngIf="deleteMode() === 'permanent'"
+          type="button"
+          class="btn btn-danger-action"
+          (click)="confirmDeleteAction()"
+          [disabled]="isProcessing()"
+          id="btn-confirm-permanent-pdp"
+        >
+          <i [class]="isProcessing() ? 'ri-loader-4-line ri-spin' : 'ri-delete-bin-line'"></i>
+          <span>{{ isProcessing() ? 'Menghapus...' : 'Ya, Hapus Permanen' }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Feedback -->
+  <div *ngIf="toastMessage()" class="pdp-toast" [class]="'toast-' + toastType()">
+    <div class="toast-icon">
+      <i [class]="toastType() === 'success' ? 'ri-checkbox-circle-fill' : toastType() === 'danger' ? 'ri-error-warning-fill' : 'ri-information-fill'"></i>
+    </div>
+    <div class="toast-content">
+      <p class="toast-text">{{ toastMessage() }}</p>
+    </div>
+    <button type="button" class="toast-close" (click)="toastMessage.set('')">
+      <i class="ri-close-line"></i>
+    </button>
+  </div>
+</div>

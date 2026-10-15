@@ -1,0 +1,84 @@
+<main class="facility-detail-route">
+  <div class="facility-detail-page" [hidden]="!currentFacility">
+        <header class="facility-detail-hero">
+          <div class="facility-detail-identity">
+            <span class="facility-detail-logo"><i class="ri-hospital-line" aria-hidden="true"></i></span>
+            <div class="facility-detail-title">
+              <div class="facility-title-line"><h2 id="facility-modal-title">{{ currentFacility?.name }}</h2><span class="facility-badge verification" [class.pending]="currentFacility?.verification === 'Menunggu'" [class.blocked]="currentFacility?.verification === 'Diblokir' || currentFacility?.verification === 'Suspended'">{{ currentFacility?.verification }}</span></div>
+              <div class="facility-detail-tags"><span>{{ currentFacility?.type }}</span><span>Pendaftar Baru</span></div>
+              <p class="facility-detail-registration">{{ currentFacility?.registration }}</p>
+              <p class="facility-detail-city"><i class="ri-map-pin-line" aria-hidden="true"></i> {{ currentFacility?.city }}</p>
+            </div>
+            <div class="facility-detail-actions">
+              <button type="button" class="facility-button secondary" (click)="close()"><i class="ri-arrow-left-line" aria-hidden="true"></i> Kembali</button>
+              <button type="button" class="facility-button secondary" (click)="edit()"><i class="ri-edit-line" aria-hidden="true"></i> Edit Fasilitas</button>
+              <button type="button" class="facility-button" [class.danger]="currentFacility?.status === 'Aktif'" [class.primary]="currentFacility?.status !== 'Aktif'" (click)="parent.toggleSelectedStatus()"><i [class]="currentFacility?.status === 'Aktif' ? 'ri-shut-down-line' : 'ri-check-line'" aria-hidden="true"></i> {{ currentFacility?.status === 'Aktif' ? 'Non-Aktifkan' : 'Aktifkan' }}</button>
+            </div>
+          </div>
+          <div class="facility-detail-contact">
+            <div><i class="ri-mail-line" aria-hidden="true"></i><span>Email<small>{{ currentFacility?.email }}</small></span></div>
+            <div><i class="ri-phone-line" aria-hidden="true"></i><span>No. Telepon<small>{{ currentFacility?.phone }}</small></span></div>
+            <div><i class="ri-map-pin-line" aria-hidden="true"></i><span>Alamat<small>{{ currentFacility?.address || currentFacility?.city }}</small></span></div>
+          </div>
+          <div class="facility-detail-metrics">
+            <article><span>Total Layanan</span><strong>{{ currentFacility?.serviceCount || 24 }}</strong><small>Layanan</small><em><i class="ri-arrow-up-line"></i> 12.5% <span>dari minggu lalu</span></em></article>
+            <article><span>Total Tenaga Medis</span><strong>{{ currentFacility?.medicalStaffCount || 24 }}</strong><small>Orang</small><em><i class="ri-arrow-up-line"></i> 12.5% <span>dari minggu lalu</span></em></article>
+            <article><span>Total Tempat Tidur</span><strong>{{ currentFacility?.bedCount || 24 }}</strong><small>Tempat Tidur</small><em><i class="ri-arrow-up-line"></i> 12.5% <span>dari minggu lalu</span></em></article>
+            <article><span>Total Pasien</span><strong>{{ currentFacility?.patientCount || 24 }}</strong><small>Pasien</small><em><i class="ri-arrow-up-line"></i> 12.5% <span>dari minggu lalu</span></em></article>
+          </div>
+        </header>
+        <nav class="facility-detail-tabs" aria-label="Detail fasilitas">
+          <button type="button" [class.active]="parent.detailTab() === 'umum'" [attr.aria-selected]="parent.detailTab() === 'umum'" (click)="parent.detailTab.set('umum')">Informasi Umum</button>
+          <button type="button" [class.active]="parent.detailTab() === 'layanan'" [attr.aria-selected]="parent.detailTab() === 'layanan'" (click)="parent.detailTab.set('layanan')">Layanan &amp; Fasilitas</button>
+          <button type="button" [class.active]="parent.detailTab() === 'verifikasi'" [attr.aria-selected]="parent.detailTab() === 'verifikasi'" (click)="parent.detailTab.set('verifikasi')">Verifikasi</button>
+        </nav>
+          <div class="facility-detail-overview" [hidden]="parent.detailTab() !== 'umum'">
+            <div class="facility-detail-left">
+              <section class="facility-detail-panel">
+                <h3>Informasi Umum</h3>
+                <dl><div><dt>Nama Fasilitas</dt><dd>{{ currentFacility?.name }}</dd></div><div><dt>Jenis Fasilitas</dt><dd>{{ currentFacility?.type }}</dd></div><div><dt>Surat Izin Fasilitas</dt><dd>{{ currentFacility?.registration }}</dd></div><div><dt>Status</dt><dd><span class="facility-badge">{{ currentFacility?.status }}</span></dd></div><div><dt>Tanggal Bergabung</dt><dd>{{ currentFacility?.joinedDate }}</dd></div><div><dt>Status Verifikasi</dt><dd><span class="facility-badge">{{ currentFacility?.verification }}</span></dd></div></dl>
+              </section>
+              <section class="facility-detail-panel">
+                <h3>Informasi PIC</h3>
+                <dl><div><dt>PIC/Penanggung Jawab</dt><dd>{{ currentFacility?.pic }}</dd></div><div><dt>Posisi/Jabatan</dt><dd>{{ currentFacility?.position }}</dd></div><div><dt>No. Telepon</dt><dd>{{ currentFacility?.phone }}</dd></div><div><dt>Email</dt><dd>{{ currentFacility?.email }}</dd></div><div><dt>Website</dt><dd>{{ currentFacility?.website || '—' }}</dd></div></dl>
+              </section>
+            </div>
+            <section class="facility-detail-panel facility-location-panel">
+              <h3>Lokasi</h3>
+              <dl><div><dt>Kota</dt><dd>{{ currentFacility?.city }}</dd></div><div><dt>Provinsi</dt><dd>{{ currentFacility?.province || '—' }}</dd></div><div><dt>Kode Pos</dt><dd>{{ currentFacility?.postalCode || '—' }}</dd></div><div><dt>Alamat Lengkap</dt><dd>{{ currentFacility?.address || currentFacility?.city }}</dd></div><div><dt>Latitude</dt><dd>{{ currentFacility?.latitude ?? '—' }}</dd></div><div><dt>Longitude</dt><dd>{{ currentFacility?.longitude ?? '—' }}</dd></div></dl>
+              @if (mapCoordinates(); as map) {
+                <iframe class="facility-open-map" [src]="map.embedUrl" [title]="'Peta OpenStreetMap ' + currentFacility?.name" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                <a class="facility-map-link" [href]="map.linkUrl" target="_blank" rel="noopener noreferrer">Buka di OpenStreetMap <i class="ri-external-link-line" aria-hidden="true"></i></a>
+              } @else {
+                <p class="facility-map-unavailable">Koordinat lokasi belum tersedia.</p>
+              }
+            </section>
+          </div>
+          <section class="facility-services-panel" [hidden]="parent.detailTab() !== 'layanan'">
+            <header class="facility-services-heading"><div><h3>Daftar Layanan &amp; Fasilitas</h3><p>Kelola layanan medis dan fasilitas pendukung yang tersedia di fasilitas ini.</p></div>
+              <div class="facility-service-filters"><label><i class="ri-search-line" aria-hidden="true"></i><input type="search" placeholder="Cari layanan..." aria-label="Cari layanan fasilitas" [ngModel]="parent.serviceSearch()" (ngModelChange)="parent.serviceSearch.set($event)" [ngModelOptions]="{standalone: true}"></label>
+                <select aria-label="Filter kategori layanan" [ngModel]="parent.serviceCategoryFilter()" (ngModelChange)="parent.serviceCategoryFilter.set($event)" [ngModelOptions]="{standalone: true}"><option value="">Pilih Kategori</option>@for (category of serviceCategories; track category) {<option [value]="category">{{ category }}</option>}</select>
+              </div>
+            </header>
+            <div class="facility-table-wrap"><table class="facility-table facility-service-table"><thead><tr><th>No.</th><th>Layanan/Fasilitas</th><th>Kategori</th><th>Metode</th><th>Deskripsi</th><th>Status</th><th>Aksi</th></tr></thead>
+              <tbody>@for (service of filteredServices; track service.name; let serviceIndex = $index) {<tr><td>{{ serviceIndex + 1 }}</td><td><div class="facility-service-name"><i [class]="service.icon + ' ' + service.color" aria-hidden="true"></i><span>{{ service.name }}<small>{{ service.type }}</small></span></div></td><td><span class="facility-badge">{{ service.category }}</span></td><td><span class="facility-badge method">{{ service.method }}</span></td><td>{{ service.description }}</td><td><span class="facility-badge">{{ service.status }}</span></td><td><div class="facility-actions"><button type="button" class="view" [attr.aria-label]="'Detail layanan ' + service.name"><i class="ri-eye-line" aria-hidden="true"></i></button><button type="button" class="edit" [attr.aria-label]="'Edit layanan ' + service.name"><i class="ri-edit-line" aria-hidden="true"></i></button><button type="button" class="delete" [attr.aria-label]="'Hapus layanan ' + service.name"><i class="ri-delete-bin-line" aria-hidden="true"></i></button></div></td></tr>} @empty {<tr><td colspan="7" class="facility-empty">Layanan tidak ditemukan.</td></tr>}</tbody>
+            </table></div>
+            <footer class="facility-pagination"><span>Menampilkan {{ filteredServices.length ? 1 : 0 }}–{{ filteredServices.length }} dari {{ filteredServices.length }} layanan</span><span>1 halaman</span></footer>
+          </section>
+          <div class="facility-verification-layout" [hidden]="parent.detailTab() !== 'verifikasi'">
+            <section class="facility-detail-panel facility-documents-panel">
+              <header><div><h3>Verifikasi Dokumen</h3><p>Periksa kelengkapan dan keabsahan dokumen yang diunggah fasilitas.</p></div><span class="facility-review-notice"><i class="ri-information-line" aria-hidden="true"></i> Pastikan semua dokumen valid sebelum menyetujui pendaftaran</span></header>
+              <div class="facility-table-wrap"><table class="facility-table facility-document-table"><thead><tr><th>No.</th><th>Dokumen</th><th>Aksi</th><th>Status</th></tr></thead><tbody>@for (document of parent.verificationDocuments; track document.name; let docIndex = $index) {<tr><td>{{ docIndex + 1 }}</td><td>{{ document.name }}<small class="facility-secondary">{{ document.file }}</small></td><td><button class="facility-button secondary" type="button"><i class="ri-eye-line" aria-hidden="true"></i> Lihat Dokumen</button></td><td><span class="facility-verification-state" [class.pending]="document.status === 'Menunggu Verifikasi'" [class.rejected]="document.status === 'Tidak Sesuai'"><i class="ri-checkbox-circle-line" aria-hidden="true"></i><span>{{ document.status }}<small>{{ document.description }}</small></span></span></td></tr>}</tbody></table></div>
+            </section>
+            <aside class="facility-verification-aside">
+              <section class="facility-detail-panel"><h3>Status Verifikasi Akun</h3><ol class="facility-timeline">@for (step of parent.verificationTimeline; track step.title) {<li [class.completed]="step.completed"><span></span><div><strong>{{ step.title }}</strong><small>{{ step.date }}</small></div></li>}</ol></section>
+              <section class="facility-detail-panel"><h3>Ringkasan Verifikasi</h3><div class="facility-verification-summary"><span>Dokumen Terverifikasi</span><strong>6 dari {{ parent.verificationDocuments.length }}</strong><span>Dokumen Menunggu Verifikasi</span><strong>1 dari {{ parent.verificationDocuments.length }}</strong><span>Dokumen Tidak Sesuai</span><strong>1</strong><label>Kelengkapan Data <b>85%</b><i><span></span></i></label></div></section>
+              <section class="facility-detail-panel"><h3>Aksi Verifikasi</h3><div class="facility-review-actions"><button type="button" (click)="parent.setVerificationStatus('Terverifikasi')"><i class="ri-check-line" aria-hidden="true"></i><span><strong>Setujui dan Aktifkan Akun</strong><small>Semua data valid, akun akan diaktifkan</small></span></button><button type="button" (click)="parent.setVerificationStatus('Diblokir')"><i class="ri-close-line" aria-hidden="true"></i><span><strong>Tolak Pendaftaran</strong><small>Pendaftaran dan akun tidak diaktifkan</small></span></button><button type="button" (click)="parent.setVerificationStatus('Menunggu')"><i class="ri-information-line" aria-hidden="true"></i><span><strong>Perbaikan</strong><small>Minta pendaftar melengkapi atau memperbaiki data</small></span></button></div><label class="facility-review-note">Catatan Moderasi<textarea rows="3" placeholder="Tulis catatan untuk pendaftar..." [ngModel]="parent.verificationNote()" (ngModelChange)="parent.verificationNote.set($event)" [ngModelOptions]="{standalone: true}"></textarea></label><button class="facility-button primary facility-save-note" type="button">Simpan Moderasi</button></section>
+            </aside>
+          </div>
+  </div>
+  <div class="facility-detail-page facility-detail-not-found" [hidden]="!!currentFacility">
+    <p class="facility-empty">Data fasilitas tidak ditemukan.</p>
+    <button class="facility-button secondary" type="button" (click)="close()">Kembali ke daftar</button>
+  </div>
+</main>

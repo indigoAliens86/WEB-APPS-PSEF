@@ -1,0 +1,675 @@
+<div class="detail-pesanan-container">
+  <!-- TOP PATIENT / ORDER PROFILE SUMMARY CARD -->
+  <div class="profile-summary-card">
+    <!-- Avatar & Aktif Badge -->
+    <div class="avatar-col">
+      <img
+        [src]="detail().pasien.avatar"
+        [alt]="detail().pasien.nama"
+        class="profile-avatar"
+        onerror="this.src='assets/images/avatar/male.png'"
+      />
+      <span class="badge-status-aktif">{{ detail().pasien.statusAktif }}</span>
+    </div>
+
+    <!-- Patient Main Info -->
+    <div class="info-main-col">
+      <h3 class="patient-name">{{ detail().pasien.nama }}</h3>
+      <div class="patient-pills">
+        <span class="pill-gender">{{ detail().pasien.gender }}</span>
+        <span class="pill-age">{{ detail().pasien.usia }}</span>
+      </div>
+      <span class="patient-nik">{{ detail().pasien.nik }}</span>
+      <span class="patient-type">{{ detail().pasien.tipe }}</span>
+    </div>
+
+    <!-- Point Health Widget -->
+    <div class="point-health-widget">
+      <div class="point-icon-box">
+        <i class="ri-coins-line"></i>
+      </div>
+      <div class="point-content">
+        <span class="point-title">Point Health yang ditarik</span>
+        <h4 class="point-number">{{ detail().pasien.poinDitarik }}</h4>
+        <span class="point-trend-badge">{{ detail().pasien.poinTrend }}</span>
+      </div>
+    </div>
+
+    <!-- Contact Details -->
+    <div class="contact-details-col">
+      <div class="contact-item">
+        <i class="ri-phone-line"></i>
+        <span>{{ detail().pasien.telepon }}</span>
+      </div>
+      <div class="contact-item">
+        <i class="ri-mail-line"></i>
+        <span>{{ detail().pasien.email }}</span>
+      </div>
+      <div class="contact-item">
+        <i class="ri-calendar-line"></i>
+        <span>{{ detail().pasien.tanggalLahir }}</span>
+      </div>
+      <div class="contact-item">
+        <i class="ri-map-pin-line"></i>
+        <span>{{ detail().pasien.alamat }}</span>
+      </div>
+    </div>
+
+    <!-- Right Summary Stats -->
+    <div class="summary-stats-col">
+      <div class="stat-card-row">
+        <div class="stat-icon-wrapper teal">
+          <i class="ri-shopping-cart-2-line"></i>
+        </div>
+        <div class="stat-meta">
+          <span class="stat-label">Total Pesanan</span>
+          <span class="stat-value">{{ detail().pasien.totalPesananCount }}</span>
+        </div>
+      </div>
+
+      <div class="stat-card-row">
+        <div class="stat-icon-wrapper blue">
+          <i class="ri-file-list-3-line"></i>
+        </div>
+        <div class="stat-meta">
+          <span class="stat-label">Total Resep</span>
+          <span class="stat-value">{{ detail().pasien.totalResepCount }}</span>
+        </div>
+      </div>
+
+      <div class="stat-card-row">
+        <div class="stat-icon-wrapper orange">
+          <i class="ri-wallet-3-line"></i>
+        </div>
+        <div class="stat-meta">
+          <span class="stat-label">Total Pembayaran</span>
+          <span class="stat-value">{{ detail().pasien.totalPembayaranSum }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN 2-COLUMN ORDER DETAILS GRID -->
+  <div class="order-grid">
+    <!-- LEFT COLUMN: PRODUCT TABLE, PRICING, VERIFICATION & NOTES -->
+    <div class="order-left-column">
+      <!-- FOUNDATION ALUR SUMBER PESANAN CARD -->
+      @if (detail().tipePesanan === 'Obat Resep') {
+        <div class="source-flow-card flow-resep">
+          <div class="flow-header">
+            <div class="flow-icon-circle resep">
+              <i class="ri-stethoscope-line"></i>
+            </div>
+            <div class="flow-meta">
+              <div class="flow-badge-row">
+                <span class="badge-type-resep">Pesanan Obat Resep</span>
+                <span class="badge-penebusan-active">
+                  <i class="ri-checkbox-circle-fill"></i>
+                  Ditebus oleh Pasien
+                </span>
+              </div>
+              <h4 class="flow-title">
+                Berasal dari Layanan {{ detail().layananKonsultasi?.jenisLayanan || 'Konsultasi' }} ({{ detail().sumberPesanan }})
+              </h4>
+              <p class="flow-desc">
+                Pesanan ini diproses dari penebusan resep elektronik hasil sesi konsultasi bersama 
+                <strong>{{ detail().layananKonsultasi?.tenagaKesehatan?.nama || 'dr. Andi Wijaya' }}</strong> 
+                ({{ detail().layananKonsultasi?.tenagaKesehatan?.sipAtauStra || 'SIP: 3273/DU/2022/451' }}) 
+                di {{ detail().layananKonsultasi?.klinikAtauApotek || 'Klinik PSEF Health Center' }}.
+              </p>
+            </div>
+          </div>
+
+          <div class="flow-tags-row">
+            <div class="flow-tag-item">
+              <span class="tag-label">ID Sesi Konsultasi:</span>
+              <strong class="tag-value">{{ detail().layananKonsultasi?.idKonsultasi || '#TLM-2026-0041' }}</strong>
+            </div>
+            <div class="flow-tag-item">
+              <span class="tag-label">Tanggal Sesi:</span>
+              <span class="tag-value">{{ detail().layananKonsultasi?.tanggalKonsultasi || '24 Mei 2026' }}</span>
+            </div>
+            <div class="flow-tag-item">
+              <span class="tag-label">Resep Digital:</span>
+              <button type="button" class="btn-flow-resep-link" (click)="openResepModal()">
+                <i class="ri-file-text-line"></i>
+                Salinan Resep Dokter
+              </button>
+            </div>
+          </div>
+        </div>
+      } @else {
+        <div class="source-flow-card flow-nonresep">
+          <div class="flow-header">
+            <div class="flow-icon-circle marketplace">
+              <i class="ri-shopping-cart-2-line"></i>
+            </div>
+            <div class="flow-meta">
+              <div class="flow-badge-row">
+                <span class="badge-type-nonresep">Pesanan Obat Non-Resep</span>
+                <span class="badge-not-available">
+                  <i class="ri-alert-line"></i>
+                  Marketplace Belum Tersedia
+                </span>
+              </div>
+              <h4 class="flow-title">
+                Berasal dari Marketplace Obat Bebas / OTC (Tahap Pengembangan)
+              </h4>
+              <p class="flow-desc">
+                Pesanan Obat Non-Resep dialokasikan untuk pembelian obat bebas (OTC), suplemen, dan alat kesehatan mandiri tanpa resep dokter. 
+                <strong>Fitur Marketplace Obat saat ini belum tersedia secara publik</strong> dan berada dalam roadmap integrasi berikutnya.
+              </p>
+            </div>
+          </div>
+
+          <div class="flow-tags-row">
+            <div class="flow-tag-item">
+              <span class="tag-label">Kanal Pembelian:</span>
+              <strong class="tag-value">Marketplace Obat Bebas (OTC)</strong>
+            </div>
+            <div class="flow-tag-item">
+              <span class="tag-label">Kebutuhan Resep:</span>
+              <span class="tag-value text-muted">Tanpa Resep Dokter</span>
+            </div>
+            <div class="flow-tag-item">
+              <span class="tag-label">Status Kanal:</span>
+              <span class="tag-value text-amber">Segera Hadir / Prototipe</span>
+            </div>
+          </div>
+        </div>
+      }
+
+      <div class="order-table-card">
+        <div class="card-header-with-back">
+          <div class="title-with-pill">
+            <h4 class="section-card-title">Detail Pesanan</h4>
+            <span
+              class="order-header-type-badge"
+              [ngClass]="detail().tipePesanan === 'Obat Resep' ? 'type-resep' : 'type-nonresep'"
+            >
+              {{ detail().tipePesanan }}
+            </span>
+          </div>
+
+          <div class="header-actions-group">
+            <!-- PREVIEW SWITCHER FOR FOUNDATION TESTING -->
+            <div class="type-preview-pill" title="Ubah pratinjau tipe pesanan">
+              <button
+                type="button"
+                class="pill-btn"
+                [class.active]="detail().tipePesanan === 'Obat Resep'"
+                (click)="switchTypePreview('Obat Resep')"
+              >
+                Obat Resep
+              </button>
+              <button
+                type="button"
+                class="pill-btn"
+                [class.active]="detail().tipePesanan === 'Obat Non-Resep'"
+                (click)="switchTypePreview('Obat Non-Resep')"
+              >
+                Obat Non-Resep
+              </button>
+            </div>
+
+            <button type="button" class="btn-back" (click)="goBack()">
+              <i class="ri-arrow-left-line"></i>
+              Kembali
+            </button>
+          </div>
+        </div>
+
+        <!-- PRODUCT TABLE -->
+        <div class="table-responsive">
+          <table class="detail-product-table">
+            <thead>
+              <tr>
+                <th class="th-no">No.</th>
+                <th class="th-prod">Produk</th>
+                <th class="th-resep">Resep</th>
+                <th class="th-harga">Harga</th>
+                <th class="th-qwt">Qwt</th>
+                <th class="th-jumlah">Jumlah</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of detail().produkList; track item.no) {
+                <tr>
+                  <td class="td-no">{{ item.no }}</td>
+                  <td class="td-prod">
+                    <div class="product-cell">
+                      <img
+                        [src]="item.thumbnail"
+                        [alt]="item.nama"
+                        class="product-thumb"
+                        onerror="this.src='assets/images/thumbnail/paracetamol.svg'"
+                      />
+                      <div class="product-meta">
+                        <span class="product-name">{{ item.nama }}</span>
+                        <span class="product-desc">{{ item.bentuk }} | {{ item.golongan }}</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="td-resep">
+                    @if (detail().tipePesanan === 'Obat Resep') {
+                      <div class="resep-cell">
+                        <span class="resep-id clickable" (click)="openResepModal()" title="Lihat Salinan Resep Digital">
+                          {{ item.resepId }}
+                          <i class="ri-eye-line"></i>
+                        </span>
+                        <span class="resep-doc">{{ item.dokter }}</span>
+                      </div>
+                    } @else {
+                      <div class="resep-cell-otc">
+                        <span class="otc-badge-pill">
+                          <i class="ri-check-line"></i>
+                          Obat Bebas
+                        </span>
+                        <span class="otc-caption">Tanpa Resep Dokter</span>
+                      </div>
+                    }
+                  </td>
+                  <td class="td-harga">{{ item.harga }}</td>
+                  <td class="td-qwt">{{ item.qwt }}</td>
+                  <td class="td-jumlah font-bold">{{ item.jumlah }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- PRICING BREAKDOWN TOTALS (RIGHT-ALIGNED) -->
+        <div class="pricing-summary-container">
+          <div class="pricing-summary-box">
+            <div class="price-row">
+              <span class="price-label">Subtotal</span>
+              <span class="price-val">{{ detail().biaya.subtotal }}</span>
+            </div>
+            <div class="price-row">
+              <span class="price-label">Diskon Produk</span>
+              <span class="price-val text-red">{{ detail().biaya.diskonProduk }}</span>
+            </div>
+            <div class="price-row">
+              <span class="price-label">Ongkos Kirim</span>
+              <span class="price-val">{{ detail().biaya.ongkosKirim }}</span>
+            </div>
+            <div class="price-row total-highlight-row">
+              <span class="price-label font-bold">Total Pembayaran</span>
+              <span class="price-val total-amount-teal">{{ detail().biaya.totalPembayaran }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- APOTHECARY VERIFICATION BANNER -->
+        <div class="verification-banner">
+          <div class="banner-left">
+            <i class="ri-file-list-3-line banner-icon"></i>
+            <span class="banner-text">{{ detail().verifikasiApoteker.statusText }}</span>
+          </div>
+          <div class="banner-right">
+            <img
+              [src]="detail().verifikasiApoteker.apotekerAvatar"
+              alt="Apoteker"
+              class="apoteker-avatar"
+              onerror="this.src='assets/images/avatar/female.png'"
+            />
+            <div class="apoteker-meta">
+              <span class="apoteker-name">{{ detail().verifikasiApoteker.apotekerNama }}</span>
+              <span class="apoteker-role">{{ detail().verifikasiApoteker.apotekerRole }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- CATATAN UNTUK APOTEK -->
+        <div class="note-box">
+          <h5 class="note-title">Catatan untuk Apotek:</h5>
+          <p class="note-content">{{ detail().catatanApotek }}</p>
+        </div>
+      </div>
+
+      <!-- CATATAN PESANAN CARD -->
+      <div class="bottom-note-card">
+        <h5 class="bottom-note-title">Catatan Pesanan</h5>
+        <p class="bottom-note-content">{{ detail().catatanPesanan }}</p>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN: DELIVERY INFO, PAYMENT SUMMARY & ORDER TIMELINE -->
+    <div class="order-right-column">
+      <!-- 1. DETAIL PENGIRIMAN -->
+      <div class="sidebar-card">
+        <div class="sidebar-card-header">
+          <h4 class="sidebar-card-title">Detail Pesanan</h4>
+          <span class="badge-dikirim">{{ detail().pengiriman.status }}</span>
+        </div>
+
+        <div class="courier-logo-row">
+          <img
+            [src]="detail().pengiriman.kurirLogo"
+            alt="JNE Express"
+            class="courier-logo"
+            onerror="this.src='assets/images/thumbnail/jne.svg'"
+          />
+        </div>
+
+        <div class="delivery-details-list">
+          <div class="del-row">
+            <span class="del-label">Penerima</span>
+            <span class="del-val">{{ detail().pengiriman.penerima }}</span>
+          </div>
+          <div class="del-row">
+            <span class="del-label">No. Telepon</span>
+            <span class="del-val">{{ detail().pengiriman.telepon }}</span>
+          </div>
+          <div class="del-row">
+            <span class="del-label">Alamat Pengiriman</span>
+            <span class="del-val">{{ detail().pengiriman.alamat }}</span>
+          </div>
+          <div class="del-row">
+            <span class="del-label">Kurir</span>
+            <span class="del-val">{{ detail().pengiriman.kurir }}</span>
+          </div>
+          <div class="del-row">
+            <span class="del-label">No. Resi</span>
+            <span class="del-val">{{ detail().pengiriman.noResi }}</span>
+          </div>
+          <div class="del-row">
+            <span class="del-label">Estimasi Tiba</span>
+            <span class="del-val">{{ detail().pengiriman.estimasiTiba }}</span>
+          </div>
+          <div class="del-row">
+            <span class="del-label">Catatan Pengiriman</span>
+            <span class="del-val">{{ detail().pengiriman.catatanPengiriman }}</span>
+          </div>
+        </div>
+
+        <button type="button" class="btn-track-delivery" (click)="lacakPengiriman()">
+          <i class="ri-truck-line"></i>
+          Lacak Pengiriman
+        </button>
+      </div>
+
+      <!-- 2. RINGKASAN PEMBAYARAN -->
+      <div class="sidebar-card">
+        <div class="sidebar-card-header">
+          <h4 class="sidebar-card-title">Ringkasan Pembayaran</h4>
+          <span class="badge-lunas">{{ detail().biaya.statusBayar }}</span>
+        </div>
+
+        <div class="payment-details-list">
+          <div class="pay-row">
+            <span class="pay-label">Subtotal</span>
+            <span class="pay-val">{{ detail().biaya.subtotal }}</span>
+          </div>
+          <div class="pay-row">
+            <span class="pay-label">Diskon Produk</span>
+            <span class="pay-val text-red">{{ detail().biaya.diskonProduk }}</span>
+          </div>
+          <div class="pay-row">
+            <span class="pay-label">Ongkos Kirim</span>
+            <span class="pay-val">{{ detail().biaya.ongkosKirim }}</span>
+          </div>
+          <div class="pay-row">
+            <span class="pay-label">Voucher</span>
+            <span class="pay-val">{{ detail().biaya.voucher }}</span>
+          </div>
+
+          <div class="pay-divider"></div>
+
+          <div class="pay-row total-pay-row">
+            <span class="pay-label font-bold">Total Pembayaran</span>
+            <span class="pay-val total-teal">{{ detail().biaya.totalPembayaran }}</span>
+          </div>
+
+          <div class="pay-row meta-bottom">
+            <span class="pay-label">Metode Pembayaran</span>
+            <span class="pay-val font-semibold">{{ detail().biaya.metodePembayaran }}</span>
+          </div>
+          <div class="pay-row meta-bottom">
+            <span class="pay-label">Waktu Pembayaran</span>
+            <span class="pay-val">{{ detail().biaya.waktuPembayaran }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. TIMELINE PESANAN -->
+      <div class="sidebar-card">
+        <h4 class="sidebar-card-title">Timeline Pesanan</h4>
+        <div class="order-timeline">
+          @for (step of detail().timeline; track step.label; let last = $last) {
+            <div class="timeline-step" [class.is-last]="last">
+              <div class="step-indicator-col">
+                <i class="ri-checkbox-circle-fill step-icon"></i>
+                @if (!last) {
+                  <div class="step-line"></div>
+                }
+              </div>
+              <div class="step-body-col">
+                <span class="step-name">{{ step.label }}</span>
+                <span class="step-time">{{ step.waktu }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1. MODAL PROGRESS LACAK PENGIRIMAN -->
+  @if (showTrackingModal()) {
+    <div class="modal-backdrop" (click)="closeTrackingModal()">
+      <div class="modal-dialog modal-tracking-dialog" (click)="$event.stopPropagation()">
+        <!-- Header -->
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <div class="modal-badge-icon tracking-icon-bg">
+              <i class="ri-truck-line"></i>
+            </div>
+            <div>
+              <h3 class="modal-title">Progress Lacak Pengiriman</h3>
+              <p class="modal-subtitle">{{ detail().pengiriman.kurir }} • {{ detail().id }}</p>
+            </div>
+          </div>
+          <button type="button" class="btn-modal-close" (click)="closeTrackingModal()" aria-label="Tutup">
+            <i class="ri-close-line"></i>
+          </button>
+        </div>
+
+        <!-- Body -->
+        <div class="modal-body tracking-modal-body">
+          <!-- Courier & AWB Banner Card -->
+          <div class="tracking-summary-banner">
+            <div class="banner-courier-info">
+              <img
+                [src]="detail().pengiriman.kurirLogo"
+                alt="Logo Kurir"
+                class="banner-courier-logo"
+                onerror="this.src='assets/images/thumbnail/jne.svg'"
+              />
+              <div class="banner-resi-box">
+                <span class="banner-resi-label">Nomor Resi:</span>
+                <div class="resi-copy-group">
+                  <strong class="banner-resi-num">{{ detail().pengiriman.noResi }}</strong>
+                  <button type="button" class="btn-copy-resi" (click)="copyResi()" title="Salin Nomor Resi">
+                    <i [class]="copiedResi() ? 'ri-check-line text-green' : 'ri-file-copy-line'"></i>
+                    {{ copiedResi() ? 'Tersalin' : 'Salin' }}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="banner-status-pill">
+              <span class="status-live-dot"></span>
+              <span class="status-live-text">{{ detail().pengiriman.status }}</span>
+            </div>
+          </div>
+
+          <!-- Route Origin & Destination -->
+          <div class="tracking-route-card">
+            <div class="route-node">
+              <div class="node-icon origin-icon">
+                <i class="ri-store-2-line"></i>
+              </div>
+              <div class="node-text">
+                <span class="node-caption">Pengirim / Asal</span>
+                <strong class="node-title">Apotek PSEF Jakarta Pusat</strong>
+                <span class="node-desc">Jl. Salemba Raya No. 12, Jakarta</span>
+              </div>
+            </div>
+            <div class="route-connector-arrow">
+              <i class="ri-arrow-right-line"></i>
+            </div>
+            <div class="route-node">
+              <div class="node-icon destination-icon">
+                <i class="ri-map-pin-user-line"></i>
+              </div>
+              <div class="node-text">
+                <span class="node-caption">Penerima / Tujuan</span>
+                <strong class="node-title">{{ detail().pengiriman.penerima }}</strong>
+                <span class="node-desc">{{ detail().pengiriman.alamat }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tracking Stepper History -->
+          <div class="tracking-history-section">
+            <h5 class="history-section-title">Riwayat Perjalanan Paket</h5>
+            <div class="tracking-events-list">
+              @for (evt of trackingEvents(); track $index; let first = $first; let last = $last) {
+                <div class="event-item" [class.is-latest]="first" [class.is-last-event]="last">
+                  <div class="event-indicator-col">
+                    <div class="event-circle-dot" [class.active-dot]="first">
+                      <i [class]="evt.icon"></i>
+                    </div>
+                    @if (!last) {
+                      <div class="event-line"></div>
+                    }
+                  </div>
+                  <div class="event-content-col">
+                    <div class="event-time-row">
+                      <span class="event-timestamp">{{ evt.tanggal }} • {{ evt.waktu }}</span>
+                      <span class="event-location-badge">{{ evt.lokasi }}</span>
+                    </div>
+                    <h6 class="event-status-title">{{ evt.status }}</h6>
+                    <p class="event-desc">{{ evt.deskripsi }}</p>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn-modal-secondary" (click)="closeTrackingModal()">
+            Tutup
+          </button>
+          <button type="button" class="btn-modal-primary" (click)="copyResi()">
+            <i class="ri-file-copy-line"></i>
+            Salin Nomor Resi
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- 2. MODAL OUTPUT RESEP DOKTER DIGITAL -->
+  @if (showResepModal()) {
+    <div class="modal-backdrop" (click)="closeResepModal()">
+      <div class="modal-dialog modal-resep-dialog" (click)="$event.stopPropagation()">
+        <!-- Header -->
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <div class="modal-badge-icon">
+              <i class="ri-file-list-3-line"></i>
+            </div>
+            <div>
+              <h3 class="modal-title">Salinan Resep Dokter Digital</h3>
+              <p class="modal-subtitle">PSEF Healthcare Services • #RX25024-0012</p>
+            </div>
+          </div>
+          <button type="button" class="btn-modal-close" (click)="closeResepModal()" aria-label="Tutup">
+            <i class="ri-close-line"></i>
+          </button>
+        </div>
+
+        <!-- Body -->
+        <div class="modal-body resep-paper">
+          <!-- Doctor Header -->
+          <div class="prescription-header">
+            <div class="doc-header-info">
+              <h4 class="doc-name">dr. Andi Wijaya</h4>
+              <span class="doc-sip">SIP: 3273/DU/2022/451</span>
+              <span class="clinic-name">Klinik PSEF Health Center</span>
+            </div>
+            <div class="doc-date-info">
+              <span class="resep-number-tag">#RX25024-0012</span>
+              <span class="resep-date-label">Tanggal: 24 Mei 2026</span>
+            </div>
+          </div>
+
+          <div class="paper-divider-double"></div>
+
+          <!-- Patient Row -->
+          <div class="patient-rx-row">
+            <div class="rx-patient-cell">
+              <span class="rx-label">Nama Pasien:</span>
+              <strong class="rx-value">{{ detail().pasien.nama }}</strong>
+            </div>
+            <div class="rx-patient-cell">
+              <span class="rx-label">Telepon:</span>
+              <span class="rx-value">{{ detail().pasien.telepon }}</span>
+            </div>
+            <div class="rx-patient-cell">
+              <span class="rx-label">Usia:</span>
+              <span class="rx-value">{{ detail().pasien.usia }}</span>
+            </div>
+          </div>
+
+          <div class="paper-divider"></div>
+
+          <!-- Items -->
+          <div class="rx-items-container">
+            @for (p of detail().produkList; track p.no) {
+              <div class="rx-item-card">
+                <div class="rx-symbol">R/</div>
+                <div class="rx-details">
+                  <div class="rx-medicine-line">
+                    <span class="rx-med-name">{{ p.nama }} ({{ p.bentuk }})</span>
+                    <span class="rx-med-qty">No. {{ p.qwt }}</span>
+                  </div>
+                  <div class="rx-signa-line">
+                    <span class="rx-signa-text">S. 3 dd tab 1 p.c. (3x sehari sesudah makan)</span>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- Verification Stamp -->
+          <div class="rx-footer-stamp-box">
+            <div class="stamp-verified">
+              <i class="ri-shield-check-fill"></i>
+              <div class="stamp-text">
+                <span class="stamp-title">TERVERIFIKASI SISTEM ELEKTRONIK APOTEK PSEF</span>
+                <span class="stamp-sub">{{ detail().verifikasiApoteker.apotekerNama }}</span>
+                <span class="stamp-date">{{ detail().verifikasiApoteker.apotekerRole }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn-modal-secondary" (click)="closeResepModal()">
+            Tutup
+          </button>
+          <button type="button" class="btn-modal-primary" (click)="printResep()">
+            <i class="ri-printer-line"></i>
+            Cetak / Unduh Resep
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

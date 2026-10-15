@@ -1,0 +1,1078 @@
+<div class="pengaturan-module-container animate-fade-in">
+  <!-- Toast Notification Feedback -->
+  <div *ngIf="toastMessage()" class="toast-feedback" [ngClass]="'toast-' + toastType()" role="status" aria-live="polite">
+    <i [class]="toastType() === 'success' ? 'ri-checkbox-circle-fill' : (toastType() === 'warning' ? 'ri-alert-fill' : 'ri-information-fill')"></i>
+    <span class="toast-text">{{ toastMessage() }}</span>
+  </div>
+
+  <!-- Header Banner -->
+  <header class="module-header-card">
+    <div class="header-main-content">
+      <div class="header-icon-box">
+        <i class="ri-settings-4-line" aria-hidden="true"></i>
+      </div>
+      <div class="header-text-group">
+        <div class="header-badge-row">
+          <span class="facility-type-badge font-mono">
+            <i class="ri-shield-check-fill text-emerald"></i>
+            APOTEK REKANAN PSEF
+          </span>
+          <span class="sync-status-badge">
+            <span class="pulse-dot"></span>
+            Sinkronisasi Cloud Aktif
+          </span>
+        </div>
+        <h1 class="header-title">Pengaturan Sistem & Operasional Fasilitas</h1>
+        <p class="header-desc">
+          Kelola matriks peran staf apotek, kustomisasi cetak etiket thermal & gateway notifikasi, serta konfigurasi katalog layanan farmasi.
+        </p>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button type="button" class="btn-profile-redirect" (click)="goToProfile()" title="Lihat profil sarana & legalitas">
+        <i class="ri-store-3-line"></i>
+        <span>Profil & Sarana</span>
+      </button>
+      <button type="button" class="btn-save-all" (click)="saveAllSettings()" [disabled]="isSaving()">
+        <i [class]="isSaving() ? 'ri-loader-4-line ri-spin' : 'ri-save-3-line'"></i>
+        <span>{{ isSaving() ? 'Menyimpan...' : 'Simpan Semua' }}</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Quick KPI Metric Summary Bar -->
+  <section class="kpi-summary-grid" aria-label="Ringkasan Konfigurasi">
+    <div class="kpi-metric-card" (click)="setTab('staf')">
+      <div class="kpi-icon-wrap bg-emerald-subtle text-emerald">
+        <i class="ri-team-line"></i>
+      </div>
+      <div class="kpi-info">
+        <span class="kpi-label">Staf Farmasi Aktif</span>
+        <strong class="kpi-value font-mono">{{ activeStaffCount }} / {{ stafList().length }} Staf</strong>
+      </div>
+      <i class="ri-arrow-right-s-line kpi-chevron"></i>
+    </div>
+
+    <div class="kpi-metric-card" (click)="setTab('etiket')">
+      <div class="kpi-icon-wrap bg-sky-subtle text-sky">
+        <i class="ri-qr-code-line"></i>
+      </div>
+      <div class="kpi-info">
+        <span class="kpi-label">Format Etiket Cetak</span>
+        <strong class="kpi-value">{{ etiket().ukuranKertas === 'thermal-70x50' ? 'Thermal 70x50mm' : 'Thermal 50x30mm' }}</strong>
+      </div>
+      <i class="ri-arrow-right-s-line kpi-chevron"></i>
+    </div>
+
+    <div class="kpi-metric-card" (click)="setTab('etiket')">
+      <div class="kpi-icon-wrap bg-amber-subtle text-amber">
+        <i class="ri-whatsapp-line"></i>
+      </div>
+      <div class="kpi-info">
+        <span class="kpi-label">WhatsApp Gateway</span>
+        <strong class="kpi-value text-emerald">
+          <i class="ri-checkbox-circle-fill"></i> Terhubung API
+        </strong>
+      </div>
+      <i class="ri-arrow-right-s-line kpi-chevron"></i>
+    </div>
+
+    <div class="kpi-metric-card" (click)="setTab('layanan')">
+      <div class="kpi-icon-wrap bg-teal-subtle text-teal">
+        <i class="ri-service-line"></i>
+      </div>
+      <div class="kpi-info">
+        <span class="kpi-label">Layanan Operasional</span>
+        <strong class="kpi-value font-mono">{{ activeServicesCount }} / {{ layananList().length }} Aktif</strong>
+      </div>
+      <i class="ri-arrow-right-s-line kpi-chevron"></i>
+    </div>
+  </section>
+
+  <!-- Module Navigation Tabs -->
+  <nav class="module-nav-tabs" aria-label="Navigasi Pengaturan">
+    <button
+      type="button"
+      class="tab-nav-btn"
+      [class.active]="activeTab() === 'staf'"
+      (click)="setTab('staf')"
+      id="tab-btn-staf"
+    >
+      <i class="ri-shield-user-line"></i>
+      <span>1. Manajemen Peran & Akses Staf</span>
+      <span class="tab-count-pill">{{ stafList().length }}</span>
+    </button>
+
+    <button
+      type="button"
+      class="tab-nav-btn"
+      [class.active]="activeTab() === 'etiket'"
+      (click)="setTab('etiket')"
+      id="tab-btn-etiket"
+    >
+      <i class="ri-printer-line"></i>
+      <span>2. Kustomisasi Etiket & Notifikasi</span>
+      <span class="tab-indicator-dot"></span>
+    </button>
+
+    <button
+      type="button"
+      class="tab-nav-btn"
+      [class.active]="activeTab() === 'layanan'"
+      (click)="setTab('layanan')"
+      id="tab-btn-layanan"
+    >
+      <i class="ri-list-check-3"></i>
+      <span>3. Manajemen Layanan & SLA</span>
+      <span class="tab-count-pill pill-teal">{{ activeServicesCount }} Aktif</span>
+    </button>
+  </nav>
+
+  <!-- =========================================================================
+       TAB 1: MANAJEMEN PERAN & AKSES STAF
+       ========================================================================= -->
+  <section *ngIf="activeTab() === 'staf'" class="tab-view-panel animate-fade-in" aria-labelledby="tab-btn-staf">
+    <!-- Top Action & Filter Toolbar -->
+    <div class="toolbar-card">
+      <div class="toolbar-left">
+        <div class="search-input-wrap">
+          <i class="ri-search-line search-icon"></i>
+          <input
+            type="text"
+            class="form-control-search"
+            placeholder="Cari nama staf, email, atau nomor SIPA/STR..."
+            [ngModel]="stafSearchQuery()"
+            (ngModelChange)="stafSearchQuery.set($event)"
+          />
+        </div>
+
+        <div class="role-filter-chips">
+          <button
+            type="button"
+            class="filter-chip"
+            [class.active]="stafFilterRole() === 'all'"
+            (click)="stafFilterRole.set('all')"
+          >
+            Semua ({{ stafList().length }})
+          </button>
+          <button
+            type="button"
+            class="filter-chip"
+            [class.active]="stafFilterRole() === 'APJ'"
+            (click)="stafFilterRole.set('APJ')"
+          >
+            APJ
+          </button>
+          <button
+            type="button"
+            class="filter-chip"
+            [class.active]="stafFilterRole() === 'Aping'"
+            (click)="stafFilterRole.set('Aping')"
+          >
+            Aping
+          </button>
+          <button
+            type="button"
+            class="filter-chip"
+            [class.active]="stafFilterRole() === 'TTK'"
+            (click)="stafFilterRole.set('TTK')"
+          >
+            TTK
+          </button>
+          <button
+            type="button"
+            class="filter-chip"
+            [class.active]="stafFilterRole() === 'Kasir'"
+            (click)="stafFilterRole.set('Kasir')"
+          >
+            Kasir
+          </button>
+          <button
+            type="button"
+            class="filter-chip"
+            [class.active]="stafFilterRole() === 'Kurir'"
+            (click)="stafFilterRole.set('Kurir')"
+          >
+            Kurir
+          </button>
+        </div>
+      </div>
+
+      <div class="toolbar-right">
+        <button type="button" class="btn-add-primary" (click)="openTambahStafModal()">
+          <i class="ri-user-add-line"></i>
+          <span>Tambah Staf Baru</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Staff List Table Card -->
+    <div class="content-box-card">
+      <div class="box-card-header">
+        <div class="bch-left">
+          <div class="sec-icon-circle bg-emerald-subtle text-emerald">
+            <i class="ri-team-line"></i>
+          </div>
+          <div>
+            <h2 class="bch-title">Daftar Tenaga Kefarmasian & Staf Operasional</h2>
+            <p class="bch-desc">Pengguna terdaftar yang memiliki hak akses sistem pengelolaan resep dan operasional apotek.</p>
+          </div>
+        </div>
+        <span class="bch-badge">{{ filteredStafList.length }} Pengguna Ditemukan</span>
+      </div>
+
+      <div class="table-responsive-wrapper">
+        <table class="data-table" aria-label="Daftar Staf Apotek">
+          <thead>
+            <tr>
+              <th scope="col">Staf Farmasi</th>
+              <th scope="col">Peran & Jabatan</th>
+              <th scope="col">Nomor SIPA / STRTTK</th>
+              <th scope="col">Status Akun</th>
+              <th scope="col">Terakhir Login</th>
+              <th scope="col" class="text-right">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (staf of filteredStafList; track staf.id) {
+              <tr class="table-row-hover">
+                <td>
+                  <div class="staf-profile-cell">
+                    <div class="staf-avatar" [style.backgroundColor]="staf.avatarColor">
+                      {{ staf.nama.charAt(0) }}
+                    </div>
+                    <div class="staf-details">
+                      <strong class="staf-name">{{ staf.nama }}</strong>
+                      <span class="staf-email font-mono">{{ staf.email }}</span>
+                      <span class="staf-phone"><i class="ri-phone-line"></i> {{ staf.phone }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span
+                    class="role-badge"
+                    [ngClass]="{
+                      'badge-apj': staf.role === 'APJ',
+                      'badge-aping': staf.role === 'Aping',
+                      'badge-ttk': staf.role === 'TTK',
+                      'badge-kasir': staf.role === 'Kasir',
+                      'badge-kurir': staf.role === 'Kurir'
+                    }"
+                  >
+                    {{ staf.roleLabel }}
+                  </span>
+                </td>
+                <td>
+                  <span class="font-mono text-mono-code">{{ staf.sipStr || '-' }}</span>
+                </td>
+                <td>
+                  <button
+                    type="button"
+                    class="status-toggle-pill"
+                    [class.is-active]="staf.status === 'Aktif'"
+                    [class.is-inactive]="staf.status !== 'Aktif'"
+                    (click)="toggleStafStatus(staf)"
+                    title="Klik untuk ubah status akun staf"
+                  >
+                    <span class="status-dot"></span>
+                    <span>{{ staf.status }}</span>
+                  </button>
+                </td>
+                <td>
+                  <span class="text-muted text-xs"><i class="ri-time-line"></i> {{ staf.terakhirAktif }}</span>
+                </td>
+                <td class="text-right">
+                  <div class="table-actions-group">
+                    <button
+                      type="button"
+                      class="btn-icon-action"
+                      (click)="toggleStafStatus(staf)"
+                      [title]="staf.status === 'Aktif' ? 'Tangguhkan Akses Staf' : 'Aktifkan Kembali Akses Staf'"
+                    >
+                      <i [class]="staf.status === 'Aktif' ? 'ri-pause-circle-line' : 'ri-play-circle-line'"></i>
+                    </button>
+                    <button
+                      type="button"
+                      class="btn-icon-action btn-icon-danger"
+                      (click)="deleteStaf(staf.id, staf.nama)"
+                      title="Cabut Akses Staf"
+                    >
+                      <i class="ri-delete-bin-line"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Granular RBAC Permissions Matrix -->
+    <div class="content-box-card">
+      <div class="box-card-header">
+        <div class="bch-left">
+          <div class="sec-icon-circle bg-teal-subtle text-teal">
+            <i class="ri-key-2-line"></i>
+          </div>
+          <div>
+            <h2 class="bch-title">Matriks Otorisasi & Hak Akses Fitur (RBAC)</h2>
+            <p class="bch-desc">Batasan wewenang fungsional berdasarkan peran profesi sesuai regulasi standar kefarmasian PSEF.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-responsive-wrapper">
+        <table class="data-table rbac-matrix-table" aria-label="Matriks Hak Akses">
+          <thead>
+            <tr>
+              <th scope="col" class="sticky-col">Peran / Jabatan</th>
+              <th scope="col" class="text-center">Skrining Klinis E-Resep</th>
+              <th scope="col" class="text-center">Tanda Tangan Digital APJ</th>
+              <th scope="col" class="text-center">Dispensing Racikan</th>
+              <th scope="col" class="text-center">Chat Telefarmasi (PIO)</th>
+              <th scope="col" class="text-center">Kelola Stok & Obat</th>
+              <th scope="col" class="text-center">Kasir POS & Keuangan</th>
+              <th scope="col" class="text-center">Pelaporan SIPNAP BPOM</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (r of rolePermissions(); track r.roleKey) {
+              <tr class="rbac-row">
+                <td class="sticky-col">
+                  <div class="rbac-role-info">
+                    <strong class="rbac-role-title">{{ r.roleName }}</strong>
+                    <span class="rbac-role-desc">{{ r.description }}</span>
+                  </div>
+                </td>
+                <td class="text-center">
+                  <input type="checkbox" class="rbac-checkbox" [(ngModel)]="r.canTelaahKlinis" />
+                </td>
+                <td class="text-center">
+                  <input type="checkbox" class="rbac-checkbox" [(ngModel)]="r.canDigitalSign" />
+                </td>
+                <td class="text-center">
+                  <input type="checkbox" class="rbac-checkbox" [(ngModel)]="r.canDispensingRacikan" />
+                </td>
+                <td class="text-center">
+                  <input type="checkbox" class="rbac-checkbox" [(ngModel)]="r.canChatTelefarmasi" />
+                </td>
+                <td class="text-center">
+                  <input type="checkbox" class="rbac-checkbox" [(ngModel)]="r.canManageInventory" />
+                </td>
+                <td class="text-center">
+                  <input type="checkbox" class="rbac-checkbox" [(ngModel)]="r.canManagePOS" />
+                </td>
+                <td class="text-center">
+                  <input type="checkbox" class="rbac-checkbox" [(ngModel)]="r.canExportReport" />
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="rbac-footer-note">
+        <i class="ri-shield-alert-line text-amber"></i>
+        <span>
+          <strong>Perhatian Regulasi Kemenkes:</strong> Fitur <em>Skrining Klinis</em> dan <em>Tanda Tangan Digital</em> hanya sah secara hukum bila dilakukan oleh Apoteker dengan SIPA aktif.
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       TAB 2: KUSTOMISASI ETIKET & NOTIFIKASI
+       ========================================================================= -->
+  <section *ngIf="activeTab() === 'etiket'" class="tab-view-panel animate-fade-in" aria-labelledby="tab-btn-etiket">
+    <div class="split-columns-layout">
+      <!-- Left Column: Etiket Configuration Form -->
+      <div class="config-column">
+        <!-- Thermal Label Settings -->
+        <div class="content-box-card">
+          <div class="box-card-header">
+            <div class="bch-left">
+              <div class="sec-icon-circle bg-sky-subtle text-sky">
+                <i class="ri-printer-line"></i>
+              </div>
+              <div>
+                <h2 class="bch-title">Konfigurasi Format Cetak Etiket Obat</h2>
+                <p class="bch-desc">Tata letak dan informasi legal yang dicetak pada stiker etiket thermal kemasan obat.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="box-card-body">
+            <!-- Pilihan Ukuran Kertas -->
+            <div class="form-group">
+              <label class="form-label" for="sel-kertas">Pilihan Dimensi Label Thermal</label>
+              <div class="segmented-picker">
+                <button
+                  type="button"
+                  class="seg-btn"
+                  [class.active]="etiket().ukuranKertas === 'thermal-70x50'"
+                  (click)="etiket().ukuranKertas = 'thermal-70x50'"
+                >
+                  <i class="ri-article-line"></i>
+                  <span>Thermal 70x50 mm (Standar)</span>
+                </button>
+                <button
+                  type="button"
+                  class="seg-btn"
+                  [class.active]="etiket().ukuranKertas === 'thermal-50x30'"
+                  (click)="etiket().ukuranKertas = 'thermal-50x30'"
+                >
+                  <i class="ri-file-text-line"></i>
+                  <span>Thermal 50x30 mm (Kecil)</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Header Sarana Form -->
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label class="form-label" for="inp-header-apotek">Header Nama Sarana Farmasi</label>
+                <input
+                  id="inp-header-apotek"
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="etiket().namaApotekHeader"
+                />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label class="form-label" for="inp-sia-sub">Nomor SIA & Telepon pada Etiket</label>
+                <input
+                  id="inp-sia-sub"
+                  type="text"
+                  class="form-control font-mono"
+                  [(ngModel)]="etiket().subHeaderSia"
+                />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label class="form-label" for="inp-apj-etiket">Nama APJ pada Etiket</label>
+                <input
+                  id="inp-apj-etiket"
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="etiket().namaApj"
+                />
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label" for="inp-sipa-etiket">SIPA APJ</label>
+                <input
+                  id="inp-sipa-etiket"
+                  type="text"
+                  class="form-control font-mono"
+                  [(ngModel)]="etiket().sipaApj"
+                />
+              </div>
+            </div>
+
+            <!-- Toggles for Optional Label Elements -->
+            <div class="label-features-grid">
+              <label class="toggle-card-item" [class.is-checked]="etiket().showQrCodeSatuSehat">
+                <input type="checkbox" [(ngModel)]="etiket().showQrCodeSatuSehat" />
+                <div class="toggle-info">
+                  <span class="tgl-title"><i class="ri-qr-code-line text-emerald"></i> QR Code SatuSehat</span>
+                  <span class="tgl-sub">Verifikasi keaslian obat e-resep nasional</span>
+                </div>
+              </label>
+
+              <label class="toggle-card-item" [class.is-checked]="etiket().showTandaTanganDigital">
+                <input type="checkbox" [(ngModel)]="etiket().showTandaTanganDigital" />
+                <div class="toggle-info">
+                  <span class="tgl-title"><i class="ri-shield-check-line text-emerald"></i> TTD Digital APJ</span>
+                  <span class="tgl-sub">Cap paraf digital penelaah resep resmi</span>
+                </div>
+              </label>
+
+              <label class="toggle-card-item" [class.is-checked]="etiket().showBeyondUseDate">
+                <input type="checkbox" [(ngModel)]="etiket().showBeyondUseDate" />
+                <div class="toggle-info">
+                  <span class="tgl-title"><i class="ri-calendar-line text-sky"></i> Tanggal BUD</span>
+                  <span class="tgl-sub">Batas kedaluwarsa setelah peracikan</span>
+                </div>
+              </label>
+
+              <label class="toggle-card-item" [class.is-checked]="etiket().showInstruksiKocok">
+                <input type="checkbox" [(ngModel)]="etiket().showInstruksiKocok" />
+                <div class="toggle-info">
+                  <span class="tgl-title"><i class="ri-drop-line text-amber"></i> Label Kocok Dahulu</span>
+                  <span class="tgl-sub">Wajib untuk sirup/emulsi suspensi</span>
+                </div>
+              </label>
+            </div>
+
+            <div class="form-group mt-3">
+              <label class="form-label" for="inp-footer-note">Catatan Kaki Etiket (Peringatan Umum)</label>
+              <input
+                id="inp-footer-note"
+                type="text"
+                class="form-control"
+                [(ngModel)]="etiket().catatanKakiDefault"
+              />
+            </div>
+
+            <!-- Print Test Action -->
+            <div class="print-actions-bar">
+              <button type="button" class="btn btn-outline" (click)="testPrintEtiket()">
+                <i class="ri-printer-line"></i>
+                <span>Uji Cetak Thermal Printer</span>
+              </button>
+              <span class="text-xs text-muted">Mendukung printer ESC/POS USB, Bluetooth, & Network IP.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Interactive Live Etiket Preview -->
+      <div class="preview-column">
+        <div class="content-box-card live-preview-sticky">
+          <div class="box-card-header">
+            <div class="bch-left">
+              <div class="sec-icon-circle bg-rose-subtle text-rose">
+                <i class="ri-eye-line"></i>
+              </div>
+              <div>
+                <h3 class="bch-title">Live Preview Etiket Apotek</h3>
+                <p class="bch-desc">Simulasi tampilan fisik stiker obat yang keluar dari printer thermal.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="box-card-body">
+            <!-- Selector: Oral (Putih) vs Luar (Biru) -->
+            <div class="etiket-type-tabs">
+              <button
+                type="button"
+                class="btn-etiket-type"
+                [class.active]="etiket().tipePreview === 'oral'"
+                (click)="setTipeEtiket('oral')"
+              >
+                <span class="swatch-color swatch-white"></span>
+                <span>Etiket Putih (Obat Oral / Dalam)</span>
+              </button>
+              <button
+                type="button"
+                class="btn-etiket-type"
+                [class.active]="etiket().tipePreview === 'luar'"
+                (click)="setTipeEtiket('luar')"
+              >
+                <span class="swatch-color swatch-blue"></span>
+                <span>Etiket Biru (Obat Luar / Topikal)</span>
+              </button>
+            </div>
+
+            <!-- Authentic Indonesian Pharmacy Thermal Label Rendering -->
+            <div class="thermal-label-canvas-wrap">
+              <div
+                class="pharmacy-thermal-sticker"
+                [class.sticker-oral]="etiket().tipePreview === 'oral'"
+                [class.sticker-luar]="etiket().tipePreview === 'luar'"
+              >
+                <!-- Label Header -->
+                <div class="sticker-header">
+                  <div class="sh-brand">
+                    <i class="ri-store-2-fill brand-icon"></i>
+                    <div>
+                      <strong class="sh-name">{{ etiket().namaApotekHeader }}</strong>
+                      <span class="sh-sub font-mono">{{ etiket().subHeaderSia }}</span>
+                    </div>
+                  </div>
+                  <div class="sh-classification-strip">
+                    {{ etiket().tipePreview === 'oral' ? 'OBAT DALAM' : 'OBAT LUAR - TIDAK BOLEH DITELAN' }}
+                  </div>
+                </div>
+
+                <!-- Rx Number & Date Row -->
+                <div class="sticker-meta-row font-mono">
+                  <span>No: <strong>{{ etiket().previewNoResep }}</strong></span>
+                  <span>Tgl: {{ etiket().previewTanggal }}</span>
+                </div>
+
+                <!-- Patient Name -->
+                <div class="sticker-patient-box">
+                  <span class="sp-label">Nama Pasien:</span>
+                  <strong class="sp-name">{{ etiket().previewPasien }}</strong>
+                </div>
+
+                <!-- Drug Info & Dosage -->
+                <div class="sticker-drug-box">
+                  <strong class="sd-drug-name">{{ etiket().previewObat }}</strong>
+                  <div class="sd-dosage-pill font-mono">
+                    {{ etiket().previewAturanPakai }} ({{ etiket().previewJumlah }})
+                  </div>
+                  <span class="sd-timing">{{ etiket().previewWaktuMinum }}</span>
+                </div>
+
+                <!-- Warning Notice -->
+                <div *ngIf="etiket().showInstruksiKocok" class="sticker-shake-alert">
+                  <i class="ri-drop-fill"></i> KOCOK DAHULU SEBELUM DIMINUM
+                </div>
+
+                <div class="sticker-special-note">
+                  {{ etiket().previewCatatanKhusus }}
+                </div>
+
+                <!-- Footer with QR Code & APJ Sign -->
+                <div class="sticker-footer-row">
+                  <div class="sf-apj-block">
+                    <span class="sf-apj-title">Apoteker Penanggung Jawab:</span>
+                    <strong class="sf-apj-name">{{ etiket().namaApj }}</strong>
+                    <span class="sf-apj-sipa font-mono text-xs">{{ etiket().sipaApj }}</span>
+                    <div *ngIf="etiket().showBeyondUseDate" class="sf-bud-tag font-mono">
+                      BUD: 15/11/2026
+                    </div>
+                  </div>
+
+                  <div *ngIf="etiket().showQrCodeSatuSehat" class="sf-qr-block">
+                    <div class="qr-mock-box" title="QR Code SatuSehat Kemenkes RI">
+                      <i class="ri-qr-code-line"></i>
+                    </div>
+                    <span class="qr-sub font-mono">SatuSehat</span>
+                  </div>
+                </div>
+
+                <!-- Bottom Fine Print -->
+                <div class="sticker-bottom-fineprint">
+                  {{ etiket().catatanKakiDefault }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notification Gateway Section (WhatsApp & Webhook) -->
+    <div class="content-box-card mt-4">
+      <div class="box-card-header">
+        <div class="bch-left">
+          <div class="sec-icon-circle bg-emerald-subtle text-emerald">
+            <i class="ri-whatsapp-line"></i>
+          </div>
+          <div>
+            <h2 class="bch-title">Gateway Notifikasi Pasien & Audio Alert Resep</h2>
+            <p class="bch-desc">Pengiriman status pesanan instan via WhatsApp dan bunyi bel pengingat telaah resep baru.</p>
+          </div>
+        </div>
+        <div class="gateway-status-pill">
+          <span class="pulse-dot"></span>
+          <span>WhatsApp API: <strong>Connected</strong></span>
+        </div>
+      </div>
+
+      <div class="box-card-body">
+        <div class="notification-channels-grid">
+          <!-- WhatsApp Channel -->
+          <div class="channel-card">
+            <div class="channel-card-head">
+              <i class="ri-whatsapp-fill text-emerald text-xl"></i>
+              <div>
+                <strong class="channel-title">WhatsApp Business API Terintegrasi</strong>
+                <span class="channel-desc">Kirim pesan otomatis saat resep diverifikasi dan dikirim.</span>
+              </div>
+            </div>
+
+            <div class="channel-toggles-list">
+              <label class="channel-switch-item">
+                <input type="checkbox" [(ngModel)]="notifikasi().waStatusResep" />
+                <span>Kirim WA saat resep selesai diverifikasi APJ</span>
+              </label>
+
+              <label class="channel-switch-item">
+                <input type="checkbox" [(ngModel)]="notifikasi().waEstimasiPengiriman" />
+                <span>Kirim WA saat pesanan diserahkan ke kurir pengantar (dengan link live GPS)</span>
+              </label>
+
+              <label class="channel-switch-item">
+                <input type="checkbox" [(ngModel)]="notifikasi().waReminderMinumObat" />
+                <span>Kirim WA pengingat minum obat berkala kepada pasien</span>
+              </label>
+            </div>
+
+            <div class="form-group mt-3">
+              <label class="form-label" for="ta-wa-template">Template Pesan WhatsApp Pelanggan</label>
+              <textarea
+                id="ta-wa-template"
+                rows="3"
+                class="form-control font-mono text-xs"
+                [(ngModel)]="notifikasi().waTemplatePesanan"
+              ></textarea>
+              <span class="form-help-text" ngNonBindable>Gunakan format parameter: &#123;&#123;nama_pasien&#125;&#125;, &#123;&#123;nomor_resep&#125;&#125;, &#123;&#123;nama_apotek&#125;&#125;, &#123;&#123;link_tracking&#125;&#125;</span>
+            </div>
+
+            <button type="button" class="btn btn-outline btn-sm mt-2" (click)="testSendWaNotification()">
+              <i class="ri-send-plane-line"></i>
+              <span>Kirim Pesan Uji Coba WhatsApp</span>
+            </button>
+          </div>
+
+          <!-- Sound Alert & Digest Channel -->
+          <div class="channel-card">
+            <div class="channel-card-head">
+              <i class="ri-notification-3-fill text-amber text-xl"></i>
+              <div>
+                <strong class="channel-title">Audio Alert Resep Masuk & Email Digest</strong>
+                <span class="channel-desc">Pengingat visual dan suara saat ada antrean e-resep darurat (Cito).</span>
+              </div>
+            </div>
+
+            <div class="channel-toggles-list">
+              <label class="channel-switch-item">
+                <input type="checkbox" [(ngModel)]="notifikasi().audioAlertResepBaru" />
+                <span>Bunyikan bel audio otomatis saat e-resep baru masuk ke antrean telaah</span>
+              </label>
+
+              <label class="channel-switch-item">
+                <input type="checkbox" [(ngModel)]="notifikasi().emailDailyDigest" />
+                <span>Kirim email rekapitulasi harian transaksi & dispensing (Pukul 23:00 WIB)</span>
+              </label>
+
+              <label class="channel-switch-item">
+                <input type="checkbox" [(ngModel)]="notifikasi().emailStokKritis" />
+                <span>Kirim email peringatan otomatis jika stok obat di bawah batas minimum (Safety Stock)</span>
+              </label>
+            </div>
+
+            <div class="form-group mt-3">
+              <label class="form-label" for="inp-email-alert">Email Penerima Laporan & Alert</label>
+              <input
+                id="inp-email-alert"
+                type="email"
+                class="form-control font-mono"
+                [(ngModel)]="notifikasi().emailPenerima"
+              />
+            </div>
+
+            <button type="button" class="btn btn-outline btn-sm mt-2" (click)="playTestAudioAlert()">
+              <i class="ri-volume-up-line"></i>
+              <span>Uji Bunyi Alarm (Test Sound)</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       TAB 3: MANAJEMEN LAYANAN & SLA
+       ========================================================================= -->
+  <section *ngIf="activeTab() === 'layanan'" class="tab-view-panel animate-fade-in" aria-labelledby="tab-btn-layanan">
+    <!-- Emergency Holiday / Pause Mode Banner -->
+    <div class="emergency-override-card" [class.is-emergency]="sla().modeJedaOperasional">
+      <div class="eoc-left">
+        <div class="eoc-icon-box">
+          <i [class]="sla().modeJedaOperasional ? 'ri-pause-circle-fill text-amber' : 'ri-shield-check-fill text-emerald'"></i>
+        </div>
+        <div>
+          <strong class="eoc-title">
+            {{ sla().modeJedaOperasional ? 'Mode Jeda Operasional Sementara Aktif' : 'Status Layanan: Buka Normal' }}
+          </strong>
+          <p class="eoc-desc">
+            {{ sla().modeJedaOperasional ? 'Penerimaan resep ditangguhkan sementara dari portal publik PSEF karena: ' + (sla().alasanJeda || 'Pemeliharaan internal') : 'Apotek siap menerima order tebus resep digital dan konsultasi telefarmasi.' }}
+          </p>
+        </div>
+      </div>
+
+      <div class="eoc-right">
+        <button
+          type="button"
+          class="btn-emergency-toggle"
+          [class.btn-resume]="sla().modeJedaOperasional"
+          (click)="toggleModeJeda()"
+        >
+          <i [class]="sla().modeJedaOperasional ? 'ri-play-line' : 'ri-pause-line'"></i>
+          <span>{{ sla().modeJedaOperasional ? 'Lanjutkan Layanan Normal' : 'Aktifkan Jeda Layanan' }}</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Active Service Offerings Grid -->
+    <div class="content-box-card">
+      <div class="box-card-header">
+        <div class="bch-left">
+          <div class="sec-icon-circle bg-teal-subtle text-teal">
+            <i class="ri-service-line"></i>
+          </div>
+          <div>
+            <h2 class="bch-title">Katalog Layanan Operasional Apotek</h2>
+            <p class="bch-desc">Aktifkan atau nonaktifkan kapabilitas layanan kefarmasian yang ditawarkan kepada pasien.</p>
+          </div>
+        </div>
+        <span class="bch-badge font-mono">{{ activeServicesCount }} / {{ layananList().length }} Layanan Aktif</span>
+      </div>
+
+      <div class="services-cards-grid">
+        @for (layanan of layananList(); track layanan.id) {
+          <div class="service-card-item" [class.is-active]="layanan.aktif" [class.is-disabled]="!layanan.aktif">
+            <div class="sci-header">
+              <div class="sci-icon-wrap">
+                <i [class]="layanan.icon"></i>
+              </div>
+              <span class="sci-tag" [ngClass]="layanan.tagClass">{{ layanan.tag }}</span>
+              <label class="switch-toggle" [title]="layanan.aktif ? 'Nonaktifkan layanan ini' : 'Aktifkan layanan ini'">
+                <input type="checkbox" [checked]="layanan.aktif" (change)="toggleLayanan(layanan)" />
+                <span class="slider round"></span>
+              </label>
+            </div>
+
+            <div class="sci-body">
+              <strong class="sci-name">{{ layanan.nama }}</strong>
+              <p class="sci-desc">{{ layanan.deskripsi }}</p>
+            </div>
+
+            <div class="sci-footer">
+              <div class="sci-sla">
+                <i class="ri-time-line text-emerald"></i>
+                <span>SLA: <strong>{{ layanan.slaEstimasi }}</strong></span>
+              </div>
+              <div class="sci-fee">
+                @if (layanan.biayaTambahan > 0) {
+                  <span class="fee-badge font-mono">+ Rp {{ layanan.biayaTambahan | number:'1.0-0' }}</span>
+                } @else {
+                  <span class="fee-free">Gratis Biaya Layanan</span>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- SLA (Service Level Agreement) Timing Rules -->
+    <div class="content-box-card">
+      <div class="box-card-header">
+        <div class="bch-left">
+          <div class="sec-icon-circle bg-amber-subtle text-amber">
+            <i class="ri-timer-flash-line"></i>
+          </div>
+          <div>
+            <h2 class="bch-title">Standar Waktu Pelayanan (SLA) & Pengiriman</h2>
+            <p class="bch-desc">Batas maksimal waktu pengerjaan resep dan radius logistik untuk kepatuhan mutu farmasi PSEF.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="box-card-body">
+        <div class="sla-inputs-grid">
+          <div class="sla-field-card">
+            <div class="sla-field-head">
+              <i class="ri-stethoscope-line text-emerald"></i>
+              <label class="sla-label" for="inp-sla-telaah">Batas Telaah Resep Standar</label>
+            </div>
+            <div class="sla-input-row">
+              <input
+                id="inp-sla-telaah"
+                type="number"
+                min="5"
+                max="60"
+                class="form-control font-mono"
+                [(ngModel)]="sla().waktuTelaahResepMenit"
+              />
+              <span class="sla-unit">Menit</span>
+            </div>
+            <span class="sla-caption">Waktu skrining administrasi, farmasetik, & klinis oleh APJ.</span>
+          </div>
+
+          <div class="sla-field-card">
+            <div class="sla-field-head">
+              <i class="ri-capsule-line text-sky"></i>
+              <label class="sla-label" for="inp-sla-jadi">Batas Dispensing Obat Jadi</label>
+            </div>
+            <div class="sla-input-row">
+              <input
+                id="inp-sla-jadi"
+                type="number"
+                min="5"
+                max="60"
+                class="form-control font-mono"
+                [(ngModel)]="sla().waktuPenyiapanObatJadiMenit"
+              />
+              <span class="sla-unit">Menit</span>
+            </div>
+            <span class="sla-caption">Pengambilan strip/botol pabrikan, cetak etiket, & double-check.</span>
+          </div>
+
+          <div class="sla-field-card">
+            <div class="sla-field-head">
+              <i class="ri-flask-line text-rose"></i>
+              <label class="sla-label" for="inp-sla-racik">Batas Dispensing Racikan (Puyer/Salep)</label>
+            </div>
+            <div class="sla-input-row">
+              <input
+                id="inp-sla-racik"
+                type="number"
+                min="15"
+                max="120"
+                class="form-control font-mono"
+                [(ngModel)]="sla().waktuPeracikanPuyerSalepMenit"
+              />
+              <span class="sla-unit">Menit</span>
+            </div>
+            <span class="sla-caption">Penimbangan mortir, peracikan pulveres, kapsul, & pengemasan.</span>
+          </div>
+
+          <div class="sla-field-card">
+            <div class="sla-field-head">
+              <i class="ri-e-bike-2-line text-purple"></i>
+              <label class="sla-label" for="inp-sla-radius">Radius Maksimal Pengantaran</label>
+            </div>
+            <div class="sla-input-row">
+              <input
+                id="inp-sla-radius"
+                type="number"
+                min="1"
+                max="50"
+                class="form-control font-mono"
+                [(ngModel)]="sla().radiusMaksimalPengirimanKm"
+              />
+              <span class="sla-unit">KM</span>
+            </div>
+            <span class="sla-caption">Jangkauan kurir instan farmasi PSEF dari lokasi sarana fisik.</span>
+          </div>
+
+          <div class="sla-field-card">
+            <div class="sla-field-head">
+              <i class="ri-time-line text-amber"></i>
+              <label class="sla-label" for="inp-sla-cutoff">Jam Cut-Off Pengiriman Harian</label>
+            </div>
+            <div class="sla-input-row">
+              <input
+                id="inp-sla-cutoff"
+                type="time"
+                class="form-control font-mono"
+                [(ngModel)]="sla().jamCutoffPengiriman"
+              />
+              <span class="sla-unit">WIB</span>
+            </div>
+            <span class="sla-caption">Pesanan di atas jam ini akan dijadwalkan pengantaran pagi berikutnya.</span>
+          </div>
+
+          <div class="sla-field-card">
+            <div class="sla-field-head">
+              <i class="ri-close-circle-line text-rose"></i>
+              <label class="sla-label" for="inp-sla-cancel">Batas Bayar Resep (Auto-Cancel)</label>
+            </div>
+            <div class="sla-input-row">
+              <input
+                id="inp-sla-cancel"
+                type="number"
+                min="15"
+                max="240"
+                class="form-control font-mono"
+                [(ngModel)]="sla().autoCancelUnpaidMinutes"
+              />
+              <span class="sla-unit">Menit</span>
+            </div>
+            <span class="sla-caption">Resep yang disetujui tapi belum dibayar pasien dibatalkan otomatis.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       MODAL: TAMBAH STAF BARU
+       ========================================================================= -->
+  <div *ngIf="showModalStaf()" class="modal-backdrop animate-fade-in" (click)="closeTambahStafModal()">
+    <div class="modal-card-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <div class="modal-title-group">
+          <i class="ri-user-add-line text-emerald"></i>
+          <h3 class="modal-title">Tambah Tenaga / Staf Baru</h3>
+        </div>
+        <button type="button" class="btn-modal-close" (click)="closeTambahStafModal()" aria-label="Tutup modal">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="modal-nama">Nama Lengkap & Gelar <span class="text-danger">*</span></label>
+          <input
+            id="modal-nama"
+            type="text"
+            class="form-control"
+            placeholder="Contoh: apt. Dimas Aditya, S.Farm"
+            [(ngModel)]="modalStafForm().nama"
+          />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label class="form-label" for="modal-email">Email Kerja <span class="text-danger">*</span></label>
+            <input
+              id="modal-email"
+              type="email"
+              class="form-control font-mono"
+              placeholder="dimas@kimiasehat-psef.id"
+              [(ngModel)]="modalStafForm().email"
+            />
+          </div>
+
+          <div class="form-group flex-1">
+            <label class="form-label" for="modal-phone">Nomor WhatsApp / HP</label>
+            <input
+              id="modal-phone"
+              type="text"
+              class="form-control font-mono"
+              placeholder="0812-xxxx-xxxx"
+              [(ngModel)]="modalStafForm().phone"
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label class="form-label" for="modal-role">Peran & Tanggung Jawab <span class="text-danger">*</span></label>
+            <select id="modal-role" class="form-control" [(ngModel)]="modalStafForm().role">
+              <option value="APJ">Apoteker Penanggung Jawab (APJ)</option>
+              <option value="Aping">Apoteker Pendamping (Aping)</option>
+              <option value="TTK">Tenaga Teknis Kefarmasian (TTK)</option>
+              <option value="Kasir">Kasir & Front Office</option>
+              <option value="Kurir">Kurir Farmasi Internal</option>
+            </select>
+          </div>
+
+          <div class="form-group flex-1">
+            <label class="form-label" for="modal-status">Status Akun</label>
+            <select id="modal-status" class="form-control" [(ngModel)]="modalStafForm().status">
+              <option value="Aktif">Aktif</option>
+              <option value="Cuti">Cuti</option>
+              <option value="Nonaktif">Nonaktif</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="modal-sip">Nomor SIPA / STRTTK (Jika Tenaga Medis)</label>
+          <input
+            id="modal-sip"
+            type="text"
+            class="form-control font-mono"
+            placeholder="Contoh: 19960510/SIPA-32.73/2025/1.1 atau STRTTK"
+            [(ngModel)]="modalStafForm().sipStr"
+          />
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" (click)="closeTambahStafModal()">
+          Batal
+        </button>
+        <button type="button" class="btn btn-primary" (click)="submitTambahStaf()">
+          <i class="ri-user-add-line"></i>
+          <span>Simpan & Berikan Akses</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

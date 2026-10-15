@@ -1,0 +1,375 @@
+<div class="transaksi-container">
+  @if (!showingDetails()) {
+    <!-- TOP 4 FINANCIAL KPI SUMMARY CARDS -->
+    <div class="kpi-grid">
+      @for (card of kpiCards; track card.title) {
+        <div class="kpi-card">
+          <div class="kpi-icon-wrapper" [ngClass]="card.colorClass">
+            <i [class]="card.icon"></i>
+          </div>
+          <div class="kpi-info">
+            <span class="kpi-label">{{ card.title }}</span>
+            <div class="kpi-value-row">
+              <h2 class="kpi-value">{{ card.value }}</h2>
+            </div>
+            <div class="kpi-trend">
+              <span class="trend-badge" [ngClass]="card.colorClass === 'red' ? 'trend-down' : 'trend-up'">
+                <i [class]="card.colorClass === 'red' ? 'ri-arrow-down-line' : 'ri-arrow-up-line'"></i>
+                {{ card.percentage }}
+              </span>
+              <span class="trend-period">{{ card.period }}</span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- MAIN 2-COLUMN TRANSAKSI WORKSPACE (TABLE + ANALYTICS SIDEBAR) -->
+    <div class="transaksi-workspace-grid">
+      <!-- LEFT SECTION: DATA PEMBAYARAN TABLE & FILTERS -->
+      <div class="table-workspace-card">
+        <div class="table-card-top-header">
+          <div class="title-meta-box">
+            <h3 class="table-card-title">Data Pembayaran</h3>
+            <span class="table-card-subtitle">
+              Pencatatan real-time transaksi pesanan obat, konsultasi dokter, dan telefarmasi
+            </span>
+          </div>
+
+          <!-- SUMBER TRANSAKSI TABS -->
+          <div class="sumber-filter-tabs" role="tablist">
+            @for (tab of sumberTabs; track tab) {
+              <button
+                type="button"
+                class="sumber-tab-btn"
+                [class.active]="activeSumberFilter() === tab"
+                (click)="setSumberFilter(tab)"
+              >
+                {{ tab }}
+              </button>
+            }
+          </div>
+        </div>
+
+        <!-- FILTER TOOLBAR ROW (MATCHING UI MOCKUP) -->
+        <div class="filter-controls-row">
+          <!-- 1. Rentang Tanggal -->
+          <div class="filter-field-group">
+            <label class="filter-field-label">Tanggal Pembayaran</label>
+            <div class="input-with-icon">
+              <input
+                type="text"
+                class="filter-input-select"
+                placeholder="Pilih rentang tanggal"
+                [ngModel]="filterTanggal()"
+                readonly
+              />
+              <i class="ri-calendar-line field-icon"></i>
+            </div>
+          </div>
+
+          <!-- 2. Status Pembayaran -->
+          <div class="filter-field-group">
+            <label class="filter-field-label">Status Pembayaran</label>
+            <div class="select-wrapper">
+              <select
+                class="filter-select"
+                [ngModel]="filterStatus()"
+                (ngModelChange)="filterStatus.set($event)"
+              >
+                <option value="Semua Status">Semua Status</option>
+                <option value="Selesai">Selesai</option>
+                <option value="Menunggu Pembayaran">Menunggu Pembayaran</option>
+                <option value="Diproses">Diproses</option>
+                <option value="Gagal">Gagal</option>
+                <option value="Dibatalkan">Dibatalkan</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- 3. Metode Pembayaran -->
+          <div class="filter-field-group">
+            <label class="filter-field-label">Metode Pembayaran</label>
+            <div class="select-wrapper">
+              <select
+                class="filter-select"
+                [ngModel]="filterMetode()"
+                (ngModelChange)="filterMetode.set($event)"
+              >
+                <option value="Semua Metode">Semua Metode</option>
+                <option value="Transfer Bank">Transfer Bank</option>
+                <option value="E-Wallet">E-Wallet</option>
+                <option value="QRIS">QRIS</option>
+                <option value="Kartu Kredit">Kartu Kredit</option>
+                <option value="COD">COD</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- 4. Cari Pembayaran -->
+          <div class="filter-field-group search-flex-group">
+            <label class="filter-field-label">Cari Pembayaran</label>
+            <div class="search-input-box">
+              <input
+                type="text"
+                class="search-input"
+                placeholder="Cari Pembayaran, Pasien, No. Transaksi..."
+                [ngModel]="searchQuery()"
+                (ngModelChange)="searchQuery.set($event)"
+              />
+              <i class="ri-search-line search-icon-right"></i>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="filter-buttons-col">
+            <button type="button" class="btn-filter-action" title="Filter Lanjutan">
+              <i class="ri-equalizer-line"></i>
+              Filters
+            </button>
+            <button type="button" class="btn-export-action" (click)="exportData()" title="Unduh Data Excel/CSV">
+              <i class="ri-file-excel-2-line"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- TRANSACTIONS DATA TABLE -->
+        <div class="table-responsive">
+          <table class="transaksi-table">
+            <thead>
+              <tr>
+                <th class="th-id">No. Transaksi</th>
+                <th class="th-tanggal">Tanggal</th>
+                <th class="th-sumber">Sumber</th>
+                <th class="th-metode">Metode</th>
+                <th class="th-status">Status</th>
+                <th class="th-total">Total Pembayaran</th>
+                <th class="th-aksi">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of filteredTransactions(); track item.cleanId) {
+                <tr class="table-row">
+                  <td class="td-id">
+                    <span class="tx-id-badge">{{ item.id }}</span>
+                  </td>
+                  <td class="td-tanggal">
+                    <div class="date-cell">
+                      <span class="date-main">{{ item.tanggal }}</span>
+                      <span class="time-sub">{{ item.waktu }}</span>
+                    </div>
+                  </td>
+                  <td class="td-sumber">
+                    <div class="source-cell">
+                      <span
+                        class="source-badge"
+                        [ngClass]="{
+                          'src-resep': item.sumber.tipe === 'Pesanan Obat Resep',
+                          'src-nonresep': item.sumber.tipe === 'Pesanan Obat Non-Resep',
+                          'src-telemed': item.sumber.tipe === 'Konsultasi Dokter',
+                          'src-telefarm': item.sumber.tipe === 'Konsultasi Apoteker'
+                        }"
+                      >
+                        {{ item.sumber.tipe }}
+                      </span>
+                      <span class="source-ref-id">{{ item.sumber.refId }}</span>
+                      <span class="source-desc">{{ item.sumber.subLabel }}</span>
+                    </div>
+                  </td>
+                  <td class="td-metode">
+                    <div class="payment-method-cell">
+                      <div class="method-logo-wrapper">
+                        <img
+                          [src]="item.metode.logo"
+                          [alt]="item.metode.provider"
+                          class="method-logo-img"
+                          onerror="this.style.display='none'"
+                        />
+                      </div>
+                      <div class="method-meta">
+                        <span class="method-holder">{{ item.metode.accountName }}</span>
+                        <span class="method-account">{{ item.metode.maskedAccount }}</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="td-status">
+                    <span class="status-badge" [ngClass]="getStatusClass(item.status)">
+                      {{ item.status }}
+                    </span>
+                  </td>
+                  <td class="td-total">
+                    <span class="total-amount-cell">{{ item.totalPembayaran }}</span>
+                  </td>
+                  <td class="td-aksi">
+                    <button
+                      type="button"
+                      class="btn-action-view"
+                      (click)="viewDetail(item)"
+                      title="Lihat Detail Transaksi"
+                    >
+                      <i class="ri-eye-line"></i>
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="7" class="empty-state-cell">
+                    <div class="empty-state-box">
+                      <i class="ri-receipt-line"></i>
+                      <p>Tidak ada transaksi yang sesuai dengan filter yang dipilih.</p>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- TABLE PAGINATION FOOTER -->
+        <div class="pagination-footer">
+          <span class="pagination-info">
+            Menampilkan 1-{{ filteredTransactions().length }} dari {{ totalItems() }} transaksi
+          </span>
+
+          <div class="pagination-controls">
+            <button type="button" class="page-nav-btn" disabled>
+              <i class="ri-arrow-left-s-line"></i>
+            </button>
+            <button type="button" class="page-num-btn active">1</button>
+            <button type="button" class="page-num-btn">2</button>
+            <button type="button" class="page-num-btn">3</button>
+            <button type="button" class="page-num-btn">4</button>
+            <span class="page-ellipsis">...</span>
+            <button type="button" class="page-num-btn">1.246</button>
+            <button type="button" class="page-nav-btn">
+              <i class="ri-arrow-right-s-line"></i>
+            </button>
+
+            <select class="page-size-select">
+              <option value="10">10/halaman</option>
+              <option value="25">25/halaman</option>
+              <option value="50">50/halaman</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT SECTION: ANALYTICS SIDEBAR WIDGETS -->
+      <div class="analytics-sidebar-column">
+        <!-- WIDGET 1: RINGKASAN PEMBAYARAN -->
+        <div class="sidebar-widget-card">
+          <div class="widget-header">
+            <h4 class="widget-title">Ringkasan Pembayaran</h4>
+            <div class="period-select-box">
+              <select class="period-dropdown">
+                <option value="7">7 Hari Terakhir</option>
+                <option value="30">30 Hari Terakhir</option>
+                <option value="bulan">Bulan Ini</option>
+              </select>
+            </div>
+          </div>
+          <span class="period-subdate">Periode: 18 Mei - 24 Mei 2026</span>
+
+          <div class="summary-stat-tiles-grid">
+            <div class="stat-tile-card soft-teal">
+              <span class="tile-label">Total Pembayaran</span>
+              <h3 class="tile-val-main">{{ totalVolumeFiltered() }}</h3>
+            </div>
+
+            <div class="stat-tile-card soft-teal">
+              <span class="tile-label">Jumlah Transaksi</span>
+              <h3 class="tile-val-main">{{ countFiltered() }}</h3>
+            </div>
+
+            <div class="stat-tile-card soft-blue">
+              <span class="tile-label">Rata-rata per transaksi</span>
+              <h4 class="tile-val-sub">Rp. 157.875</h4>
+            </div>
+
+            <div class="stat-tile-card soft-blue">
+              <span class="tile-label">Tertinggi</span>
+              <h4 class="tile-val-sub">Rp. 570.000</h4>
+            </div>
+          </div>
+        </div>
+
+        <!-- WIDGET 2: METODE PEMBAYARAN DONUT DISTRIBUTION -->
+        <div class="sidebar-widget-card">
+          <div class="widget-header">
+            <h4 class="widget-title">Metode Pembayaran</h4>
+          </div>
+
+          <div class="donut-chart-container">
+            <!-- Custom Clean SVG Donut Chart -->
+            <div class="donut-chart-graphic">
+              <svg viewBox="0 0 100 100" class="donut-svg" width="130" height="130">
+                <!-- Outer ring background -->
+                <circle cx="50" cy="50" r="38" fill="transparent" stroke="#f1f5f9" stroke-width="16"/>
+                <!-- Transfer Bank: 45% (dasharray ~107.4, dashoffset 0) -->
+                <circle
+                  cx="50" cy="50" r="38"
+                  fill="transparent"
+                  stroke="#0ab39c"
+                  stroke-width="16"
+                  stroke-dasharray="107.4 131.3"
+                  stroke-dashoffset="0"
+                  transform="rotate(-90 50 50)"
+                />
+                <!-- E-Wallet: 30% (dasharray ~71.6, offset -107.4) -->
+                <circle
+                  cx="50" cy="50" r="38"
+                  fill="transparent"
+                  stroke="#0284c7"
+                  stroke-width="16"
+                  stroke-dasharray="71.6 167.1"
+                  stroke-dashoffset="-107.4"
+                  transform="rotate(-90 50 50)"
+                />
+                <!-- COD: 15% (dasharray ~35.8, offset -179) -->
+                <circle
+                  cx="50" cy="50" r="38"
+                  fill="transparent"
+                  stroke="#f97316"
+                  stroke-width="16"
+                  stroke-dasharray="35.8 202.9"
+                  stroke-dashoffset="-179"
+                  transform="rotate(-90 50 50)"
+                />
+                <!-- Kartu Kredit: 10% (dasharray ~23.9, offset -214.8) -->
+                <circle
+                  cx="50" cy="50" r="38"
+                  fill="transparent"
+                  stroke="#6366f1"
+                  stroke-width="16"
+                  stroke-dasharray="23.9 214.8"
+                  stroke-dashoffset="-214.8"
+                  transform="rotate(-90 50 50)"
+                />
+                <circle cx="50" cy="50" r="28" fill="var(--surface-card, #ffffff)"/>
+              </svg>
+            </div>
+
+            <!-- Legend List -->
+            <div class="donut-legend-list">
+              @for (st of metodeStats; track st.kategori) {
+                <div class="legend-row-item">
+                  <div class="legend-indicator-col">
+                    <span class="legend-color-dot" [style.background-color]="st.color"></span>
+                    <span class="legend-name">{{ st.kategori }}</span>
+                  </div>
+                  <div class="legend-values-col">
+                    <span class="legend-percent">{{ st.persentase }}%</span>
+                    <span class="legend-nominal">{{ st.nominal }}</span>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- CHILD ROUTE OUTLET FOR DETAIL TRANSAKSI -->
+  <router-outlet></router-outlet>
+</div>

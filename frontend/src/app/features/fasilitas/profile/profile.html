@@ -1,0 +1,1319 @@
+<div class="pengaturan-container">
+  <!-- Top Header Section -->
+  <header class="page-header">
+    <div class="header-left">
+      <div class="header-icon-box">
+        <i class="ri-store-3-line"></i>
+      </div>
+      <div>
+        <h1 class="page-title">Pengaturan Sarana & Operasional Apotek</h1>
+        <p class="page-subtitle">
+          Kelola legalitas SIA, verifikasi SatuSehat Kemenkes RI, data APJ penanggung jawab, jam operasional, kesiapan rantai dingin, dan keamanan sarana farmasi.
+        </p>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <div class="status-summary-group">
+        <div class="compliance-pill">
+          <i class="ri-shield-check-fill text-emerald"></i>
+          <span>SIA Terverifikasi Aktif</span>
+        </div>
+        <button
+          type="button"
+          class="live-status-pill"
+          [class.pill-open]="operasional().statusToko === 'Buka'"
+          [class.pill-closed]="operasional().statusToko !== 'Buka'"
+          (click)="toggleStatusApotek()"
+          [title]="operasional().statusToko === 'Buka' ? 'Klik untuk jeda / tutup sementara' : 'Klik untuk buka layanan resep'"
+        >
+          <span class="pulse-dot"></span>
+          <span>{{ operasional().statusToko === 'Buka' ? 'Apotek Buka' : 'Tutup Sementara' }}</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Horizontal Settings Navigation Tabs -->
+  <nav class="settings-tabs-bar" aria-label="Menu Pengaturan Fasilitas">
+    <button
+      type="button"
+      class="tab-btn"
+      [class.active]="activeTab() === 'profil'"
+      (click)="setTab('profil')"
+    >
+      <i class="ri-building-line"></i>
+      <span>Profil Sarana & Lokasi</span>
+    </button>
+
+    <button
+      type="button"
+      class="tab-btn"
+      [class.active]="activeTab() === 'legalitas'"
+      (click)="setTab('legalitas')"
+    >
+      <i class="ri-shield-check-line"></i>
+      <span>Legalitas SIA & SatuSehat</span>
+    </button>
+
+    <button
+      type="button"
+      class="tab-btn"
+      [class.active]="activeTab() === 'operasional'"
+      (click)="setTab('operasional')"
+    >
+      <i class="ri-time-line"></i>
+      <span>Apoteker & Jam Layanan</span>
+    </button>
+
+    <button
+      type="button"
+      class="tab-btn"
+      [class.active]="activeTab() === 'logistik'"
+      (click)="setTab('logistik')"
+    >
+      <i class="ri-truck-line"></i>
+      <span>Rantai Dingin & Pengiriman</span>
+    </button>
+
+    <button
+      type="button"
+      class="tab-btn"
+      [class.active]="activeTab() === 'keamanan'"
+      (click)="setTab('keamanan')"
+    >
+      <i class="ri-lock-line"></i>
+      <span>Keamanan & Notifikasi</span>
+    </button>
+  </nav>
+
+  <!-- Dynamic Tab Content -->
+  <main class="settings-content-card">
+
+    <!-- ==================== TAB 1: PROFIL SARANA ==================== -->
+    <div *ngIf="activeTab() === 'profil'" class="tab-panel animate-fade-in">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">Identitas Sarana & Lokasi Apotek</h2>
+          <p class="panel-subtitle">Informasi sarana farmasi yang ditampilkan pada portal publik PSEF dan verifikasi SatuSehat</p>
+        </div>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="saveCurrentSection('Profil Sarana & Lokasi')"
+          [disabled]="isSaving()"
+          id="btn-save-profil"
+        >
+          <i [class]="isSaving() ? 'ri-loader-4-line ri-spin' : 'ri-save-line'"></i>
+          <span>{{ isSaving() ? 'Menyimpan...' : 'Simpan Profil Sarana' }}</span>
+        </button>
+      </div>
+
+      <div class="panel-body">
+        <div class="form-grid-layout">
+          <!-- Left Column: Form Fields -->
+          <div class="form-column">
+            <!-- 1. Nama Fasilitas (Terkunci / Readonly) -->
+            <div class="form-group">
+              <div class="form-label-row">
+                <label class="form-label" for="inp-nama-apotek">Nama Fasilitas Apotek <span class="text-danger">*</span></label>
+                <span class="badge-locked font-mono"><i class="ri-lock-2-line"></i> Terkunci sesuai izin SIA/OSS</span>
+              </div>
+              <div class="input-with-icon">
+                <i class="ri-lock-line text-muted"></i>
+                <input
+                  id="inp-nama-apotek"
+                  type="text"
+                  class="form-control font-semibold readonly-input"
+                  [readonly]="true"
+                  [(ngModel)]="profil().namaApotek"
+                  title="Nama fasilitas apotek dikunci sesuai data legalitas Surat Izin Apotek (SIA)"
+                />
+              </div>
+              <span class="form-hint-text">
+                <i class="ri-information-line"></i> Nama sarana farmasi dikunci secara permanen sesuai dengan Surat Izin Apotek (SIA) resmi.
+              </span>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label class="form-label" for="inp-tipe-apotek">Tipe Fasilitas</label>
+                <select id="inp-tipe-apotek" class="form-control" [(ngModel)]="profil().tipeFasilitas">
+                  <option value="Apotek Komunitas & Fulfillment Hub PSEF">Apotek Komunitas & Fulfillment Hub PSEF</option>
+                  <option value="Apotek Mandiri Rekanan">Apotek Mandiri Rekanan</option>
+                  <option value="Apotek Jaringan Retail Farmasi">Apotek Jaringan Retail Farmasi</option>
+                  <option value="Instalasi Farmasi Klinik Pratama">Instalasi Farmasi Klinik Pratama</option>
+                </select>
+              </div>
+
+              <div class="form-group flex-1">
+                <label class="form-label" for="inp-nib">Nomor Induk Berusaha (NIB)</label>
+                <input
+                  id="inp-nib"
+                  type="text"
+                  class="form-control font-mono"
+                  [(ngModel)]="profil().nomorNib"
+                  placeholder="0129003884712"
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="inp-alamat">Alamat Lengkap Sarana Fisik <span class="text-danger">*</span></label>
+              <textarea
+                id="inp-alamat"
+                rows="2"
+                class="form-control"
+                [(ngModel)]="profil().alamatLengkap"
+                placeholder="Jl. Ir. H. Juanda No. 120"
+              ></textarea>
+            </div>
+
+            <!-- 2. Alamat Detail (Kelurahan, Kecamatan) -->
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label class="form-label" for="inp-kel">Kelurahan</label>
+                <input id="inp-kel" type="text" class="form-control" [(ngModel)]="profil().kelurahan" />
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label" for="inp-kec">Kecamatan</label>
+                <input id="inp-kec" type="text" class="form-control" [(ngModel)]="profil().kecamatan" />
+              </div>
+            </div>
+
+            <!-- 2. Alamat Detail Tambahan (Kota/Kabupaten, PROVINSI, Kode Pos) -->
+            <div class="form-row">
+              <div class="form-group flex-2">
+                <label class="form-label" for="inp-kota">Kota / Kabupaten</label>
+                <input id="inp-kota" type="text" class="form-control" [(ngModel)]="profil().kota" />
+              </div>
+              <div class="form-group flex-2">
+                <label class="form-label" for="inp-provinsi">Provinsi <span class="text-danger">*</span></label>
+                <input id="inp-provinsi" type="text" class="form-control" [(ngModel)]="profil().provinsi" placeholder="Jawa Barat" />
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label" for="inp-kodepos">Kode Pos</label>
+                <input id="inp-kodepos" type="text" class="form-control font-mono" [(ngModel)]="profil().kodePos" />
+              </div>
+            </div>
+
+            <!-- 3. Pisahkan Kolom Latitude dan Longitude -->
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <div class="form-label-row">
+                  <label class="form-label" for="inp-latitude">Latitude (Garis Lintang)</label>
+                  <span class="label-hint">Contoh: -6.885834</span>
+                </div>
+                <div class="input-with-icon">
+                  <i class="ri-map-pin-2-line"></i>
+                  <input
+                    id="inp-latitude"
+                    type="text"
+                    class="form-control font-mono"
+                    [(ngModel)]="profil().latitude"
+                    placeholder="-6.885834"
+                  />
+                </div>
+              </div>
+
+              <div class="form-group flex-1">
+                <div class="form-label-row">
+                  <label class="form-label" for="inp-longitude">Longitude (Garis Bujur)</label>
+                  <span class="label-hint">Contoh: 107.613842</span>
+                </div>
+                <div class="input-with-icon">
+                  <i class="ri-map-pin-range-line"></i>
+                  <input
+                    id="inp-longitude"
+                    type="text"
+                    class="form-control font-mono"
+                    [(ngModel)]="profil().longitude"
+                    placeholder="107.613842"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Preview Maps Container -->
+            <div class="map-preview-wrapper">
+              <div class="map-preview-header">
+                <div class="mph-left">
+                  <div class="mph-icon"><i class="ri-map-2-line"></i></div>
+                  <div>
+                    <h4 class="mph-title">Pratinjau Peta Lokasi Sarana & Titik Penjemputan</h4>
+                    <span class="mph-subtitle">Visualisasi titik koordinat GPS untuk kurir pengantaran resep instan</span>
+                  </div>
+                </div>
+
+                <div class="mph-actions">
+                  <button
+                    type="button"
+                    class="btn btn-outline btn-sm"
+                    (click)="detectCurrentLocation()"
+                    title="Gunakan titik koordinat GPS perangkat saat ini"
+                    id="btn-detect-gps"
+                  >
+                    <i class="ri-crosshair-2-line text-emerald"></i>
+                    <span>GPS Saya</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    class="btn btn-outline btn-sm"
+                    (click)="copyCoordinates()"
+                    title="Salin koordinat Latitude & Longitude"
+                    id="btn-copy-coords"
+                  >
+                    <i class="ri-file-copy-line"></i>
+                    <span>Salin</span>
+                  </button>
+
+                  <a
+                    [href]="googleMapsUrl"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="btn btn-outline btn-sm btn-maps-external"
+                    title="Buka di Google Maps di tab baru"
+                    id="link-google-maps"
+                  >
+                    <i class="ri-external-link-line text-sky"></i>
+                    <span>Buka Google Maps</span>
+                  </a>
+                </div>
+              </div>
+
+              <!-- Map Viewport -->
+              <div class="map-viewport">
+                <iframe
+                  class="map-iframe"
+                  [src]="mapEmbedUrl"
+                  title="Peta Lokasi Apotek"
+                  loading="lazy"
+                  frameborder="0"
+                  scrolling="no"
+                  marginheight="0"
+                  marginwidth="0"
+                ></iframe>
+
+                <!-- Custom Overlay Pinpoint Badge -->
+                <div class="map-pinpoint-overlay">
+                  <div class="pinpoint-badge">
+                    <span class="pinpoint-pulse"></span>
+                    <i class="ri-store-2-fill"></i>
+                    <span>{{ profil().namaApotek }}</span>
+                  </div>
+                </div>
+
+                <!-- Radius Tag -->
+                <div class="map-radius-tag">
+                  <i class="ri-radar-line"></i>
+                  <span>Radius Layanan: <strong>{{ logistik().radiusPengirimanMaksKm }} KM</strong></span>
+                </div>
+              </div>
+
+              <!-- Map Footer Bar -->
+              <div class="map-preview-footer">
+                <div class="mpf-item">
+                  <span class="mpf-label">Koordinat Presisi:</span>
+                  <span class="mpf-value font-mono">{{ profil().latitude }}, {{ profil().longitude }}</span>
+                </div>
+                <div class="mpf-item">
+                  <span class="mpf-label">Status Akurasi:</span>
+                  <span class="mpf-value text-emerald"><i class="ri-checkbox-circle-fill"></i> Terkalibrasi Geocoding Kemenkes</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label class="form-label" for="inp-telp">Telepon Resmi Sarana</label>
+                <input id="inp-telp" type="text" class="form-control font-mono" [(ngModel)]="profil().teleponResmi" />
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label" for="inp-wa">WhatsApp PIC / CS Farmasi</label>
+                <input id="inp-wa" type="text" class="form-control font-mono" [(ngModel)]="profil().whatsappPic" />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label class="form-label" for="inp-email">Email Resmi Korespondensi</label>
+                <input id="inp-email" type="email" class="form-control font-mono" [(ngModel)]="profil().emailResmi" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="inp-deskripsi">Deskripsi Layanan & Catatan Khusus Fasilitas</label>
+              <textarea
+                id="inp-deskripsi"
+                rows="3"
+                class="form-control"
+                [(ngModel)]="profil().deskripsiLayanan"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- Right Column: Live Pharmacy Badge & Location Preview -->
+          <div class="preview-column">
+            <div class="pharmacy-preview-card">
+              <div class="card-brand-header">
+                <div class="avatar-lg">
+                  <i class="ri-store-2-fill"></i>
+                </div>
+                <div>
+                  <h3 class="preview-pharmacy-name">{{ profil().namaApotek }}</h3>
+                  <span class="preview-pharmacy-type">{{ profil().tipeFasilitas }}</span>
+                </div>
+              </div>
+
+              <div class="preview-pill-row">
+                <span class="verified-pill"><i class="ri-shield-check-fill"></i> PSEF Kemenkes</span>
+                <span class="cold-chain-pill"><i class="ri-temp-cold-line"></i> Cold-Chain 2-8°C</span>
+              </div>
+
+              <div class="preview-detail-list">
+                <div class="detail-row">
+                  <i class="ri-map-pin-line text-emerald"></i>
+                  <span>{{ profil().alamatLengkap }}, {{ profil().kota }}, {{ profil().provinsi }}</span>
+                </div>
+                <div class="detail-row">
+                  <i class="ri-phone-line text-emerald"></i>
+                  <span class="font-mono">{{ profil().teleponResmi }} / {{ profil().whatsappPic }}</span>
+                </div>
+                <div class="detail-row">
+                  <i class="ri-mail-line text-emerald"></i>
+                  <span class="font-mono">{{ profil().emailResmi }}</span>
+                </div>
+                <div class="detail-row">
+                  <i class="ri-gps-line text-emerald"></i>
+                  <span class="font-mono text-xs">Lat: {{ profil().latitude }}, Long: {{ profil().longitude }}</span>
+                </div>
+              </div>
+
+              <div class="preview-notice-box">
+                <i class="ri-information-line"></i>
+                <span>Data sarana fisik terverifikasi secara berkala oleh Dinas Kesehatan & Auditor PSEF Kemenkes.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 2: LEGALITAS & SATUSEHAT ==================== -->
+    <div *ngIf="activeTab() === 'legalitas'" class="tab-panel animate-fade-in">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">Legalitas Perizinan & Integrasi SatuSehat</h2>
+          <p class="panel-subtitle">Kepatuhan Surat Izin Apotek (SIA), bridging API SatuSehat Kemenkes, dan pelaporan SIPNAP BPOM</p>
+        </div>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="saveCurrentSection('Legalitas & SatuSehat')"
+          [disabled]="isSaving()"
+          id="btn-save-legalitas"
+        >
+          <i [class]="isSaving() ? 'ri-loader-4-line ri-spin' : 'ri-save-line'"></i>
+          <span>{{ isSaving() ? 'Menyimpan...' : 'Simpan Legalitas' }}</span>
+        </button>
+      </div>
+
+      <div class="panel-body">
+        <!-- SIA Section Card -->
+        <div class="section-card">
+          <div class="section-card-header">
+            <div class="sec-icon bg-emerald-light text-emerald">
+              <i class="ri-file-shield-2-line"></i>
+            </div>
+            <div>
+              <h3 class="sec-title">Surat Izin Apotek (SIA)</h3>
+              <p class="sec-desc">Nomor izin resmi sarana pelayanan kefarmasian dari pemerintah daerah</p>
+            </div>
+            <span class="status-chip chip-success font-semibold">
+              <i class="ri-checkbox-circle-fill"></i> Terdaftar Sah
+            </span>
+          </div>
+
+          <div class="section-card-body">
+            <div class="form-row">
+              <div class="form-group flex-2">
+                <label class="form-label" for="inp-sia">Nomor SIA Resmi <span class="text-danger">*</span></label>
+                <input
+                  id="inp-sia"
+                  type="text"
+                  class="form-control font-mono"
+                  [(ngModel)]="legalitas().nomorSia"
+                />
+              </div>
+
+              <div class="form-group flex-1">
+                <label class="form-label" for="inp-dpmptsp">Instansi Penerbit Izin</label>
+                <input
+                  id="inp-dpmptsp"
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="legalitas().instansiPenerbit"
+                />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label class="form-label" for="inp-sia-terbit">Tanggal Terbit SIA</label>
+                <input
+                  id="inp-sia-terbit"
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="legalitas().tanggalTerbitSia"
+                />
+              </div>
+
+              <div class="form-group flex-1">
+                <label class="form-label" for="inp-sia-exp">Masa Berlaku Hingga <span class="text-danger">*</span></label>
+                <input
+                  id="inp-sia-exp"
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="legalitas().masaBerlakuSia"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SatuSehat Integration Card -->
+        <div class="section-card">
+          <div class="section-card-header">
+            <div class="sec-icon bg-sky-light text-sky">
+              <i class="ri-cloud-line"></i>
+            </div>
+            <div>
+              <h3 class="sec-title">Integrasi Bridging SatuSehat Kemenkes RI</h3>
+              <p class="sec-desc">Sinkronisasi data dispensing obat resep dengan Rekam Medis Elektronik (RME) Nasional</p>
+            </div>
+            <button
+              type="button"
+              class="btn btn-outline btn-sm"
+              (click)="testSatuSehatSync()"
+              [disabled]="isTestingSatuSehat()"
+              id="btn-test-satusehat"
+            >
+              <i [class]="isTestingSatuSehat() ? 'ri-loader-4-line ri-spin' : 'ri-refresh-line'"></i>
+              <span>{{ isTestingSatuSehat() ? 'Menguji API...' : 'Uji Koneksi API' }}</span>
+            </button>
+          </div>
+
+          <div class="section-card-body">
+            <div class="satusehat-status-box">
+              <div class="ss-status-left">
+                <span class="status-dot-pulse"></span>
+                <span>Status Koneksi: <strong>{{ legalitas().satusehatStatus }} (HTTP 200 OK)</strong></span>
+              </div>
+              <span class="font-mono text-xs text-muted">Last sync: Hari ini, 12:45 WIB</span>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label class="form-label" for="inp-ss-org">Organization ID (SatuSehat)</label>
+                <input
+                  id="inp-ss-org"
+                  type="text"
+                  class="form-control font-mono"
+                  [(ngModel)]="legalitas().satusehatOrgId"
+                />
+              </div>
+
+              <div class="form-group flex-1">
+                <label class="form-label" for="inp-ss-client">Client ID</label>
+                <input
+                  id="inp-ss-client"
+                  type="text"
+                  class="form-control font-mono"
+                  [(ngModel)]="legalitas().satusehatClientId"
+                />
+              </div>
+
+              <div class="form-group flex-1">
+                <label class="form-label" for="inp-ss-secret">Client Secret</label>
+                <input
+                  id="inp-ss-secret"
+                  type="password"
+                  class="form-control font-mono"
+                  [(ngModel)]="legalitas().satusehatSecretKey"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SIPNAP BPOM Card -->
+        <div class="section-card">
+          <div class="section-card-header">
+            <div class="sec-icon bg-indigo-light text-indigo">
+              <i class="ri-file-chart-line"></i>
+            </div>
+            <div>
+              <h3 class="sec-title">Pelaporan SIPNAP BPOM</h3>
+              <p class="sec-desc">Sistem Informasi Pelaporan Narkotika, Psikotropika, dan Prekursor Farmasi</p>
+            </div>
+            <button
+              type="button"
+              class="btn btn-outline btn-sm"
+              (click)="testSipnapSync()"
+              id="btn-sync-sipnap"
+            >
+              <i class="ri-share-forward-line"></i>
+              <span>Uji Pelaporan SIPNAP</span>
+            </button>
+          </div>
+
+          <div class="section-card-body">
+            <div class="form-row">
+              <div class="form-group flex-2">
+                <label class="form-label" for="inp-sipnap-reg">Nomor Registrasi Akun SIPNAP</label>
+                <input
+                  id="inp-sipnap-reg"
+                  type="text"
+                  class="form-control font-mono"
+                  [(ngModel)]="legalitas().nomorRegistrasiSipnap"
+                />
+              </div>
+
+              <div class="form-group flex-1">
+                <label class="form-label" for="inp-sipnap-status">Status Akun SIPNAP</label>
+                <select id="inp-sipnap-status" class="form-control" [(ngModel)]="legalitas().statusSipnap">
+                  <option value="Aktif">Aktif & Terdaftar BPOM</option>
+                  <option value="Nonaktif">Nonaktif</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 3: APOTEKER & OPERASIONAL ==================== -->
+    <div *ngIf="activeTab() === 'operasional'" class="tab-panel animate-fade-in">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">Apoteker Penanggung Jawab & Jam Layanan</h2>
+          <p class="panel-subtitle">Legalitas SIPA Apoteker, jadwal praktek kefarmasian, dan konfigurasi jam buka apotek</p>
+        </div>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="saveCurrentSection('Apoteker & Operasional')"
+          [disabled]="isSaving()"
+          id="btn-save-operasional"
+        >
+          <i [class]="isSaving() ? 'ri-loader-4-line ri-spin' : 'ri-save-line'"></i>
+          <span>{{ isSaving() ? 'Menyimpan...' : 'Simpan Operasional' }}</span>
+        </button>
+      </div>
+
+      <div class="panel-body">
+        <!-- APJ Section -->
+        <div class="section-card">
+          <div class="section-card-header">
+            <div class="sec-icon bg-emerald-light text-emerald">
+              <i class="ri-nurse-line"></i>
+            </div>
+            <div>
+              <h3 class="sec-title">Apoteker Penanggung Jawab (APJ) Utama</h3>
+              <p class="sec-desc">Tenaga kefarmasian berizin resmi yang bertanggung jawab terhadap tata kelola resep obat</p>
+            </div>
+            <span class="status-chip chip-success font-semibold">
+              <i class="ri-checkbox-circle-fill"></i> SIPA Terverifikasi
+            </span>
+          </div>
+
+          <div class="section-card-body">
+            <div class="form-row">
+              <div class="form-group flex-2">
+                <label class="form-label" for="inp-apj-nama">Nama Lengkap & Gelar APJ <span class="text-danger">*</span></label>
+                <input
+                  id="inp-apj-nama"
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="operasional().apjGelar"
+                />
+              </div>
+
+              <div class="form-group flex-1">
+                <label class="form-label" for="inp-apj-kontak">Kontak Darurat APJ</label>
+                <input
+                  id="inp-apj-kontak"
+                  type="text"
+                  class="form-control font-mono"
+                  [(ngModel)]="operasional().apjKontakDarurat"
+                />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label class="form-label" for="inp-apj-stra">Nomor STRA</label>
+                <input
+                  id="inp-apj-stra"
+                  type="text"
+                  class="form-control font-mono"
+                  [(ngModel)]="operasional().apjStra"
+                />
+              </div>
+
+              <div class="form-group flex-1">
+                <label class="form-label" for="inp-apj-sipa">Nomor SIPA Aktif <span class="text-danger">*</span></label>
+                <input
+                  id="inp-apj-sipa"
+                  type="text"
+                  class="form-control font-mono"
+                  [(ngModel)]="operasional().apjSipa"
+                />
+              </div>
+
+              <div class="form-group flex-1">
+                <label class="form-label" for="inp-apj-sipa-exp">Masa Berlaku SIPA</label>
+                <input
+                  id="inp-apj-sipa-exp"
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="operasional().apjMasaBerlakuSipa"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: JADWAL OPERASIONAL FASILITAS (Matches User Screenshot) -->
+        <div id="section-op-schedule" class="section-card op-faskes-card p-2">
+          <div class="schedule-card-header">
+            <div class="icon-circle rose">
+              <i class="ri-store-2-line" aria-hidden="true"></i>
+            </div>
+            <div class="section-title-wrap">
+              <div class="title-with-pill">
+                <h3 class="schedule-main-title">Jadwal Operasional Fasilitas</h3>
+                <span class="badge-op-tag">Latar Merah di Diagram</span>
+              </div>
+              <p class="section-desc">Jam buka pelayanan sarana farmasi (menjadi batas jam pelayanan dan supervisi apoteker)</p>
+            </div>
+            <span class="section-step-badge">Bagian 5/7</span>
+          </div>
+
+          <!-- Quick Template Selector for Faskes -->
+          <div class="faskes-op-presets-bar">
+            <span class="faskes-preset-caption">
+              <i class="ri-building-line"></i> Pilihan Template Faskes:
+            </span>
+            <div class="faskes-preset-buttons">
+              <button
+                type="button"
+                class="btn-op-preset"
+                (click)="applyOpPreset('standard')"
+                title="Apotek buka Senin - Minggu jam 08:00 sampai 22:00 WIB"
+              >
+                <i class="ri-store-line"></i> Standar (08:00 - 22:00)
+              </button>
+              <button
+                type="button"
+                class="btn-op-preset"
+                (click)="applyOpPreset('24h')"
+                title="Apotek beroperasi 24 jam non-stop setiap hari"
+              >
+                <i class="ri-24-hours-line"></i> 24 Jam Non-Stop
+              </button>
+              <button
+                type="button"
+                class="btn-op-preset"
+                (click)="applyOpPreset('extended')"
+                title="Apotek buka Senin - Sabtu jam 07:00 sampai 23:00 WIB"
+              >
+                <i class="ri-time-line"></i> Ekstra (07:00 - 23:00)
+              </button>
+            </div>
+          </div>
+
+          <!-- Info Box 24 Jam -->
+          <div class="operational-info-banner">
+            <i class="ri-information-fill banner-info-icon" aria-hidden="true"></i>
+            <span>Untuk fasilitas yang beroperasional 24 jam silahkan ditulis 00:00:00 sampai dengan 23:45:00</span>
+          </div>
+
+          <!-- Pola Operasional List -->
+          <div class="patterns-container">
+            @for (pat of operationalPatterns; track pat.id; let idx = $index) {
+              <div class="schedule-pattern-item op-item-border">
+                <div class="pattern-time-row">
+                  <div class="time-field-box">
+                    <span class="time-field-label">
+                      <i class="ri-time-line text-rose"></i> BUKA SARANA
+                    </span>
+                    <input
+                      type="text"
+                      class="form-control pattern-time-input font-mono"
+                      [(ngModel)]="pat.openTime"
+                      [name]="'opOpen' + idx"
+                      placeholder="08:00:00"
+                    />
+                  </div>
+
+                  <div class="time-field-box">
+                    <span class="time-field-label">
+                      <i class="ri-time-line text-rose"></i> TUTUP SARANA
+                    </span>
+                    <input
+                      type="text"
+                      class="form-control pattern-time-input font-mono"
+                      [(ngModel)]="pat.closeTime"
+                      [name]="'opClose' + idx"
+                      placeholder="22:00:00"
+                    />
+                  </div>
+
+                  <button
+                    type="button"
+                    class="btn-delete-pattern op-del-btn"
+                    (click)="removeOperationalPattern(idx)"
+                    title="Hapus pola operasional ini"
+                  >
+                    <i class="ri-delete-bin-line" aria-hidden="true"></i>
+                    <span>hapus pola</span>
+                  </button>
+                </div>
+
+                <!-- Day Pills: sen sel rab kam jum sab min -->
+                <div class="pattern-days-bar">
+                  @for (d of dayOptions; track d.key) {
+                    <button
+                      type="button"
+                      class="day-pill-btn op-day-pill"
+                      [class.active]="pat.days[d.key]"
+                      (click)="toggleOperationalDay(pat, d.key)"
+                      title="Klik untuk buka/tutup fasilitas pada hari {{ d.label }}"
+                    >
+                      {{ d.label }}
+                    </button>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+
+          <div class="btn-add-pattern-row">
+            <button
+              type="button"
+              class="btn-add-pattern op-btn-add"
+              (click)="addOperationalPattern()"
+            >
+              <i class="ri-add-line" aria-hidden="true"></i>
+              <span>Tambah Pola Operasional</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Section 3: DIAGRAM TIMELINE OPERASIONAL FASILITAS (Tanpa Praktik Apoteker) -->
+        <div class="section-card diagram-studio-card p-2">
+          <div class="schedule-card-header">
+            <div class="sec-icon bg-rose-light text-rose">
+              <i class="ri-bar-chart-2-line" aria-hidden="true"></i>
+            </div>
+            <div class="section-title-wrap">
+              <div class="title-with-pill">
+                <h3 class="schedule-main-title">Diagram Timeline Jam Operasional Fasilitas</h3>
+                <span class="badge-op-tag">Visualisasi Kalender Sarana</span>
+              </div>
+              <p class="section-desc">Grafik visual rentang waktu buka sarana farmasi (Latar Merah) yang melayani pasien</p>
+            </div>
+
+            <!-- View Mode Switcher -->
+            <div class="schedule-mode-pills">
+              <button
+                type="button"
+                class="btn-mode-seg"
+                [class.active]="scheduleViewMode() === 'timeline'"
+                (click)="setScheduleViewMode('timeline')"
+                title="Tampilan diagram timeline visual kalender"
+              >
+                <i class="ri-bar-chart-2-line"></i>
+                <span>Diagram Timeline Visual</span>
+              </button>
+              <button
+                type="button"
+                class="btn-mode-seg"
+                [class.active]="scheduleViewMode() === 'matrix'"
+                (click)="setScheduleViewMode('matrix')"
+                title="Tampilan matriks slot per-jam 24 Jam"
+              >
+                <i class="ri-grid-fill"></i>
+                <span>Matriks Grid 24 Jam</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Studio Legend Bar -->
+          <div class="studio-legend-bar">
+            <div class="legend-items-wrap">
+              <div class="legend-chip">
+                <span class="legend-color-box op-rose-box"></span>
+                <span><strong>Jadwal Operasional Fasilitas</strong> (Latar Merah)</span>
+              </div>
+              <span class="legend-hint-text">
+                <i class="ri-information-line"></i>
+                Rentang jam fasilitas buka melayani tebus resep digital dan pengiriman obat
+              </span>
+            </div>
+            <div class="legend-metrics-group">
+              <span class="legend-metric-pill">
+                <i class="ri-calendar-check-line text-rose"></i>
+                <strong>{{ getOperationalDaysCount() }} / 7 Hari Buka</strong>
+              </span>
+              <span class="legend-metric-pill">
+                <i class="ri-time-line text-rose"></i>
+                <strong>{{ getTotalOperationalHoursWeekly() }} Jam / Minggu</strong>
+              </span>
+            </div>
+          </div>
+
+          <!-- MODE 1: VISUAL TIMELINE CANVAS -->
+          @if (scheduleViewMode() === 'timeline') {
+            <div class="visual-timeline-canvas-card">
+              <!-- Days Header Row -->
+              <div class="timeline-days-header-row">
+                <div class="timeline-axis-corner">
+                  <span class="axis-corner-text">WAKTU (WIB)</span>
+                </div>
+                @for (col of calendarScheduleView; track col.key) {
+                  <div class="timeline-day-head-cell" [class.is-today]="col.key === 'rab'">
+                    <div class="day-head-name-group">
+                      <strong class="day-head-short">{{ col.label }}</strong>
+                      <span class="day-head-full">{{ col.subLabel }}</span>
+                    </div>
+                    <span
+                      class="day-shift-status-badge"
+                      [class.has-practice]="col.op.isOpen"
+                      [class.is-off]="!col.op.isOpen"
+                    >
+                      @if (col.op.isOpen) {
+                        {{ col.op.duration }} Jam Buka
+                      } @else {
+                        Tutup
+                      }
+                    </span>
+                  </div>
+                }
+              </div>
+
+              <!-- Timeline Chart Body: Left Axis + 7 Columns -->
+              <div class="timeline-canvas-body">
+                <!-- Left Time Axis -->
+                <div class="timeline-time-axis">
+                  @for (th of timelineScaleHours; track th.hour) {
+                    <div class="time-axis-marker">
+                      <span class="axis-time-tag font-mono">{{ th.label }}</span>
+                      <span class="axis-tick-line"></span>
+                    </div>
+                  }
+                </div>
+
+                <!-- 7 Day Columns Canvas -->
+                <div class="timeline-columns-wrapper">
+                  <!-- Background Hour Guidelines -->
+                  <div class="timeline-grid-guidelines" aria-hidden="true">
+                    @for (th of timelineScaleHours; track th.hour) {
+                      <div class="timeline-guideline-row"></div>
+                    }
+                  </div>
+
+                  <!-- 7 Day Render Columns -->
+                  @for (col of calendarScheduleView; track col.key) {
+                    <div
+                      class="timeline-day-track-column"
+                      [class.day-highlighted]="col.key === 'rab'"
+                    >
+                      <!-- RED OPERATIONAL BACKGROUND ZONE (LATAR MERAH) -->
+                      @if (col.op.isOpen) {
+                        <div
+                          class="timeline-op-zone"
+                          [style.top.%]="col.op.topPct"
+                          [style.height.%]="col.op.heightPct"
+                          [title]="'Fasilitas ' + col.subLabel + ' Buka: ' + col.op.openTime + ' - ' + col.op.closeTime"
+                        >
+                          <div class="op-zone-top-tag">
+                            <i class="ri-store-2-line"></i>
+                            <span>Buka {{ col.op.openTime.slice(0, 5) }} - {{ col.op.closeTime.slice(0, 5) }}</span>
+                          </div>
+
+                          <div class="op-zone-duration-tag">
+                            <i class="ri-time-line"></i>
+                            <span>{{ col.op.duration }} Jam Layanan</span>
+                          </div>
+                        </div>
+                      } @else {
+                        <div class="op-closed-zone">
+                          <i class="ri-close-circle-line"></i>
+                          <span>Sarana Tutup</span>
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+
+          <!-- MODE 2: MATRIX GRID 24 JAM -->
+          @if (scheduleViewMode() === 'matrix') {
+            <div class="matrix-canvas-card">
+              <div class="matrix-table-wrap">
+                <table class="matrix-table" aria-label="Matriks Jadwal 24 Jam">
+                  <thead>
+                    <tr>
+                      <th class="matrix-corner-th">WAKTU</th>
+                      @for (col of calendarScheduleView; track col.key) {
+                        <th class="matrix-day-th" [class.is-today]="col.key === 'rab'">
+                          {{ col.label }}
+                          <span class="matrix-th-sub">({{ col.subLabel }})</span>
+                        </th>
+                      }
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (h of matrixHours; track h) {
+                      <tr>
+                        <td class="matrix-hour-td font-mono">{{ formatHourLabel(h) }}</td>
+                        @for (col of calendarScheduleView; track col.key) {
+                          <td
+                            class="matrix-slot-td"
+                            [class.slot-op-active]="isHourInOperational(col.key, h)"
+                            [class.is-today-col]="col.key === 'rab'"
+                            [title]="col.subLabel + ' Jam ' + formatHourLabel(h) + (isHourInOperational(col.key, h) ? ': Fasilitas Buka' : ': Tutup')"
+                          >
+                            @if (isHourInOperational(col.key, h)) {
+                              <span class="matrix-cell-bubble op-cell">BUKA</span>
+                            } @else {
+                              <span class="matrix-cell-empty">-</span>
+                            }
+                          </td>
+                        }
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Section 4: Kapabilitas Pelayanan Resep Farmasi -->
+        <div class="section-card">
+          <div class="section-card-header">
+            <div class="sec-icon bg-amber-light text-amber">
+              <i class="ri-checkbox-multiple-line"></i>
+            </div>
+            <div>
+              <h3 class="sec-title">Kapabilitas Pelayanan Resep Farmasi</h3>
+              <p class="sec-desc">Konfigurasi ragam penyiapan sediaan obat, skrining resep, dan telefarmasi</p>
+            </div>
+          </div>
+
+          <div class="section-card-body">
+            <div class="capabilities-checklist">
+              <div class="checkboxes-grid">
+                <label class="checkbox-box" [class.checked]="operasional().layananResepDigital">
+                  <input type="checkbox" [(ngModel)]="operasional().layananResepDigital" />
+                  <div>
+                    <span class="cb-title">Tebus Resep Digital PSEF</span>
+                    <span class="cb-sub">Terima pesanan resep elektronik telemedisin</span>
+                  </div>
+                </label>
+
+                <label class="checkbox-box" [class.checked]="operasional().layananObatRacikan">
+                  <input type="checkbox" [(ngModel)]="operasional().layananObatRacikan" />
+                  <div>
+                    <span class="cb-title">Dispensing Obat Racikan</span>
+                    <span class="cb-sub">Pembuatan sediaan puyer, kapsul racik, & salep</span>
+                  </div>
+                </label>
+
+                <label class="checkbox-box" [class.checked]="operasional().layananTelefarmasiKIE">
+                  <input type="checkbox" [(ngModel)]="operasional().layananTelefarmasiKIE" />
+                  <div>
+                    <span class="cb-title">Konseling Telefarmasi (PIO)</span>
+                    <span class="cb-sub">Layanan KIE aturan pakai & interaksi obat online</span>
+                  </div>
+                </label>
+
+                <label class="checkbox-box" [class.checked]="operasional().layananResepCito">
+                  <input type="checkbox" [(ngModel)]="operasional().layananResepCito" />
+                  <div>
+                    <span class="cb-title">Resep Cito / Prioritas</span>
+                    <span class="cb-sub">Dispensing darurat dalam waktu di bawah 30 menit</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 4: RANTAI DINGIN & LOGISTIK ==================== -->
+    <div *ngIf="activeTab() === 'logistik'" class="tab-panel animate-fade-in">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">Rantai Dingin (Cold-Chain) & Jangkauan Pengiriman</h2>
+          <p class="panel-subtitle">Standar CDOB pengiriman obat termolabil, sensor chiller IoT (2-8°C), dan radius kurir instan</p>
+        </div>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="saveCurrentSection('Rantai Dingin & Pengiriman')"
+          [disabled]="isSaving()"
+          id="btn-save-logistik"
+        >
+          <i [class]="isSaving() ? 'ri-loader-4-line ri-spin' : 'ri-save-line'"></i>
+          <span>{{ isSaving() ? 'Menyimpan...' : 'Simpan Logistik' }}</span>
+        </button>
+      </div>
+
+      <div class="panel-body">
+        <!-- Cold Chain Monitoring Box -->
+        <div class="section-card">
+          <div class="section-card-header">
+            <div class="sec-icon bg-teal-light text-teal">
+              <i class="ri-temp-cold-line"></i>
+            </div>
+            <div>
+              <h3 class="sec-title">Sistem Monitoring Suhu Chiller Vaksin & Termolabil</h3>
+              <p class="sec-desc">Sesuai Peraturan BPOM tentang standar penyimpanan sediaan rantai dingin (Cold-Chain)</p>
+            </div>
+            <span class="status-chip chip-success font-semibold">
+              <i class="ri-sensor-line"></i> Sensor IoT Terhubung
+            </span>
+          </div>
+
+          <div class="section-card-body">
+            <div class="chiller-dashboard-row">
+              <div class="chiller-gauge-card">
+                <span class="gauge-title">Suhu Chiller Farmasi Saat Ini:</span>
+                <span class="gauge-val font-mono">{{ logistik().suhuChillerSaatIni }}°C</span>
+                <span class="gauge-status text-emerald"><i class="ri-checkbox-circle-fill"></i> Suhu Sangat Stabil (Target 2°C - 8°C)</span>
+              </div>
+
+              <div class="chiller-inputs">
+                <div class="form-row">
+                  <div class="form-group flex-1">
+                    <label class="form-label" for="inp-suhu-min">Batas Bawah Suhu (°C)</label>
+                    <input
+                      id="inp-suhu-min"
+                      type="number"
+                      step="0.1"
+                      class="form-control font-mono"
+                      [(ngModel)]="logistik().suhuChillerMin"
+                    />
+                  </div>
+                  <div class="form-group flex-1">
+                    <label class="form-label" for="inp-suhu-max">Batas Atas Suhu (°C)</label>
+                    <input
+                      id="inp-suhu-max"
+                      type="number"
+                      step="0.1"
+                      class="form-control font-mono"
+                      [(ngModel)]="logistik().suhuChillerMax"
+                    />
+                  </div>
+                  <div class="form-group flex-1">
+                    <label class="form-label" for="inp-biaya-kemas">Biaya Ice Gel & Kemasan (Rp)</label>
+                    <input
+                      id="inp-biaya-kemas"
+                      type="number"
+                      class="form-control font-mono"
+                      [(ngModel)]="logistik().biayaKemasanKhusus"
+                    />
+                  </div>
+                </div>
+
+                <label class="checkbox-card-simple" [class.checked]="logistik().tamperEvidentSeal">
+                  <input type="checkbox" [(ngModel)]="logistik().tamperEvidentSeal" />
+                  <span>Wajib menggunakan Segel Pengaman (*Tamper-Evident Seal*) pada setiap paket obat resep sebelum diserahkan ke kurir</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Radius & Courier Methods -->
+        <div class="section-card">
+          <div class="section-card-header">
+            <div class="sec-icon bg-sky-light text-sky">
+              <i class="ri-moped-line"></i>
+            </div>
+            <div>
+              <h3 class="sec-title">Radius Pengiriman & Integrasi Kurir Instan</h3>
+              <p class="sec-desc">Batas jangkauan pesanan tebus resep dari lokasi titik koordinat apotek</p>
+            </div>
+          </div>
+
+          <div class="section-card-body">
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <div class="form-label-row">
+                  <label class="form-label" for="inp-radius">Radius Jangkauan Antar Maksimal</label>
+                  <span class="font-mono font-bold text-emerald">{{ logistik().radiusPengirimanMaksKm }} KM</span>
+                </div>
+                <input
+                  id="inp-radius"
+                  type="range"
+                  min="5"
+                  max="35"
+                  step="1"
+                  class="range-slider"
+                  [(ngModel)]="logistik().radiusPengirimanMaksKm"
+                />
+                <span class="range-sub">Pesanan pasien di luar radius {{ logistik().radiusPengirimanMaksKm }} km akan dialihkan ke apotek PSEF terdekat lainnya.</span>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <label class="checkbox-box flex-1" [class.checked]="logistik().kurirInstantMitra">
+                <input type="checkbox" [(ngModel)]="logistik().kurirInstantMitra" />
+                <div>
+                  <span class="cb-title">Kurir Instan PSEF (GrabExpress / GoSend API)</span>
+                  <span class="cb-sub">Penjemputan otomatis dengan pelacakan live tracking</span>
+                </div>
+              </label>
+
+              <label class="checkbox-box flex-1" [class.checked]="logistik().kurirInternalApotek">
+                <input type="checkbox" [(ngModel)]="logistik().kurirInternalApotek" />
+                <div>
+                  <span class="cb-title">Kurir Internal Apotek</span>
+                  <span class="cb-sub">Staf kurir terdaftar apotek untuk area dekat (< 5 KM)</span>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 5: KEAMANAN & NOTIFIKASI ==================== -->
+    <div *ngIf="activeTab() === 'keamanan'" class="tab-panel animate-fade-in">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">Keamanan Akun Apotek & Preferensi Notifikasi</h2>
+          <p class="panel-subtitle">Pengaturan pengingat resep darurat, verifikasi dua langkah (2FA), dan batas waktu sesi</p>
+        </div>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="saveCurrentSection('Keamanan & Notifikasi')"
+          [disabled]="isSaving()"
+          id="btn-save-keamanan"
+        >
+          <i [class]="isSaving() ? 'ri-loader-4-line ri-spin' : 'ri-save-line'"></i>
+          <span>{{ isSaving() ? 'Menyimpan...' : 'Simpan Keamanan' }}</span>
+        </button>
+      </div>
+
+      <div class="panel-body">
+        <div class="section-card">
+          <div class="section-card-header">
+            <div class="sec-icon bg-amber-light text-amber">
+              <i class="ri-notification-3-line"></i>
+            </div>
+            <div>
+              <h3 class="sec-title">Notifikasi Resep & Pengingat Suara</h3>
+              <p class="sec-desc">Pastikan tim apotek tidak melewatkan resep darurat dari dokter atau pasien</p>
+            </div>
+          </div>
+
+          <div class="section-card-body">
+            <div class="toggle-list">
+              <label class="toggle-item">
+                <div class="toggle-info">
+                  <span class="ti-title">Alarm Audio saat Resep Baru Masuk</span>
+                  <span class="ti-desc">Bunyikan nada dering notifikasi pada browser saat ada resep yang perlu telaah</span>
+                </div>
+                <input type="checkbox" [(ngModel)]="keamanan().audioAlertResepBaru" />
+              </label>
+
+              <label class="toggle-item">
+                <div class="toggle-info">
+                  <span class="ti-title">Notifikasi WhatsApp ke Nomor Staf Apotek</span>
+                  <span class="ti-desc">Kirim ringkasan nomor resep otomatis ke WhatsApp PIC saat resep CITO diterbitkan</span>
+                </div>
+                <input type="checkbox" [(ngModel)]="keamanan().notifikasiWaPesanan" />
+              </label>
+
+              <label class="toggle-item">
+                <div class="toggle-info">
+                  <span class="ti-title">Peringatan Kritis Suhu Chiller (> 8°C atau < 2°C)</span>
+                  <span class="ti-desc">Kirim peringatan darurat seketika bila sensor IoT mencatat anomali suhu rantai dingin</span>
+                </div>
+                <input type="checkbox" [(ngModel)]="keamanan().notifikasiSuhuAbnormal" />
+              </label>
+
+              <label class="toggle-item">
+                <div class="toggle-info">
+                  <span class="ti-title">Email Rekapitulasi Dispensing Harian</span>
+                  <span class="ti-desc">Terima laporan rekap resep terlayani dan stok keluar setiap pukul 23:00 WIB</span>
+                </div>
+                <input type="checkbox" [(ngModel)]="keamanan().emailRekapitulasiHarian" />
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <div class="section-card-header">
+            <div class="sec-icon bg-indigo-light text-indigo">
+              <i class="ri-shield-keyhole-line"></i>
+            </div>
+            <div>
+              <h3 class="sec-title">Keamanan Akses & Autentikasi APJ</h3>
+              <p class="sec-desc">Perlindungan hak akses telaah resep dan perubahan master stok sediaan obat keras</p>
+            </div>
+          </div>
+
+          <div class="section-card-body">
+            <div class="toggle-list">
+              <label class="toggle-item">
+                <div class="toggle-info">
+                  <span class="ti-title">Verifikasi Dua Langkah (2FA OTP) untuk Telaah Resep Golongan Narkotika</span>
+                  <span class="ti-desc">Wajibkan input kode OTP ke nomor APJ sebelum menerbitkan etiket obat khusus</span>
+                </div>
+                <input type="checkbox" [(ngModel)]="keamanan().twoFactorAuth" />
+              </label>
+            </div>
+
+            <div class="form-row" style="margin-top: 1rem;">
+              <div class="form-group flex-1">
+                <label class="form-label" for="inp-timeout">Batas Waktu Sesi Tidak Aktif (Session Timeout)</label>
+                <select id="inp-timeout" class="form-control" [(ngModel)]="keamanan().sessionTimeoutMenit">
+                  <option [value]="15">15 Menit</option>
+                  <option [value]="30">30 Menit (Standar Keamanan Medis)</option>
+                  <option [value]="60">60 Menit</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Floating Toast Notification -->
+  <div *ngIf="toastMessage()" class="settings-toast" [class]="'toast-' + toastType()">
+    <div class="toast-icon">
+      <i [class]="toastType() === 'success' ? 'ri-checkbox-circle-fill' : toastType() === 'danger' ? 'ri-error-warning-fill' : 'ri-information-fill'"></i>
+    </div>
+    <div class="toast-content">
+      <p class="toast-text">{{ toastMessage() }}</p>
+    </div>
+    <button type="button" class="toast-close" (click)="toastMessage.set('')">
+      <i class="ri-close-line"></i>
+    </button>
+  </div>
+</div>

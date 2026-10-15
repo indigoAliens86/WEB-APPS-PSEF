@@ -1,0 +1,188 @@
+.apoteker-layout {
+    display: grid;
+    grid-template-columns: 16.5rem minmax(0, 1fr);
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    transition: grid-template-columns 220ms ease;
+    background-color: #f8fafc;
+}
+
+.apoteker-sidebar {
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 0;
+    height: 100%;
+    overflow: hidden;
+    transition: opacity 180ms ease;
+}
+
+.apoteker-layout.sidebar-collapsed {
+    grid-template-columns: 5.25rem minmax(0, 1fr);
+}
+
+.apoteker-layout.sidebar-collapsed .apoteker-sidebar {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.sidebar-backdrop {
+    display: none;
+}
+
+.apoteker-content {
+    display: flex;
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    flex-direction: column;
+}
+
+.apoteker-navbar {
+    display: block;
+    flex: 0 0 auto;
+}
+
+.apoteker-scroll-area {
+    display: flex;
+    min-width: 0;
+    min-height: 0;
+    flex: 1;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior-y: contain;
+    scroll-behavior: smooth;
+    scrollbar-color: #e3e9e9 transparent;
+    scrollbar-width: thin;
+}
+
+.apoteker-scroll-area:hover {
+    scrollbar-color: #b9c8c8 transparent;
+}
+
+.apoteker-scroll-area::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.apoteker-scroll-area::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.apoteker-scroll-area::-webkit-scrollbar-thumb {
+    min-height: 2.5rem;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    background-color: #e3e9e9;
+    background-clip: padding-box;
+    transition: background-color 220ms ease;
+}
+
+.apoteker-scroll-area:hover::-webkit-scrollbar-thumb {
+    background-color: #b9c8c8;
+}
+
+.apoteker-main {
+    flex: 1;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 1.5rem;
+}
+
+/* Dark Theme Overrides */
+:host-context(html.dark-theme) .apoteker-layout {
+    background-color: #111c20;
+    color: #e4ebed;
+}
+
+:host-context(html.dark-theme) .apoteker-main {
+    background-color: #111c20;
+    color: #e4ebed;
+}
+
+:host-context(html.dark-theme) .apoteker-scroll-area {
+    scrollbar-color: #34464b transparent;
+}
+
+:host-context(html.dark-theme) .apoteker-scroll-area:hover {
+    scrollbar-color: #526568 transparent;
+}
+
+:host-context(html.dark-theme) .apoteker-scroll-area::-webkit-scrollbar-thumb {
+    background-color: #34464b;
+}
+
+:host-context(html.dark-theme) .apoteker-scroll-area:hover::-webkit-scrollbar-thumb {
+    background-color: #526568;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .apoteker-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .apoteker-sidebar {
+        position: fixed;
+        z-index: 30;
+        inset: 0 auto 0 0;
+        width: min(16.5rem, 85vw);
+        height: 100vh;
+        height: 100dvh;
+        overflow-y: auto;
+        box-shadow: 0.75rem 0 2rem rgba(15, 23, 42, 0.16);
+        opacity: 1;
+        transform: translateX(-105%);
+        transition: transform 220ms ease;
+        visibility: hidden;
+    }
+
+    .apoteker-layout.sidebar-collapsed .apoteker-sidebar {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateX(0);
+        visibility: visible;
+    }
+
+    .sidebar-backdrop {
+        position: fixed;
+        z-index: 20;
+        inset: 0;
+        display: block;
+        border: 0;
+        background: rgba(15, 23, 42, 0.45);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 220ms ease;
+        visibility: hidden;
+    }
+
+    .apoteker-layout.sidebar-collapsed .sidebar-backdrop {
+        opacity: 1;
+        pointer-events: auto;
+        visibility: visible;
+    }
+
+    .apoteker-content {
+        height: 100%;
+        min-height: 0;
+    }
+
+    .apoteker-main {
+        padding: 1rem;
+    }
+
+    .apoteker-layout.sidebar-collapsed {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .apoteker-layout,
+    .apoteker-sidebar,
+    .sidebar-backdrop {
+        transition: none;
+    }
+}

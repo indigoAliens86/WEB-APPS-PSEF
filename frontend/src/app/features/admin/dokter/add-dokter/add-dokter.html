@@ -1,0 +1,477 @@
+<div class="form-page-container">
+  <!-- Top Navigation & Header -->
+  <div class="header-nav-row">
+    <button
+      type="button"
+      class="btn-back"
+      (click)="goBack()"
+      aria-label="Kembali ke Daftar Dokter"
+    >
+      <i class="ri-arrow-left-line" aria-hidden="true"></i>
+      <span>Kembali ke Daftar Dokter</span>
+    </button>
+  </div>
+
+  <header class="page-title-card">
+    <div class="title-meta">
+      <span class="badge-role"><i class="ri-stethoscope-line" aria-hidden="true"></i> Dokter Baru</span>
+      <h1 class="page-title">Tambah Dokter Baru</h1>
+      <p class="page-subtitle">
+        Lengkapi formulir pendaftaran dokter untuk verifikasi data legalitas praktik PSEF.
+      </p>
+    </div>
+  </header>
+
+  <!-- Alert Messages -->
+  @if (errorMessage()) {
+    <div class="alert alert-danger" role="alert">
+      <i class="ri-error-warning-line" aria-hidden="true"></i>
+      <span>{{ errorMessage() }}</span>
+    </div>
+  }
+
+  @if (saveSuccess()) {
+    <div class="alert alert-success" role="alert">
+      <i class="ri-checkbox-circle-line" aria-hidden="true"></i>
+      <span>Data dokter berhasil disimpan! Mengalihkan ke daftar dokter...</span>
+    </div>
+  }
+
+  <!-- Main Form Grid -->
+  <form (ngSubmit)="save()" class="form-layout" novalidate>
+    <!-- Section 1: Data Pribadi -->
+    <section class="form-card" aria-labelledby="section-personal">
+      <div class="card-section-header">
+        <div class="icon-circle teal">
+          <i class="ri-user-3-line" aria-hidden="true"></i>
+        </div>
+        <div>
+          <h2 id="section-personal" class="section-title">Data Pribadi & Identitas</h2>
+          <p class="section-desc">Informasi dasar identitas kependudukan dokter</p>
+        </div>
+      </div>
+
+      <div class="grid-2-col">
+        <div class="form-group">
+          <label for="doctor-name" class="form-label">
+            Nama Lengkap & Gelar <span class="required">*</span>
+          </label>
+          <input
+            id="doctor-name"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.name"
+            name="name"
+            placeholder="Contoh: dr. Sarah Aulia, Sp.OG"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="doctor-nik" class="form-label">
+            Nomor Induk Kependudukan (NIK) <span class="required">*</span>
+          </label>
+          <input
+            id="doctor-nik"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.nik"
+            name="nik"
+            maxlength="16"
+            placeholder="16 digit NIK sesuai KTP"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="doctor-gender" class="form-label">Jenis Kelamin</label>
+          <select
+            id="doctor-gender"
+            class="form-select"
+            [(ngModel)]="formData.gender"
+            name="gender"
+          >
+            <option value="female">Perempuan</option>
+            <option value="male">Laki-laki</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="doctor-birth" class="form-label">Tempat & Tanggal Lahir</label>
+          <div class="grid-2-inline">
+            <input
+              id="doctor-birth"
+              type="text"
+              class="form-control"
+              [(ngModel)]="formData.birthPlace"
+              name="birthPlace"
+              placeholder="Kota lahir"
+            />
+            <input
+              type="date"
+              class="form-control"
+              [(ngModel)]="formData.birthDate"
+              name="birthDate"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="doctor-email" class="form-label">
+            Email Resmi <span class="required">*</span>
+          </label>
+          <input
+            id="doctor-email"
+            type="email"
+            class="form-control"
+            [(ngModel)]="formData.email"
+            name="email"
+            placeholder="dokter@healora.id"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="doctor-phone" class="form-label">Nomor Telepon / WhatsApp</label>
+          <input
+            id="doctor-phone"
+            type="tel"
+            class="form-control"
+            [(ngModel)]="formData.phone"
+            name="phone"
+            placeholder="0812-xxxx-xxxx"
+          />
+        </div>
+
+        <div class="form-group full-width">
+          <label for="doctor-address" class="form-label">Alamat Lengkap KTP</label>
+          <textarea
+            id="doctor-address"
+            rows="2"
+            class="form-control"
+            [(ngModel)]="formData.address"
+            name="address"
+            placeholder="Alamat domisili sesuai KTP"
+          ></textarea>
+        </div>
+
+        <div class="form-group full-width">
+          <label for="doctor-about" class="form-label">Tentang Dokter / Profil Singkat</label>
+          <textarea
+            id="doctor-about"
+            rows="2"
+            class="form-control"
+            [(ngModel)]="formData.about"
+            name="about"
+            placeholder="Ringkasan pengalaman klinis dan kompetensi dokter..."
+          ></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Pendidikan & Spesialisasi -->
+    <section class="form-card" aria-labelledby="section-education">
+      <div class="card-section-header">
+        <div class="icon-circle blue">
+          <i class="ri-graduation-cap-line" aria-hidden="true"></i>
+        </div>
+        <div>
+          <h2 id="section-education" class="section-title">Pendidikan & Spesialisasi</h2>
+          <p class="section-desc">Kualifikasi profesi medis dan keahlian spesialis</p>
+        </div>
+      </div>
+
+      <div class="grid-2-col">
+        <div class="form-group">
+          <label for="doctor-specialty" class="form-label">
+            Spesialisasi / Bidang Medis <span class="required">*</span>
+          </label>
+          <select
+            id="doctor-specialty"
+            class="form-select"
+            [(ngModel)]="formData.specialty"
+            name="specialty"
+          >
+            @for (sp of specialties; track sp) {
+              <option [value]="sp">{{ sp }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="doctor-lastEducation" class="form-label">Jenjang Pendidikan Terakhir</label>
+          <input
+            id="doctor-lastEducation"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.lastEducation"
+            name="lastEducation"
+            placeholder="Contoh: Spesialis Obstetri dan Ginekologi"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="doctor-univ" class="form-label">Institusi Pendidikan (Universitas)</label>
+          <input
+            id="doctor-univ"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.educationInstitution"
+            name="educationInstitution"
+            placeholder="Contoh: Universitas Padjadjaran"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="doctor-diploma" class="form-label">Nomor Ijazah</label>
+          <input
+            id="doctor-diploma"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.diplomaNumber"
+            name="diplomaNumber"
+            placeholder="Contoh: 104/UNPAD/Sp.OG/V/2020"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="doctor-gradYear" class="form-label">Tahun Kelulusan</label>
+          <input
+            id="doctor-gradYear"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.graduationYear"
+            name="graduationYear"
+            placeholder="Contoh: 2020"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Legalitas & Perizinan (SIP & STR) -->
+    <section class="form-card" aria-labelledby="section-legal">
+      <div class="card-section-header">
+        <div class="icon-circle amber">
+          <i class="ri-shield-check-line" aria-hidden="true"></i>
+        </div>
+        <div>
+          <h2 id="section-legal" class="section-title">Legalitas & Perizinan (SIP / STR)</h2>
+          <p class="section-desc">Nomor Surat Izin Praktik dan Surat Tanda Registrasi Dokter</p>
+        </div>
+      </div>
+
+      <div class="grid-2-col">
+        <div class="form-group">
+          <label for="doctor-sip" class="form-label">
+            Nomor SIP (Surat Izin Praktik) <span class="required">*</span>
+          </label>
+          <input
+            id="doctor-sip"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.sip"
+            name="sip"
+            placeholder="Contoh: NR62712412009799"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="doctor-sipExpiry" class="form-label">Masa Berlaku SIP</label>
+          <input
+            id="doctor-sipExpiry"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.sipExpiry"
+            name="sipExpiry"
+            placeholder="Contoh: 10 Mei 2028"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="doctor-sipIssuer" class="form-label">Instansi Penerbit SIP</label>
+          <input
+            id="doctor-sipIssuer"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.sipIssuer"
+            name="sipIssuer"
+            placeholder="Contoh: Dinas Kesehatan Kota Bandung"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="doctor-stra" class="form-label">Nomor STR Dokter</label>
+          <input
+            id="doctor-stra"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.stra"
+            name="stra"
+            placeholder="Contoh: JC00001828429426"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="doctor-straExpiry" class="form-label">Masa Berlaku STR</label>
+          <input
+            id="doctor-straExpiry"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.straExpiry"
+            name="straExpiry"
+            placeholder="Contoh: Seumur Hidup"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Fasilitas Praktik & Jadwal -->
+    <section class="form-card" aria-labelledby="section-facility">
+      <div class="card-section-header">
+        <div class="icon-circle teal">
+          <i class="ri-hospital-line" aria-hidden="true"></i>
+        </div>
+        <div>
+          <h2 id="section-facility" class="section-title">Fasilitas Praktik & Layanan</h2>
+          <p class="section-desc">Afiliasi fasilitas pelayanan kesehatan dan jadwal dokter</p>
+        </div>
+      </div>
+
+      <div class="grid-2-col">
+        <div class="form-group">
+          <label for="doctor-facility" class="form-label">
+            Nama Fasilitas Kesehatan <span class="required">*</span>
+          </label>
+          <input
+            id="doctor-facility"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.facility"
+            name="facility"
+            placeholder="Contoh: RSIA Bunda Bandung"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="doctor-facilityType" class="form-label">Jenis Fasilitas</label>
+          <select
+            id="doctor-facilityType"
+            class="form-select"
+            [(ngModel)]="formData.facilityType"
+            name="facilityType"
+          >
+            @for (ft of facilityTypes; track ft) {
+              <option [value]="ft">{{ ft }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="doctor-position" class="form-label">Posisi / Jabatan Klinis</label>
+          <input
+            id="doctor-position"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.position"
+            name="position"
+            placeholder="Contoh: Dokter Penanggung Jawab Pelayanan (DPJP)"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="doctor-schedule" class="form-label">Jadwal Praktik Telemedisin</label>
+          <input
+            id="doctor-schedule"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.practiceSchedule"
+            name="practiceSchedule"
+            placeholder="Contoh: Senin - Jumat (08.00 - 16.00)"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: Status Akun & Moderasi -->
+    <section class="form-card" aria-labelledby="section-status">
+      <div class="card-section-header">
+        <div class="icon-circle blue">
+          <i class="ri-settings-4-line" aria-hidden="true"></i>
+        </div>
+        <div>
+          <h2 id="section-status" class="section-title">Status Akun & Verifikasi</h2>
+          <p class="section-desc">Pengaturan keaktifan dan status verifikasi sistem</p>
+        </div>
+      </div>
+
+      <div class="grid-2-col">
+        <div class="form-group">
+          <label for="doctor-status" class="form-label">Status Keaktifan</label>
+          <select
+            id="doctor-status"
+            class="form-select"
+            [(ngModel)]="formData.status"
+            name="status"
+          >
+            <option value="Aktif">Aktif</option>
+            <option value="Non-Aktif">Non-Aktif</option>
+            <option value="Suspended">Suspended</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="doctor-verification" class="form-label">Status Verifikasi</label>
+          <select
+            id="doctor-verification"
+            class="form-select"
+            [(ngModel)]="formData.verification"
+            name="verification"
+          >
+            <option value="Terverifikasi">Terverifikasi</option>
+            <option value="Menunggu Verifikasi">Menunggu Verifikasi</option>
+            <option value="Ditolak">Ditolak</option>
+          </select>
+        </div>
+
+        <div class="form-group full-width">
+          <label for="doctor-notes" class="form-label">Catatan Admin / Internal</label>
+          <textarea
+            id="doctor-notes"
+            rows="2"
+            class="form-control"
+            [(ngModel)]="formData.notes"
+            name="notes"
+            placeholder="Catatan verifikasi atau riwayat kredensialing..."
+          ></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- Form Action Bar -->
+    <div class="form-action-bar">
+      <button
+        type="button"
+        class="btn-secondary"
+        (click)="goBack()"
+      >
+        <i class="ri-close-line" aria-hidden="true"></i>
+        Batal
+      </button>
+
+      <button
+        type="submit"
+        class="btn-primary"
+        [disabled]="isSubmitting()"
+      >
+        @if (isSubmitting()) {
+          <i class="ri-loader-4-line ri-spin" aria-hidden="true"></i>
+          <span>Menyimpan...</span>
+        } @else {
+          <i class="ri-save-line" aria-hidden="true"></i>
+          <span>Simpan Data Dokter</span>
+        }
+      </button>
+    </div>
+  </form>
+</div>

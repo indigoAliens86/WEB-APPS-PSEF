@@ -1,0 +1,141 @@
+@if (!showingDetails()) {
+<section class="facility-page">
+  <section class="facility-stats" aria-label="Ringkasan fasilitas">
+    <article class="facility-stat-card">
+      <span class="facility-stat-icon blue"><i class="ri-hospital-line" aria-hidden="true"></i></span>
+      <div><span>Total Fasilitas</span><strong>{{ totalCount }}</strong><span class="facility-stat-note"><i class="ri-arrow-up-line" aria-hidden="true"></i> Data terdaftar</span></div>
+    </article>
+    <article class="facility-stat-card">
+      <span class="facility-stat-icon green"><i class="ri-hospital-line" aria-hidden="true"></i></span>
+      <div><span>Fasilitas Aktif</span><strong>{{ activeCount }}</strong><span class="facility-stat-note"><i class="ri-checkbox-circle-line" aria-hidden="true"></i> Status aktif</span></div>
+    </article>
+    <article class="facility-stat-card">
+      <span class="facility-stat-icon amber"><i class="ri-time-line" aria-hidden="true"></i></span>
+      <div><span>Menunggu Verifikasi</span><strong>{{ pendingCount }}</strong><span class="facility-stat-note"><i class="ri-hourglass-line" aria-hidden="true"></i> Perlu ditinjau</span></div>
+    </article>
+    <article class="facility-stat-card">
+      <span class="facility-stat-icon red"><i class="ri-close-circle-line" aria-hidden="true"></i></span>
+      <div><span>Non-Aktif</span><strong>{{ inactiveCount }}</strong><span class="facility-stat-note"><i class="ri-information-line" aria-hidden="true"></i> Tidak beroperasi</span></div>
+    </article>
+  </section>
+
+  <section class="facility-list-card" aria-labelledby="facility-list-title">
+    <header class="facility-list-heading"><h1 id="facility-list-title">Daftar Fasilitas</h1></header>
+    <div class="facility-list-toolbar">
+      <nav class="facility-view-tabs" aria-label="Filter status fasilitas">
+        @for (view of views; track view.id) {
+          <button type="button" [class.active]="activeView() === view.id" [attr.aria-pressed]="activeView() === view.id"
+            (click)="selectView(view.id)">{{ view.label }} <span>{{ getViewCount(view.id) }}</span></button>
+        }
+      </nav>
+      <label class="facility-search">
+        <i class="ri-search-line" aria-hidden="true"></i>
+        <input type="search" placeholder="Cari fasilitas..." aria-label="Cari fasilitas"
+          [ngModel]="search()" (ngModelChange)="search.set($event); onFilterChange()" [ngModelOptions]="{standalone: true}">
+      </label>
+      <label class="facility-status-filter">
+        <span class="visually-hidden">Filter status</span>
+        <select aria-label="Filter status" [ngModel]="statusFilter()" (ngModelChange)="statusFilter.set($event); onFilterChange()" [ngModelOptions]="{standalone: true}">
+          <option value="">Pilih Status</option><option value="Aktif">Aktif</option><option value="Non-Aktif">Non-Aktif</option>
+        </select>
+      </label>
+      <button class="facility-export" type="button" aria-label="Ekspor data fasilitas" title="Ekspor data"><i class="ri-file-download-line" aria-hidden="true"></i></button>
+      <button class="facility-add-button" type="button" (click)="openAdd()"><i class="ri-add-line" aria-hidden="true"></i> Tambah Fasilitas</button>
+    </div>
+
+    <div class="facility-table-wrap">
+      <table class="facility-table">
+        <thead><tr>
+          <th scope="col">No.</th><th scope="col">Nama Fasilitas</th><th scope="col">Jenis</th>
+          <th scope="col">Kota</th><th scope="col">PIC</th><th scope="col">Kontak</th>
+          <th scope="col">Bergabung</th><th scope="col">Status</th><th scope="col">Verifikasi</th><th scope="col">Aksi</th>
+        </tr></thead>
+        <tbody>
+          @for (facility of paginatedFacilities; track facility.id; let rowIndex = $index) {
+            <tr>
+              <td class="facility-row-number">{{ (page() - 1) * pageSize + rowIndex + 1 }}</td>
+              <td><div class="facility-name-cell">
+                <span class="facility-logo" aria-hidden="true"><i class="ri-hospital-line"></i></span>
+                <span><strong>{{ facility.name }}</strong><span class="facility-secondary">{{ facility.registration }}</span></span>
+              </div></td>
+              <td>{{ facility.type }}</td><td>{{ facility.city }}</td>
+              <td><span class="facility-pic">{{ facility.pic }}</span><span class="facility-secondary">{{ facility.position }}</span></td>
+              <td><span class="facility-contact">{{ facility.phone }}</span><span class="facility-secondary">{{ facility.email }}</span></td>
+              <td>{{ facility.joinedDate }}</td>
+              <td><span class="facility-badge" [class.inactive]="facility.status !== 'Aktif'">{{ facility.status }}</span></td>
+              <td><span class="facility-badge verification"
+                [class.pending]="facility.verification === 'Menunggu'"
+                [class.nonactive]="facility.verification === 'Non-Aktif'"
+                [class.suspended]="facility.verification === 'Suspended'"
+                [class.blocked]="facility.verification === 'Diblokir'">{{ facility.verification }}</span></td>
+              <td><div class="facility-actions">
+                <button type="button" class="view" [attr.aria-label]="'Detail ' + facility.name" title="Detail" (click)="openDetails(facility)"><i class="ri-eye-line" aria-hidden="true"></i></button>
+                <button type="button" class="edit" [attr.aria-label]="'Edit ' + facility.name" title="Edit" (click)="openEdit(facility)"><i class="ri-edit-line" aria-hidden="true"></i></button>
+                <button type="button" class="delete" [attr.aria-label]="'Hapus ' + facility.name" title="Hapus" (click)="openDelete(facility.id)"><i class="ri-delete-bin-line" aria-hidden="true"></i></button>
+              </div></td>
+            </tr>
+          } @empty {
+            <tr><td class="facility-empty" colspan="10"><i class="ri-search-line" aria-hidden="true"></i><strong>Fasilitas tidak ditemukan</strong><span>Ubah pencarian atau filter yang dipilih.</span></td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <footer class="facility-pagination">
+      <span>Menampilkan {{ pageStart }}–{{ pageEnd }} dari {{ filteredFacilities.length }} fasilitas</span>
+      <div>
+        <button type="button" aria-label="Halaman sebelumnya" [disabled]="page() <= 1" (click)="setPage(page() - 1)"><i class="ri-arrow-left-s-line" aria-hidden="true"></i></button>
+        @for (pageNumber of pageNumbers; track pageNumber) {
+          <button type="button" [class.current]="page() === pageNumber" [attr.aria-label]="'Halaman ' + pageNumber" [attr.aria-current]="page() === pageNumber ? 'page' : null" (click)="setPage(pageNumber)">{{ pageNumber }}</button>
+        }
+        <button type="button" aria-label="Halaman berikutnya" [disabled]="page() >= pageCount" (click)="setPage(page() + 1)"><i class="ri-arrow-right-s-line" aria-hidden="true"></i></button>
+        <label>Baris per halaman <select aria-label="Baris per halaman"><option>10</option></select></label>
+      </div>
+    </footer>
+  </section>
+</section>
+
+@if (modal() !== 'closed') {
+  <div class="facility-modal-backdrop" (click)="closeModal()">
+    <section class="facility-modal" role="dialog" aria-modal="true" aria-labelledby="facility-modal-title" (click)="$event.stopPropagation()">
+      @if (modal() === 'form') {
+        <header class="facility-modal-heading">
+          <div><h2 id="facility-modal-title">{{ editingId() ? 'Edit' : 'Tambah' }} Fasilitas</h2><p>Lengkapi data fasilitas kesehatan.</p></div>
+          <button type="button" class="facility-modal-close" aria-label="Tutup" (click)="closeModal()"><i class="ri-close-line" aria-hidden="true"></i></button>
+        </header>
+        <form (ngSubmit)="submit()">
+          <div class="facility-form-grid">
+            <label><span>Nama Fasilitas <b>*</b></span><input name="name" [(ngModel)]="draft.name" required></label>
+            <label><span>No. Izin / Registrasi <b>*</b></span><input name="registration" [(ngModel)]="draft.registration" required></label>
+            <label><span>Jenis Fasilitas <b>*</b></span><select name="type" [(ngModel)]="draft.type" required><option>Rumah Sakit</option><option>Klinik</option><option>Apotek</option><option>Laboratorium</option></select></label>
+            <label><span>Kota <b>*</b></span><input name="city" [(ngModel)]="draft.city" required></label>
+            <label><span>Provinsi</span><input name="province" [(ngModel)]="draft.province"></label>
+            <label><span>Kode Pos</span><input name="postalCode" [(ngModel)]="draft.postalCode"></label>
+            <label class="facility-form-wide"><span>Alamat Lengkap</span><input name="address" [(ngModel)]="draft.address"></label>
+            <label><span>Latitude <b>*</b></span><input name="latitude" type="number" min="-90" max="90" step="any" [(ngModel)]="draft.latitude" required></label>
+            <label><span>Longitude <b>*</b></span><input name="longitude" type="number" min="-180" max="180" step="any" [(ngModel)]="draft.longitude" required></label>
+            <label><span>Nama PIC <b>*</b></span><input name="pic" [(ngModel)]="draft.pic" required></label>
+            <label><span>Jabatan PIC</span><input name="position" [(ngModel)]="draft.position"></label>
+            <label><span>No. Telepon <b>*</b></span><input name="phone" type="tel" [(ngModel)]="draft.phone" required></label>
+            <label><span>Email <b>*</b></span><input name="email" type="email" [(ngModel)]="draft.email" required></label>
+            <label><span>Website</span><input name="website" [(ngModel)]="draft.website"></label>
+            <label><span>Status</span><select name="status" [(ngModel)]="draft.status"><option>Aktif</option><option>Non-Aktif</option></select></label>
+            <label><span>Status Verifikasi</span><select name="verification" [(ngModel)]="draft.verification"><option>Terverifikasi</option><option>Menunggu</option><option>Non-Aktif</option><option>Suspended</option><option>Diblokir</option></select></label>
+          </div>
+          @if (formError()) {<p class="facility-form-error" role="alert">{{ formError() }}</p>}
+          <footer class="facility-modal-actions"><button type="button" class="facility-button secondary" (click)="closeModal()">Batal</button><button type="submit" class="facility-button primary">Simpan Fasilitas</button></footer>
+        </form>
+      } @else if (modal() === 'delete' && deletingFacility; as facility) {
+        <header class="facility-modal-heading">
+          <div><h2 id="facility-modal-title">Hapus Fasilitas</h2><p>Penghapusan data tidak dapat dibatalkan.</p></div>
+          <button type="button" class="facility-modal-close" aria-label="Tutup" (click)="closeModal()"><i class="ri-close-line" aria-hidden="true"></i></button>
+        </header>
+        <p class="facility-delete-copy">Yakin ingin menghapus <strong>{{ facility.name }}</strong> ({{ facility.id }})?</p>
+        <footer class="facility-modal-actions"><button type="button" class="facility-button secondary" (click)="closeModal()">Batal</button><button type="button" class="facility-button danger" (click)="deleteFacility()">Hapus</button></footer>
+      }
+    </section>
+  </div>
+}
+}
+
+<router-outlet (activate)="showingDetails.set(true)" (deactivate)="showingDetails.set(false)" />

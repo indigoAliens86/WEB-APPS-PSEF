@@ -1,0 +1,207 @@
+<div class="telefarmasi-container">
+  @if (!showingDetails()) {
+    <!-- TOP 5 KPI SUMMARY CARDS -->
+    <div class="kpi-grid">
+      @for (card of kpiCards; track card.title) {
+        <div class="kpi-card">
+          <div class="kpi-icon-wrapper" [ngClass]="card.colorClass">
+            <i [class]="card.icon"></i>
+          </div>
+          <div class="kpi-info">
+            <span class="kpi-label">{{ card.title }}</span>
+            <div class="kpi-value-row">
+              <h2 class="kpi-value">{{ card.value }}</h2>
+            </div>
+            <div class="kpi-trend">
+              <span class="trend-badge" [ngClass]="card.colorClass === 'red' ? 'trend-down' : 'trend-up'">
+                <i [class]="card.colorClass === 'red' ? 'ri-arrow-down-line' : 'ri-arrow-up-line'"></i>
+                {{ card.percentage }}
+              </span>
+              <span class="trend-period">{{ card.period }}</span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- MAIN CARD: DAFTAR TELEFARMASI -->
+    <div class="table-card">
+      <div class="table-card-header">
+        <h3 class="table-card-title">Daftar Telefarmasi</h3>
+      </div>
+
+      <!-- FILTER TABS & SEARCH CONTROLS -->
+      <div class="filter-toolbar">
+        <div class="category-tabs">
+          @for (tab of categoryTabs; track tab) {
+            <button
+              type="button"
+              class="tab-btn"
+              [class.active]="activeCategory() === tab"
+              (click)="setCategory(tab)"
+            >
+              {{ tab }}
+            </button>
+          }
+        </div>
+
+        <div class="search-filter-controls">
+          <div class="search-input-box">
+            <i class="ri-search-line search-icon"></i>
+            <input
+              type="text"
+              class="search-input"
+              placeholder="Cari Pasien / Apoteker..."
+              [ngModel]="searchQuery()"
+              (ngModelChange)="searchQuery.set($event)"
+            />
+          </div>
+
+          <div class="select-dropdown-box">
+            <select
+              class="status-select"
+              [ngModel]="filterStatus()"
+              (ngModelChange)="filterStatus.set($event)"
+            >
+              <option value="Pilih Status">Pilih Status</option>
+              <option value="Selesai">Selesai</option>
+              <option value="Menunggu">Menunggu</option>
+              <option value="Berlangsung">Berlangsung</option>
+              <option value="Dibatalkan">Dibatalkan</option>
+            </select>
+          </div>
+
+          <button type="button" class="btn-filter-icon" title="Filter Lanjutan" aria-label="Filter Lanjutan">
+            <i class="ri-equalizer-line"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- TABLE LIST -->
+      <div class="table-responsive">
+        <table class="telefarmasi-table">
+          <thead>
+            <tr>
+              <th class="th-no">No</th>
+              <th class="th-id">ID Konsultasi</th>
+              <th class="th-pasien">Pasien</th>
+              <th class="th-apoteker">Apoteker</th>
+              <th class="th-spesialisasi">Spesialisasi</th>
+              <th class="th-waktu">Tanggal & Waktu</th>
+              <th class="th-durasi">Durasi</th>
+              <th class="th-status">Status</th>
+              <th class="th-aksi">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of filteredConsultations(); track $index) {
+              <tr class="table-row">
+                <td class="td-no">{{ $index + 1 }}</td>
+                <td class="td-id">
+                  <span class="consult-id">{{ item.id }}</span>
+                  <span class="consult-type">{{ item.tipe }}</span>
+                </td>
+                <td class="td-pasien">
+                  <div class="user-cell">
+                    <img
+                      [src]="item.pasien.avatar"
+                      [alt]="item.pasien.nama"
+                      class="user-avatar"
+                      onerror="this.src='assets/images/avatar/female.png'"
+                    />
+                    <div class="user-meta">
+                      <span class="user-name">{{ item.pasien.nama }}</span>
+                      <span class="user-sub">{{ item.pasien.gender }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td class="td-apoteker">
+                  <div class="user-cell">
+                    <img
+                      [src]="item.apoteker.avatar"
+                      [alt]="item.apoteker.nama"
+                      class="user-avatar"
+                      onerror="this.src='assets/images/avatar/female.png'"
+                    />
+                    <div class="user-meta">
+                      <span class="user-name">{{ item.apoteker.nama }}</span>
+                      <span class="user-sub">{{ item.apoteker.sip }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td class="td-spesialisasi">
+                  <span class="specialty-text">{{ item.spesialisasi }}</span>
+                </td>
+                <td class="td-waktu">
+                  <div class="date-meta">
+                    <span class="date-main">{{ item.tanggal }}</span>
+                    <span class="time-sub">{{ item.waktu }}</span>
+                  </div>
+                </td>
+                <td class="td-durasi">
+                  <span class="duration-text">{{ item.durasi }}</span>
+                </td>
+                <td class="td-status">
+                  <span class="status-badge" [ngClass]="getStatusClass(item.status)">
+                    {{ item.status }}
+                  </span>
+                </td>
+                <td class="td-aksi">
+                  <button
+                    type="button"
+                    class="btn-action-view"
+                    title="Lihat Detail Konsultasi"
+                    aria-label="Lihat Detail Konsultasi"
+                    (click)="viewDetail(item)"
+                  >
+                    <i class="ri-eye-line"></i>
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="9" class="empty-state-cell">
+                  <div class="empty-state">
+                    <i class="ri-inbox-line"></i>
+                    <p>Tidak ada data konsultasi telefarmasi yang cocok.</p>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- PAGINATION FOOTER -->
+      <div class="pagination-footer">
+        <span class="pagination-info">Menampilkan 1-10 dari {{ totalItems() | number }} pasien</span>
+
+        <div class="pagination-controls">
+          <button type="button" class="page-nav-btn" disabled>
+            <i class="ri-arrow-left-s-line"></i>
+          </button>
+          <button type="button" class="page-num-btn active">1</button>
+          <button type="button" class="page-num-btn">2</button>
+          <button type="button" class="page-num-btn">3</button>
+          <button type="button" class="page-num-btn">4</button>
+          <span class="page-ellipsis">...</span>
+          <button type="button" class="page-num-btn">1.246</button>
+          <button type="button" class="page-nav-btn">
+            <i class="ri-arrow-right-s-line"></i>
+          </button>
+        </div>
+
+        <div class="per-page-selector">
+          <select class="per-page-select">
+            <option value="10">10/halaman</option>
+            <option value="25">25/halaman</option>
+            <option value="50">50/halaman</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- DETAIL ROUTER OUTLET -->
+  <router-outlet (activate)="showingDetails.set(true)" (deactivate)="showingDetails.set(false)"></router-outlet>
+</div>

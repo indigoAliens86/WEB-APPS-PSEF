@@ -1,0 +1,448 @@
+<div class="form-page-container">
+  <!-- Top Navigation & Header -->
+  <div class="header-nav-row">
+    <button
+      type="button"
+      class="btn-back"
+      (click)="goBack()"
+      aria-label="Kembali ke Daftar Pasien"
+    >
+      <i class="ri-arrow-left-line" aria-hidden="true"></i>
+      <span>Kembali ke Daftar Pasien</span>
+    </button>
+  </div>
+
+  <header class="page-title-card">
+    <div class="title-meta">
+      <span class="badge-role"><i class="ri-user-add-line" aria-hidden="true"></i> Pasien Baru</span>
+      <h1 class="page-title">Tambah Pasien Baru</h1>
+      <p class="page-subtitle">
+        Lengkapi formulir registrasi data pasien untuk integrasi rekam medis elektronik dan layanan PSEF.
+      </p>
+    </div>
+  </header>
+
+  <!-- Alert Messages -->
+  @if (errorMessage()) {
+    <div class="alert alert-danger" role="alert">
+      <i class="ri-error-warning-line" aria-hidden="true"></i>
+      <span>{{ errorMessage() }}</span>
+    </div>
+  }
+
+  @if (saveSuccess()) {
+    <div class="alert alert-success" role="alert">
+      <i class="ri-checkbox-circle-line" aria-hidden="true"></i>
+      <span>Data pasien berhasil disimpan! Mengalihkan ke daftar pasien...</span>
+    </div>
+  }
+
+  <!-- Main Form -->
+  <form (ngSubmit)="save()" class="form-layout" novalidate>
+    <!-- Section 1: Data Identitas Pasien -->
+    <section class="form-card" aria-labelledby="section-personal">
+      <div class="card-section-header">
+        <div class="icon-circle teal">
+          <i class="ri-user-3-line" aria-hidden="true"></i>
+        </div>
+        <div>
+          <h2 id="section-personal" class="section-title">Data Pribadi & Identitas</h2>
+          <p class="section-desc">Informasi kependudukan dan demografi pasien</p>
+        </div>
+      </div>
+
+      <div class="grid-2-col">
+        <div class="form-group">
+          <label for="patient-name" class="form-label">
+            Nama Lengkap <span class="required">*</span>
+          </label>
+          <input
+            id="patient-name"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.name"
+            name="name"
+            placeholder="Contoh: Andi Putra"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="patient-nik" class="form-label">
+            Nomor Induk Kependudukan (NIK) <span class="required">*</span>
+          </label>
+          <input
+            id="patient-nik"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.nik"
+            name="nik"
+            maxlength="16"
+            placeholder="16 digit NIK sesuai KTP"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="patient-gender" class="form-label">Jenis Kelamin <span class="required">*</span></label>
+          <select
+            id="patient-gender"
+            class="form-select"
+            [(ngModel)]="formData.gender"
+            name="gender"
+          >
+            @for (opt of genderOptions; track opt.value) {
+              <option [value]="opt.value">{{ opt.label }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="patient-blood" class="form-label">Golongan Darah</label>
+          <select
+            id="patient-blood"
+            class="form-select"
+            [(ngModel)]="formData.bloodType"
+            name="bloodType"
+          >
+            @for (bt of bloodTypes; track bt) {
+              <option [value]="bt">{{ bt }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="patient-birth-place" class="form-label">Tempat Lahir</label>
+          <input
+            id="patient-birth-place"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.birthPlace"
+            name="birthPlace"
+            placeholder="Contoh: Bandung"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="patient-birth-date" class="form-label">Tanggal Lahir</label>
+          <input
+            id="patient-birth-date"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.birthDate"
+            name="birthDate"
+            placeholder="Contoh: 01-01-1990"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="patient-marital" class="form-label">Status Pernikahan</label>
+          <select
+            id="patient-marital"
+            class="form-select"
+            [(ngModel)]="formData.maritalStatus"
+            name="maritalStatus"
+          >
+            <option value="Belum Menikah">Belum Menikah</option>
+            <option value="Menikah">Menikah</option>
+            <option value="Cerai Hidup">Cerai Hidup</option>
+            <option value="Cerai Mati">Cerai Mati</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="patient-religion" class="form-label">Agama</label>
+          <select
+            id="patient-religion"
+            class="form-select"
+            [(ngModel)]="formData.religion"
+            name="religion"
+          >
+            <option value="Islam">Islam</option>
+            <option value="Kristen Protestan">Kristen Protestan</option>
+            <option value="Katolik">Katolik</option>
+            <option value="Hindu">Hindu</option>
+            <option value="Buddha">Buddha</option>
+            <option value="Konghucu">Konghucu</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Kontak & Alamat Domisili -->
+    <section class="form-card" aria-labelledby="section-contact">
+      <div class="card-section-header">
+        <div class="icon-circle blue">
+          <i class="ri-map-pin-user-line" aria-hidden="true"></i>
+        </div>
+        <div>
+          <h2 id="section-contact" class="section-title">Kontak & Alamat Domisili</h2>
+          <p class="section-desc">Nomor kontak aktif dan alamat tempat tinggal</p>
+        </div>
+      </div>
+
+      <div class="grid-2-col">
+        <div class="form-group">
+          <label for="patient-phone" class="form-label">
+            Nomor Handphone / WhatsApp <span class="required">*</span>
+          </label>
+          <input
+            id="patient-phone"
+            type="tel"
+            class="form-control"
+            [(ngModel)]="formData.phone"
+            name="phone"
+            placeholder="0812-xxxx-xxxx"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="patient-email" class="form-label">Alamat Email</label>
+          <input
+            id="patient-email"
+            type="email"
+            class="form-control"
+            [(ngModel)]="formData.email"
+            name="email"
+            placeholder="pasien@gmail.com"
+          />
+        </div>
+
+        <div class="form-group full-width">
+          <label for="patient-address" class="form-label">Alamat Lengkap Domisili</label>
+          <input
+            id="patient-address"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.address"
+            name="address"
+            placeholder="Jl. Merdeka No. 12, Kelurahan / Kecamatan"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="patient-province" class="form-label">Provinsi</label>
+          <input
+            id="patient-province"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.province"
+            name="province"
+            placeholder="Jawa Barat"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="patient-city" class="form-label">Kota / Kabupaten</label>
+          <input
+            id="patient-city"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.city"
+            name="city"
+            placeholder="Bandung"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Layanan Medis & Penjamin -->
+    <section class="form-card" aria-labelledby="section-insurance">
+      <div class="card-section-header">
+        <div class="icon-circle green">
+          <i class="ri-shield-check-line" aria-hidden="true"></i>
+        </div>
+        <div>
+          <h2 id="section-insurance" class="section-title">Layanan Medis & Asuransi</h2>
+          <p class="section-desc">Kategori pembiayaan dan fasilitas kesehatan rujukan</p>
+        </div>
+      </div>
+
+      <div class="grid-2-col">
+        <div class="form-group">
+          <label for="patient-type" class="form-label">Tipe Pasien / Penjamin</label>
+          <select
+            id="patient-type"
+            class="form-select"
+            [(ngModel)]="formData.patientType"
+            name="patientType"
+          >
+            @for (pt of patientTypes; track pt) {
+              <option [value]="pt">{{ pt }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="patient-insurance-no" class="form-label">Nomor Kartu BPJS / Polis Asuransi</label>
+          <input
+            id="patient-insurance-no"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.insuranceNumber"
+            name="insuranceNumber"
+            placeholder="0001234567890 (kosongkan jika Umum)"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="patient-faskes" class="form-label">Fasilitas Kesehatan Terdaftar</label>
+          <input
+            id="patient-faskes"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.faskesName"
+            name="faskesName"
+            placeholder="Nama Rumah Sakit / Klinik Rujukan"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="patient-status" class="form-label">Status Akun</label>
+          <select
+            id="patient-status"
+            class="form-select"
+            [(ngModel)]="formData.status"
+            name="status"
+          >
+            <option value="Aktif">Aktif</option>
+            <option value="Non-Aktif">Non-Aktif</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Kontak Darurat -->
+    <section class="form-card" aria-labelledby="section-emergency">
+      <div class="card-section-header">
+        <div class="icon-circle amber">
+          <i class="ri-alarm-warning-line" aria-hidden="true"></i>
+        </div>
+        <div>
+          <h2 id="section-emergency" class="section-title">Kontak Darurat (Wali / Keluarga)</h2>
+          <p class="section-desc">Kontak yang dapat dihubungi dalam situasi darurat medis</p>
+        </div>
+      </div>
+
+      <div class="grid-2-col">
+        <div class="form-group">
+          <label for="patient-em-name" class="form-label">Nama Kontak Darurat</label>
+          <input
+            id="patient-em-name"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.emergencyName"
+            name="emergencyName"
+            placeholder="Contoh: Rina Putri"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="patient-em-rel" class="form-label">Hubungan / Relasi</label>
+          <select
+            id="patient-em-rel"
+            class="form-select"
+            [(ngModel)]="formData.emergencyRelation"
+            name="emergencyRelation"
+          >
+            <option value="Keluarga">Keluarga</option>
+            <option value="Orang Tua">Orang Tua</option>
+            <option value="Pasangan">Pasangan (Suami/Istri)</option>
+            <option value="Anak">Anak</option>
+            <option value="Saudara">Saudara Kandung</option>
+          </select>
+        </div>
+
+        <div class="form-group full-width">
+          <label for="patient-em-phone" class="form-label">Nomor Telepon Darurat</label>
+          <input
+            id="patient-em-phone"
+            type="tel"
+            class="form-control"
+            [(ngModel)]="formData.emergencyPhone"
+            name="emergencyPhone"
+            placeholder="0813-xxxx-xxxx"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: Riwayat Alergi & Catatan Khusus -->
+    <section class="form-card" aria-labelledby="section-notes">
+      <div class="card-section-header">
+        <div class="icon-circle red">
+          <i class="ri-heart-pulse-line" aria-hidden="true"></i>
+        </div>
+        <div>
+          <h2 id="section-notes" class="section-title">Alergi & Riwayat Kesehatan Khusus</h2>
+          <p class="section-desc">Peringatan medis untuk keamanan peresepan dan tindakan klinis</p>
+        </div>
+      </div>
+
+      <div class="grid-2-col">
+        <div class="form-group full-width">
+          <label for="patient-allergies" class="form-label">Riwayat Alergi Obat / Makanan</label>
+          <input
+            id="patient-allergies"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.allergies"
+            name="allergies"
+            placeholder="Contoh: Alergi Penisilin, Amoksisilin, Seafood (kosongkan jika tidak ada)"
+          />
+        </div>
+
+        <div class="form-group full-width">
+          <label for="patient-chronic" class="form-label">Penyakit Kronis / Bawaan</label>
+          <input
+            id="patient-chronic"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.chronicDiseases"
+            name="chronicDiseases"
+            placeholder="Contoh: Asma, Hipertensi, Diabetes Melitus (kosongkan jika tidak ada)"
+          />
+        </div>
+
+        <div class="form-group full-width">
+          <label for="patient-notes" class="form-label">Catatan Tambahan</label>
+          <textarea
+            id="patient-notes"
+            rows="3"
+            class="form-control"
+            [(ngModel)]="formData.notes"
+            name="notes"
+            placeholder="Tambahkan catatan khusus pasien jika ada..."
+          ></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- Action Bar -->
+    <div class="form-action-bar">
+      <button
+        type="button"
+        class="btn-secondary"
+        (click)="goBack()"
+        [disabled]="isSubmitting()"
+      >
+        Batal
+      </button>
+
+      <button
+        type="submit"
+        class="btn-primary"
+        [disabled]="isSubmitting()"
+      >
+        @if (isSubmitting()) {
+          <i class="ri-loader-4-line spin" aria-hidden="true"></i>
+          <span>Menyimpan...</span>
+        } @else {
+          <i class="ri-check-line" aria-hidden="true"></i>
+          <span>Simpan Data Pasien</span>
+        }
+      </button>
+    </div>
+  </form>
+</div>

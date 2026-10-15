@@ -1,0 +1,460 @@
+<div class="about-wrapper">
+  <!-- Sub Header -->
+  <div class="sub-header">
+    <div class="sub-header-info">
+      <h3 class="sub-title">Profil Perusahaan & Ekosistem PSEF</h3>
+      <p class="sub-desc">
+        Kelola informasi legalitas korporasi, visi-misi, pimpinan apoteker penanggung jawab, serta kontak fasilitas fulfillment hub farmasi.
+      </p>
+    </div>
+    <div class="sub-header-actions">
+      <button
+        *ngIf="!isEditing()"
+        type="button"
+        class="btn btn-outline"
+        (click)="toggleEdit()"
+      >
+        <i class="ri-edit-line"></i>
+        <span>Ubah Data Profil</span>
+      </button>
+
+      <button
+        *ngIf="isEditing()"
+        type="button"
+        class="btn btn-primary"
+        (click)="saveProfil()"
+      >
+        <i class="ri-save-line"></i>
+        <span>Simpan Perubahan</span>
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="savedNotification()" class="alert-success">
+    <i class="ri-checkbox-circle-fill"></i>
+    <span>Data profil perusahaan berhasil disimpan dan disinkronkan ke portal publik!</span>
+  </div>
+
+  <!-- Stats Grid -->
+  <div class="stats-row">
+    <div *ngFor="let s of statistikPerusahaan" class="stat-box">
+      <div class="stat-icon-wrap">
+        <i [class]="s.icon"></i>
+      </div>
+      <div>
+        <div class="stat-val font-mono">{{ s.value }}</div>
+        <div class="stat-lbl">{{ s.label }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Corporate Info & Vision Mission Card -->
+  <div class="info-card">
+    <div class="info-card-header">
+      <div class="card-title-group">
+        <div class="card-icon-badge">
+          <i class="ri-building-line"></i>
+        </div>
+        <div>
+          <h4 class="card-title">{{ profil().namaEntitas }}</h4>
+          <span class="card-subtitle font-mono">{{ profil().nomorNIB }}</span>
+        </div>
+      </div>
+      <span class="founded-badge">Berdiri Sejak {{ profil().tahunBerdiri }}</span>
+    </div>
+
+    <div class="info-card-body">
+      <!-- Visi & Misi -->
+      <div class="vm-section">
+        <div class="visi-box">
+          <span class="vm-label"><i class="ri-eye-line"></i> Visi Korporasi</span>
+          <p *ngIf="!isEditing()" class="visi-text">"{{ profil().visi }}"</p>
+          <textarea
+            *ngIf="isEditing()"
+            class="form-control"
+            rows="3"
+            [(ngModel)]="profil().visi"
+          ></textarea>
+        </div>
+
+        <div class="misi-box">
+          <span class="vm-label"><i class="ri-compass-3-line"></i> Misi Utama Pelayanan Kefarmasian</span>
+          <ul class="misi-list">
+            <li *ngFor="let m of profil().misi; let i = index">
+              <i class="ri-check-double-line check-bullet"></i>
+              <span>{{ m }}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Alamat & Kontak -->
+      <div class="contact-grid">
+        <div class="contact-card">
+          <span class="contact-type"><i class="ri-map-pin-line"></i> Kantor Pusat Operasional</span>
+          <p *ngIf="!isEditing()" class="contact-val">{{ profil().alamatPusat }}</p>
+          <input
+            *ngIf="isEditing()"
+            type="text"
+            class="form-control"
+            [(ngModel)]="profil().alamatPusat"
+          />
+        </div>
+
+        <div class="contact-card">
+          <span class="contact-type"><i class="ri-store-3-line"></i> Central Pharmacy Fulfillment Hub</span>
+          <p *ngIf="!isEditing()" class="contact-val">{{ profil().alamatFulfillment }}</p>
+          <input
+            *ngIf="isEditing()"
+            type="text"
+            class="form-control"
+            [(ngModel)]="profil().alamatFulfillment"
+          />
+        </div>
+
+        <div class="contact-card">
+          <span class="contact-type"><i class="ri-mail-send-line"></i> Email Resmi</span>
+          <p *ngIf="!isEditing()" class="contact-val font-mono">{{ profil().emailResmi }}</p>
+          <input
+            *ngIf="isEditing()"
+            type="text"
+            class="form-control font-mono"
+            [(ngModel)]="profil().emailResmi"
+          />
+        </div>
+
+        <div class="contact-card">
+          <span class="contact-type"><i class="ri-phone-line"></i> Telepon & Call Center</span>
+          <p *ngIf="!isEditing()" class="contact-val font-mono">{{ profil().teleponResmi }}</p>
+          <input
+            *ngIf="isEditing()"
+            type="text"
+            class="form-control font-mono"
+            [(ngModel)]="profil().teleponResmi"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Medical Leadership Section -->
+  <div class="leadership-section">
+    <div class="leadership-header">
+      <div>
+        <h4 class="leadership-title">Dewan Direksi & Apoteker Penanggung Jawab</h4>
+        <p class="leadership-sub">Tenaga kesehatan berizin resmi yang bertanggung jawab terhadap tata kelola farmasi klinis platform PSEF</p>
+      </div>
+
+      <button type="button" class="btn btn-primary" (click)="openAddLeaderModal()" id="btn-tambah-pimpinan">
+        <i class="ri-user-add-line"></i>
+        <span>Tambah Anggota Direksi / APJ</span>
+      </button>
+    </div>
+
+    <div class="leadership-grid">
+      <div *ngFor="let leader of timPimpinan()" class="leader-card" [class.leader-nonaktif]="leader.status !== 'Aktif'">
+        <div class="leader-card-top">
+          <div class="leader-avatar">
+            <i [class]="leader.icon"></i>
+          </div>
+
+          <button
+            type="button"
+            class="status-pill-toggle"
+            [class.active]="leader.status === 'Aktif'"
+            (click)="toggleLeaderStatus(leader)"
+            [title]="leader.status === 'Aktif' ? 'Klik untuk nonaktifkan pimpinan' : 'Klik untuk aktifkan pimpinan'"
+          >
+            <span class="dot"></span>
+            <span>{{ leader.status }}</span>
+          </button>
+        </div>
+
+        <div class="leader-info">
+          <h5 class="leader-name">{{ leader.nama }}</h5>
+          <span class="leader-role">{{ leader.jabatan }}</span>
+          <p class="leader-qual">{{ leader.kualifikasi }}</p>
+          <div class="leader-permit font-mono">{{ leader.noIzin }}</div>
+        </div>
+
+        <div class="leader-card-footer">
+          <span class="audit-chip font-mono"><i class="ri-shield-check-line"></i> Verified APJ</span>
+
+          <div class="leader-actions">
+            <button type="button" class="btn-icon" (click)="openEditLeaderModal(leader)" title="Edit Data Pimpinan">
+              <i class="ri-edit-line"></i>
+            </button>
+            <button type="button" class="btn-icon btn-danger-hover" (click)="openDeleteModal(leader)" title="Nonaktifkan / Hapus Pimpinan">
+              <i class="ri-delete-bin-line"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Tambah / Edit Pimpinan (Static Backdrop) -->
+  <div *ngIf="showLeaderModal()" class="modal-backdrop">
+    <div class="modal-dialog modal-lg" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-header-icon" [class.edit-mode]="isEditingLeader()">
+          <i [class]="isEditingLeader() ? 'ri-edit-line' : 'ri-user-add-line'"></i>
+        </div>
+        <div>
+          <h4 class="modal-title">{{ isEditingLeader() ? 'Edit Data Pimpinan #' + currentLeader.id : 'Tambah Anggota Direksi / APJ Baru' }}</h4>
+          <p class="modal-subtitle">Daftarkan tenaga medis atau jajaran eksekutif penanggung jawab operasional farmasi PSEF</p>
+        </div>
+        <button type="button" class="btn-close" (click)="closeLeaderModal()">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group flex-2">
+            <label class="form-label" for="inp-nama-leader">Nama Lengkap & Gelar <span class="text-danger">*</span></label>
+            <input
+              id="inp-nama-leader"
+              type="text"
+              class="form-control"
+              placeholder="Contoh: apt. Rina Meilani, S.Farm, M.Farm"
+              [(ngModel)]="currentLeader.nama"
+              [class.is-invalid]="formSubmitted() && !currentLeader.nama.trim()"
+            />
+            <span *ngIf="formSubmitted() && !currentLeader.nama.trim()" class="form-error-msg">
+              <i class="ri-error-warning-fill"></i> Nama pimpinan wajib diisi
+            </span>
+          </div>
+          <div class="form-group flex-1">
+            <label class="form-label" for="inp-icon-leader">Ikon Medis</label>
+            <select id="inp-icon-leader" class="form-control" [(ngModel)]="currentLeader.icon">
+              <option value="ri-capsule-fill">Kapsul Farmasi (Apoteker)</option>
+              <option value="ri-stethoscope-fill">Stetoskop (Dokter Spesialis)</option>
+              <option value="ri-nurse-fill">Perawat / Tenaga Teknis</option>
+              <option value="ri-shield-user-fill">Hukum & Legal DPO</option>
+              <option value="ri-user-settings-fill">Manajemen & Operasional</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="form-label-row">
+            <label class="form-label" for="inp-jabatan-leader">Jabatan Struktural <span class="text-danger">*</span></label>
+            <span class="char-counter font-mono">{{ currentLeader.jabatan.length }} karakter</span>
+          </div>
+          <input
+            id="inp-jabatan-leader"
+            type="text"
+            class="form-control"
+            placeholder="Contoh: Direktur Operasional & Apoteker Penanggung Jawab (APJ) Utama"
+            [(ngModel)]="currentLeader.jabatan"
+            [class.is-invalid]="formSubmitted() && !currentLeader.jabatan.trim()"
+          />
+          <span *ngIf="formSubmitted() && !currentLeader.jabatan.trim()" class="form-error-msg">
+            <i class="ri-error-warning-fill"></i> Jabatan wajib diisi
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="inp-kualifikasi-leader">Kualifikasi Akademik & Keahlian</label>
+          <input
+            id="inp-kualifikasi-leader"
+            type="text"
+            class="form-control"
+            placeholder="Contoh: Spesialis Telaah Resep & Interaksi Obat (Fakultas Farmasi UI)"
+            [(ngModel)]="currentLeader.kualifikasi"
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="inp-noizin-leader">Nomor Izin Praktik / SIP / SIPA / STRA <span class="text-danger">*</span></label>
+          <input
+            id="inp-noizin-leader"
+            type="text"
+            class="form-control font-mono"
+            placeholder="Contoh: STRA: 19910412/STRA-IAI/2015 • SIPA: 31.74/2026"
+            [(ngModel)]="currentLeader.noIzin"
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Status Keberadaan Jabatan</label>
+          <div class="radio-options">
+            <label class="radio-card" [class.selected]="currentLeader.status === 'Aktif'">
+              <input type="radio" name="leader-status" value="Aktif" [(ngModel)]="currentLeader.status" />
+              <div class="radio-card-content">
+                <span class="radio-title"><i class="ri-checkbox-circle-fill text-emerald"></i> Aktif Menjabat</span>
+                <span class="radio-sub">Tampil dalam bagan struktur direksi & APJ PSEF</span>
+              </div>
+            </label>
+            <label class="radio-card" [class.selected]="currentLeader.status === 'Nonaktif / Alumni'">
+              <input type="radio" name="leader-status" value="Nonaktif / Alumni" [(ngModel)]="currentLeader.status" />
+              <div class="radio-card-content">
+                <span class="radio-title"><i class="ri-archive-line text-amber"></i> Nonaktif / Alumni</span>
+                <span class="radio-sub">Diarsipkan sebagai riwayat APJ/Direksi terdahulu</span>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" (click)="closeLeaderModal()">Batal</button>
+        <button type="button" class="btn btn-primary" (click)="saveLeader()" id="btn-save-leader">
+          <i [class]="isEditingLeader() ? 'ri-save-line' : 'ri-check-line'"></i>
+          <span>{{ isEditingLeader() ? 'Simpan Perubahan' : 'Terbitkan Pimpinan' }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Konfirmasi Nonaktifkan / Hapus Pimpinan (Static Backdrop) -->
+  <div *ngIf="showDeleteModal() && selectedLeader() as targetLeader" class="modal-backdrop">
+    <div class="modal-dialog modal-delete-dialog" (click)="$event.stopPropagation()">
+      <div class="delete-modal-header">
+        <div class="delete-icon-pulse" [class.danger]="deleteMode() === 'permanent'">
+          <i [class]="deleteMode() === 'deactivate' ? 'ri-archive-line' : 'ri-delete-bin-line'"></i>
+        </div>
+        <div class="delete-header-titles">
+          <h4 class="modal-title" [class.text-amber]="deleteMode() === 'deactivate'" [class.text-danger]="deleteMode() === 'permanent'">
+            {{ deleteMode() === 'deactivate' ? 'Nonaktifkan Jabatan Pimpinan?' : 'Hapus Pimpinan Permanen?' }}
+          </h4>
+          <p class="modal-subtitle">Pengelolaan struktur penanggung jawab klinis dengan perlindungan data audit SIPA</p>
+        </div>
+        <button type="button" class="btn-close" (click)="closeDeleteModal()" [disabled]="isProcessing()">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <div class="delete-modal-body">
+        <!-- Target Leader Preview Card -->
+        <div class="leader-preview-card">
+          <div class="preview-header">
+            <span class="preview-cat-badge font-mono">{{ targetLeader.jabatan }}</span>
+            <span class="preview-status-pill" [class.status-aktif]="targetLeader.status === 'Aktif'">
+              {{ targetLeader.status }}
+            </span>
+          </div>
+          <h5 class="preview-title">{{ targetLeader.nama }}</h5>
+          <p class="preview-desc">{{ targetLeader.kualifikasi }}</p>
+
+          <div class="preview-stat-row">
+            <div class="stat-pill">
+              <i class="ri-nurse-line text-indigo"></i>
+              <span class="stat-lbl">Legalitas Izin:</span>
+              <span class="stat-num font-mono">{{ targetLeader.noIzin }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Audit Protection Notice Box -->
+        <div class="analytics-notice-box" [class.warning-border]="deleteMode() === 'permanent'">
+          <div class="notice-icon-box" [class.danger-bg]="deleteMode() === 'permanent'">
+            <i [class]="deleteMode() === 'deactivate' ? 'ri-shield-star-line' : 'ri-error-warning-fill'"></i>
+          </div>
+          <div class="notice-text-content">
+            <h6 class="notice-title">
+              {{ deleteMode() === 'deactivate' ? 'Perlindungan Arsip Legalitas Penanggung Jawab Farmasi' : 'Peringatan Penghapusan Rekam Jejak APJ' }}
+            </h6>
+            <p class="notice-desc" *ngIf="deleteMode() === 'deactivate'">
+              Dengan <strong>menonaktifkan (arsip alumni)</strong>, nama pimpinan tidak lagi muncul di halaman publik aktif, 
+              namun <strong>catatan nomor SIPA dan masa pengabdian APJ tetap tersimpan</strong> guna memenuhi ketentuan regulasi 
+              inspeksi Kemenkes terkait riwayat telaah resep masa lampau.
+            </p>
+            <p class="notice-desc text-danger-text" *ngIf="deleteMode() === 'permanent'">
+              Menghapus permanen akan <strong>menghilangkan rekam jejak nama dan legalitas APJ</strong> dari sistem. 
+              Tindakan ini tidak dapat dibatalkan!
+            </p>
+          </div>
+        </div>
+
+        <!-- Action Choice Cards -->
+        <div class="delete-options-group">
+          <div
+            class="action-choice-card"
+            role="button"
+            tabindex="0"
+            [class.selected]="deleteMode() === 'deactivate'"
+            (click)="setDeleteMode('deactivate')"
+            (keydown.enter)="setDeleteMode('deactivate')"
+          >
+            <div class="choice-indicator radio-amber"></div>
+            <div class="choice-content">
+              <div class="choice-header-row">
+                <span class="choice-title">Nonaktifkan / Arsipkan Alumni APJ</span>
+                <span class="recommend-badge"><i class="ri-star-fill"></i> Disarankan</span>
+              </div>
+              <p class="choice-desc">Arsipkan profil tanpa merusak rekam jejak audit SIPA dan resep terdahulu.</p>
+            </div>
+          </div>
+
+          <div
+            class="action-choice-card"
+            role="button"
+            tabindex="0"
+            [class.selected]="deleteMode() === 'permanent'"
+            (click)="setDeleteMode('permanent')"
+            (keydown.enter)="setDeleteMode('permanent')"
+          >
+            <div class="choice-indicator radio-danger"></div>
+            <div class="choice-content">
+              <div class="choice-header-row">
+                <span class="choice-title text-danger">Hapus Profil Permanen</span>
+                <span class="danger-badge">Merusak Jejak</span>
+              </div>
+              <p class="choice-desc">Hanya gunakan bila profil merupakan draf duplikat yang salah input.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="delete-modal-footer">
+        <button
+          type="button"
+          class="btn btn-outline"
+          (click)="closeDeleteModal()"
+          [disabled]="isProcessing()"
+        >
+          Batal
+        </button>
+
+        <button
+          *ngIf="deleteMode() === 'deactivate'"
+          type="button"
+          class="btn btn-warning-action"
+          (click)="confirmDeleteAction()"
+          [disabled]="isProcessing()"
+          id="btn-confirm-deactivate-leader"
+        >
+          <i [class]="isProcessing() ? 'ri-loader-4-line ri-spin' : 'ri-archive-line'"></i>
+          <span>{{ isProcessing() ? 'Memproses...' : 'Nonaktifkan Pimpinan' }}</span>
+        </button>
+
+        <button
+          *ngIf="deleteMode() === 'permanent'"
+          type="button"
+          class="btn btn-danger-action"
+          (click)="confirmDeleteAction()"
+          [disabled]="isProcessing()"
+          id="btn-confirm-permanent-leader"
+        >
+          <i [class]="isProcessing() ? 'ri-loader-4-line ri-spin' : 'ri-delete-bin-line'"></i>
+          <span>{{ isProcessing() ? 'Menghapus...' : 'Ya, Hapus Permanen' }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Feedback -->
+  <div *ngIf="toastMessage()" class="about-toast" [class]="'toast-' + toastType()">
+    <div class="toast-icon">
+      <i [class]="toastType() === 'success' ? 'ri-checkbox-circle-fill' : toastType() === 'danger' ? 'ri-error-warning-fill' : 'ri-information-fill'"></i>
+    </div>
+    <div class="toast-content">
+      <p class="toast-text">{{ toastMessage() }}</p>
+    </div>
+    <button type="button" class="toast-close" (click)="toastMessage.set('')">
+      <i class="ri-close-line"></i>
+    </button>
+  </div>
+</div>

@@ -1,0 +1,16 @@
+<div class="fasilitas-layout" [class.sidebar-collapsed]="isSidebarCollapsed()">
+    <button class="sidebar-backdrop" type="button" aria-label="Tutup sidebar fasilitas"
+        (click)="toggleSidebar()" [attr.aria-hidden]="!isSidebarCollapsed()"></button>
+
+    <app-sidebar class="fasilitas-sidebar" [class.sidebar-compact]="isSidebarCollapsed()"></app-sidebar>
+
+    <div class="fasilitas-content">
+        <app-navbar class="fasilitas-navbar" (sidebarToggle)="toggleSidebar()"></app-navbar>
+
+        <div class="fasilitas-scroll-area">
+            <main class="fasilitas-main">
+                <router-outlet></router-outlet>
+            </main>
+        </div>
+    </div>
+</div>

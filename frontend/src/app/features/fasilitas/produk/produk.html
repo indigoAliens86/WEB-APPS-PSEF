@@ -1,0 +1,314 @@
+@if (!showingDetails()) {
+  <div class="produk-page-container">
+    <!-- TOP 4 KPI CARDS -->
+    <section class="kpi-grid" aria-label="Ringkasan Inventaris Produk">
+      @for (card of kpiCards(); track card.title) {
+        <article class="kpi-card">
+          <div class="kpi-icon-wrapper" [ngClass]="card.colorClass">
+            <i [class]="card.icon" aria-hidden="true"></i>
+          </div>
+          <div class="kpi-info">
+            <span class="kpi-label">{{ card.title }}</span>
+            <strong class="kpi-value">{{ card.value }}</strong>
+            <span class="kpi-subtext">{{ card.subtext }}</span>
+          </div>
+        </article>
+      }
+    </section>
+
+    <!-- MAIN PRODUCT INVENTORY TABLE CARD -->
+    <section class="table-card" aria-labelledby="produk-heading">
+      <!-- Card Header -->
+      <header class="table-card-header">
+        <div class="card-title-group">
+          <h1 id="produk-heading" class="card-title">Inventaris & Katalog Produk</h1>
+          <p class="card-subtitle">Kelola harga jual, stok fisik obat, dan katalog produk fasilitas farmasi</p>
+        </div>
+
+        <div class="card-actions">
+          <button
+            type="button"
+            class="btn-export"
+            (click)="exportData()"
+            title="Export Inventaris ke CSV"
+            aria-label="Export Inventaris ke CSV"
+          >
+            <i class="ri-file-excel-2-line" aria-hidden="true"></i>
+            <span>Export CSV</span>
+          </button>
+
+          <button
+            type="button"
+            class="btn-primary-add"
+            (click)="openAdd()"
+            aria-label="Tambah Produk Baru"
+          >
+            <i class="ri-add-line" aria-hidden="true"></i>
+            <span>Tambah Produk</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Toolbar Filter Bar -->
+      <div class="filter-toolbar">
+        <div class="search-box">
+          <i class="ri-search-line search-icon" aria-hidden="true"></i>
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Cari nama obat, NIE BPOM, SKU, atau zat aktif..."
+            [ngModel]="searchQuery()"
+            (ngModelChange)="searchQuery.set($event)"
+            aria-label="Cari Produk"
+          />
+        </div>
+
+        <div class="filter-dropdowns">
+          <div class="select-wrap">
+            <select
+              class="filter-select"
+              [ngModel]="selectedCategory()"
+              (ngModelChange)="selectedCategory.set($event)"
+              aria-label="Filter Kategori"
+            >
+              @for (cat of categories; track cat) {
+                <option [value]="cat">{{ cat }}</option>
+              }
+            </select>
+            <i class="ri-arrow-down-s-line select-arrow" aria-hidden="true"></i>
+          </div>
+
+          <div class="select-wrap">
+            <select
+              class="filter-select"
+              [ngModel]="selectedStatus()"
+              (ngModelChange)="selectedStatus.set($event)"
+              aria-label="Filter Status Stok"
+            >
+              <option value="Semua Status">Semua Status</option>
+              <option value="Tersedia">Stok Tersedia</option>
+              <option value="Menipis">Stok Menipis</option>
+              <option value="Habis">Stok Habis</option>
+            </select>
+            <i class="ri-arrow-down-s-line select-arrow" aria-hidden="true"></i>
+          </div>
+
+          <div class="select-wrap">
+            <select
+              class="filter-select"
+              [ngModel]="selectedSource()"
+              (ngModelChange)="selectedSource.set($event)"
+              aria-label="Filter Sumber Produk"
+            >
+              <option value="Semua Sumber">Semua Sumber</option>
+              <option value="Katalog">Master Katalog PSEF</option>
+              <option value="Manual">Input Manual</option>
+            </select>
+            <i class="ri-arrow-down-s-line select-arrow" aria-hidden="true"></i>
+          </div>
+
+          <button
+            type="button"
+            class="btn-reset-filter"
+            (click)="resetFilters()"
+            title="Reset Filter"
+            aria-label="Reset Filter"
+          >
+            <i class="ri-refresh-line" aria-hidden="true"></i>
+            <span>Reset</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Data Table -->
+      <div class="table-responsive">
+        <table class="produk-table" aria-label="Tabel Inventaris Produk Apotek">
+          <thead>
+            <tr>
+              <th class="th-no">No</th>
+              <th class="th-sku">SKU</th>
+              <th class="th-produk">Produk & NIE</th>
+              <th class="th-kategori">Kategori</th>
+              <th class="th-sumber">Sumber</th>
+              <th class="th-harga-beli">Harga Beli (HPP)</th>
+              <th class="th-harga-jual">Harga Jual</th>
+              <th class="th-stok">Stok</th>
+              <th class="th-rak">Lokasi Rak</th>
+              <th class="th-status">Status</th>
+              <th class="th-aksi">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of paginatedProducts(); track item.id; let idx = $index) {
+              <tr class="table-row">
+                <td class="td-no">{{ (page() - 1) * pageSize() + idx + 1 }}</td>
+                <td class="td-sku">
+                  <span class="sku-code">{{ item.sku }}</span>
+                  <span class="barcode-text">{{ item.barcode }}</span>
+                </td>
+                <td class="td-produk">
+                  <div class="product-identity-cell">
+                    <img
+                      [src]="item.thumbnail"
+                      [alt]="item.name"
+                      class="product-thumb"
+                      onerror="this.src='assets/images/thumbnail/ibuprofen.svg'"
+                    />
+                    <div class="product-meta">
+                      <strong class="product-name" (click)="openDetail(item)">{{ item.name }}</strong>
+                      <span class="product-bpom"><i class="ri-shield-check-line"></i> {{ item.bpomNumber }}</span>
+                      <span class="product-mfr">{{ item.manufacturer }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td class="td-kategori">
+                  <span class="cat-pill" [class.keras]="item.golongan === 'Keras'" [class.bebas]="item.golongan === 'Bebas'" [class.terbatas]="item.golongan === 'Bebas Terbatas'">
+                    {{ item.kategori }}
+                  </span>
+                  <span class="dosage-sub">{{ item.bentukSediaan }} • {{ item.satuan }}</span>
+                </td>
+                <td class="td-sumber">
+                  @if (item.source === 'Katalog') {
+                    <span class="source-badge source-katalog" title="Data resmi dari Master Katalog Admin">
+                      <i class="ri-verified-badge-fill"></i> Master
+                    </span>
+                  } @else {
+                    <span class="source-badge source-manual" title="Ditambahkan manual oleh fasilitas">
+                      <i class="ri-edit-2-line"></i> Manual
+                    </span>
+                  }
+                </td>
+                <td class="td-harga-beli">
+                  <span class="price-hpp">Rp {{ item.hargaBeli | number }}</span>
+                </td>
+                <td class="td-harga-jual">
+                  <span class="price-selling">Rp {{ item.hargaJual | number }}</span>
+                  @if (item.diskon > 0) {
+                    <span class="discount-tag">-Rp {{ item.diskon | number }}</span>
+                  }
+                </td>
+                <td class="td-stok">
+                  <div class="stock-badge" [class.danger]="item.stok === 0" [class.warning]="item.stok > 0 && item.stok <= item.stokMin" [class.safe]="item.stok > item.stokMin">
+                    <strong class="stock-num">{{ item.stok }}</strong>
+                    <span class="stock-unit">Min: {{ item.stokMin }}</span>
+                  </div>
+                </td>
+                <td class="td-rak">
+                  <span class="shelf-pill"><i class="ri-inbox-archive-line"></i> {{ item.rakLokasi }}</span>
+                </td>
+                <td class="td-status">
+                  <span class="status-badge" [class.badge-tersedia]="item.status === 'Tersedia'" [class.badge-menipis]="item.status === 'Menipis'" [class.badge-habis]="item.status === 'Habis'">
+                    {{ item.status }}
+                  </span>
+                </td>
+                <td class="td-aksi">
+                  <div class="action-buttons">
+                    <button
+                      type="button"
+                      class="btn-act btn-view"
+                      (click)="openDetail(item)"
+                      title="Lihat Detail Produk"
+                      aria-label="Lihat Detail Produk"
+                    >
+                      <i class="ri-eye-line" aria-hidden="true"></i>
+                    </button>
+                    <button
+                      type="button"
+                      class="btn-act btn-edit"
+                      (click)="openEdit(item)"
+                      title="Edit Harga & Stok"
+                      aria-label="Edit Harga & Stok"
+                    >
+                      <i class="ri-edit-line" aria-hidden="true"></i>
+                    </button>
+                    <button
+                      type="button"
+                      class="btn-act btn-delete"
+                      (click)="confirmDelete(item)"
+                      title="Hapus Produk"
+                      aria-label="Hapus Produk"
+                    >
+                      <i class="ri-delete-bin-line" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="11" class="empty-cell">
+                  <div class="empty-box">
+                    <i class="ri-inbox-2-line empty-icon"></i>
+                    <strong>Produk Tidak Ditemukan</strong>
+                    <span>Tidak ada produk yang cocok dengan kata kunci pencarian atau filter yang dipilih.</span>
+                    <button type="button" class="btn-clear" (click)="resetFilters()">Reset Filter</button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination Footer -->
+      <footer class="pagination-footer">
+        <span class="pagination-info">
+          Menampilkan {{ (page() - 1) * pageSize() + 1 }}–{{ (page() - 1) * pageSize() + paginatedProducts().length }} dari {{ filteredProducts().length }} produk
+        </span>
+
+        <div class="pagination-controls">
+          <button
+            type="button"
+            class="page-nav-btn"
+            [disabled]="page() <= 1"
+            (click)="setPage(page() - 1)"
+            aria-label="Halaman sebelumnya"
+          >
+            <i class="ri-arrow-left-s-line" aria-hidden="true"></i>
+          </button>
+
+          @for (p of [].constructor(totalPages()); track $index) {
+            <button
+              type="button"
+              class="page-num-btn"
+              [class.active]="page() === $index + 1"
+              (click)="setPage($index + 1)"
+            >
+              {{ $index + 1 }}
+            </button>
+          }
+
+          <button
+            type="button"
+            class="page-nav-btn"
+            [disabled]="page() >= totalPages()"
+            (click)="setPage(page() + 1)"
+            aria-label="Halaman berikutnya"
+          >
+            <i class="ri-arrow-right-s-line" aria-hidden="true"></i>
+          </button>
+        </div>
+      </footer>
+    </section>
+  </div>
+}
+
+<router-outlet (activate)="showingDetails.set(true)" (deactivate)="showingDetails.set(false)"></router-outlet>
+
+<!-- MODAL KONFIRMASI HAPUS PRODUK -->
+@if (deletingProduct(); as prod) {
+  <div class="modal-backdrop" (click)="closeDeleteModal()">
+    <div class="modal-card modal-delete" (click)="$event.stopPropagation()">
+      <div class="delete-icon-box">
+        <i class="ri-delete-bin-line"></i>
+      </div>
+      <h2 class="modal-title">Hapus Produk dari Fasilitas?</h2>
+      <p class="modal-desc">
+        Apakah Anda yakin ingin menghapus <strong>{{ prod.name }}</strong> (SKU: {{ prod.sku }}) dari inventaris apotek?
+      </p>
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" (click)="closeDeleteModal()">Batal</button>
+        <button type="button" class="btn-confirm-delete" (click)="executeDelete()">Ya, Hapus Produk</button>
+      </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,240 @@
+<div class="detail-container">
+  <!-- Top Breadcrumb & Actions -->
+  <header class="detail-header">
+    <div class="header-left">
+      <button type="button" class="btn-back" (click)="goBack()" title="Kembali ke Daftar">
+        <i class="ri-arrow-left-line"></i>
+      </button>
+      <div class="breadcrumb-info">
+        <div class="breadcrumb-trail">
+          <span class="crumb-link" (click)="goBack()">Laporan & Analitik PSEF</span>
+          <i class="ri-arrow-right-s-line crumb-sep"></i>
+          <span class="crumb-current">{{ detail().id }}</span>
+        </div>
+        <h1 class="page-title">Pratinjau & Detail Dokumen Laporan</h1>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <button type="button" class="btn btn-outline" (click)="printReport()" title="Cetak lembar laporan">
+        <i class="ri-printer-line"></i>
+        <span>Cetak</span>
+      </button>
+      <button type="button" class="btn btn-primary" (click)="downloadReport()" title="Unduh berkas resmi">
+        <i class="ri-download-2-line"></i>
+        <span>Unduh File ({{ detail().format }})</span>
+      </button>
+      <button type="button" class="btn btn-outline" (click)="goBack()">
+        <i class="ri-close-line"></i>
+        <span>Tutup</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Interactive Simulation Preview Switcher -->
+  <div class="simulation-banner">
+    <div class="sim-label">
+      <i class="ri-cursor-line"></i>
+      <span>Simulasi Kategori Dokumen Laporan:</span>
+    </div>
+    <div class="sim-buttons">
+      <button
+        type="button"
+        class="sim-btn"
+        [class.active]="detail().kategori === 'Keuangan & Transaksi'"
+        (click)="switchReportType('Keuangan')"
+      >
+        <i class="ri-wallet-3-line"></i>
+        <span>Keuangan & Settlement</span>
+      </button>
+      <button
+        type="button"
+        class="sim-btn"
+        [class.active]="detail().kategori === 'Pelayanan Farmasi (PSEF)'"
+        (click)="switchReportType('Farmasi')"
+      >
+        <i class="ri-capsule-line"></i>
+        <span>Farmasi PSEF & Resep</span>
+      </button>
+      <button
+        type="button"
+        class="sim-btn"
+        [class.active]="detail().kategori === 'Konsultasi Medis'"
+        (click)="switchReportType('Medis')"
+      >
+        <i class="ri-stethoscope-line"></i>
+        <span>Kinerja Konsultasi Medis</span>
+      </button>
+      <button
+        type="button"
+        class="sim-btn"
+        [class.active]="detail().kategori === 'Kepatuhan Regulasi Kemenkes'"
+        (click)="switchReportType('Kemenkes')"
+      >
+        <i class="ri-shield-check-line"></i>
+        <span>Kepatuhan SIPNAP Kemenkes</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Hero Document Card -->
+  <section class="hero-doc-card">
+    <div class="doc-top-row">
+      <div class="doc-badge-group">
+        <span class="format-badge font-mono" [class.badge-pdf]="detail().format === 'PDF'" [class.badge-xlsx]="detail().format === 'XLSX'">
+          {{ detail().format }}
+        </span>
+        <span class="doc-id font-mono">{{ detail().id }}</span>
+        <span class="category-pill">{{ detail().kategori }}</span>
+        <span class="status-badge badge-siap">{{ detail().status }}</span>
+      </div>
+
+      <div class="doc-time-meta font-mono">
+        <i class="ri-calendar-line"></i>
+        <span>Periode: <strong>{{ detail().periode }}</strong></span>
+      </div>
+    </div>
+
+    <div class="doc-main-content">
+      <div class="doc-title-block">
+        <h2 class="doc-title">{{ detail().judul }}</h2>
+        <p class="doc-desc">{{ detail().deskripsi }}</p>
+      </div>
+
+      <!-- File Size & Publish Timestamp -->
+      <div class="doc-specs-row">
+        <div class="spec-col">
+          <span class="spec-label">Ukuran Dokumen:</span>
+          <span class="spec-value font-mono">{{ detail().ukuranFile }}</span>
+        </div>
+        <div class="spec-col">
+          <span class="spec-label">Waktu Diterbitkan:</span>
+          <span class="spec-value font-mono">{{ detail().waktuTerbit }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Security & Author Footer -->
+    <div class="doc-footer-row">
+      <!-- Digital Signature Badge -->
+      <div class="digital-signature-box">
+        <div class="sig-icon">
+          <i class="ri-shield-check-fill"></i>
+        </div>
+        <div class="sig-details">
+          <span class="sig-title">Digital Signature Verified &bull; {{ detail().digitalSignature.certifiedBy }}</span>
+          <span class="sig-hash font-mono">SHA-256: {{ detail().digitalSignature.hashSha256 }}</span>
+        </div>
+      </div>
+
+      <!-- PIC Author Info -->
+      <div class="pic-profile-box">
+        <img [src]="detail().pic.avatar" [alt]="detail().pic.nama" class="pic-avatar" />
+        <div class="pic-info">
+          <span class="pic-name">{{ detail().pic.nama }}</span>
+          <span class="pic-role">{{ detail().pic.role }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 Executive Summary Highlight Cards -->
+  <section class="highlights-grid" aria-label="Ringkasan Eksekutif Laporan">
+    <div *ngFor="let m of detail().ringkasanEksekutif" class="highlight-card" [ngClass]="m.colorClass">
+      <div class="hl-header">
+        <span class="hl-title">{{ m.label }}</span>
+        <div class="hl-icon-box">
+          <i [class]="m.icon"></i>
+        </div>
+      </div>
+      <div class="hl-val">{{ m.value }}</div>
+      <span class="hl-sub">{{ m.subtext }}</span>
+    </div>
+  </section>
+
+  <!-- 2-Column Content Layout -->
+  <div class="details-content-grid">
+    <!-- Left Column: Data Table Preview -->
+    <div class="details-left-col">
+      <section class="preview-table-card">
+        <div class="section-title-row">
+          <i class="ri-table-line section-icon"></i>
+          <div>
+            <h3 class="section-title">Pratinjau Sampel Data Laporan</h3>
+            <span class="section-sub">Sampel data agregasi teratas yang tercantum dalam dokumen resmi</span>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="preview-data-table">
+            <thead>
+              <tr>
+                <th *ngFor="let th of detail().tabelHeaders">{{ th }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of detail().pratinjauTabel" class="preview-row">
+                <td class="font-mono text-muted td-center">{{ row.no }}</td>
+                <td class="font-semibold">{{ row.kolom1 }}</td>
+                <td>{{ row.kolom2 }}</td>
+                <td class="font-mono font-bold">{{ row.kolom3 }}</td>
+                <td class="font-mono text-muted">{{ row.kolom4 }}</td>
+                <td>
+                  <span class="status-cell-badge">{{ row.kolom5 }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="table-card-footer">
+          <span class="sample-notice text-muted">
+            <i class="ri-information-line"></i>
+            Menampilkan 4 baris sampel pratinjau. Unduh berkas lengkap ({{ detail().format }}) untuk mengakses seluruh baris data.
+          </span>
+          <button type="button" class="btn btn-outline btn-sm" (click)="downloadReport()">
+            <span>Unduh Berkas Lengkap</span>
+            <i class="ri-download-line"></i>
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <!-- Right Column: Audit Access Trail & Verification -->
+    <div class="details-right-col">
+      <section class="audit-card">
+        <div class="section-title-row">
+          <i class="ri-history-line section-icon"></i>
+          <div>
+            <h3 class="section-title">Log Audit & Integritas Dokumen</h3>
+            <span class="section-sub">Rekam jejak penerbitan dan pengesahan laporan</span>
+          </div>
+        </div>
+
+        <div class="audit-timeline">
+          <div *ngFor="let a of detail().auditRiwayat" class="audit-step">
+            <div class="step-icon-marker">
+              <i [class]="a.icon"></i>
+            </div>
+            <div class="step-body">
+              <div class="step-top">
+                <span class="step-title">{{ a.label }}</span>
+                <span class="step-time text-muted font-mono">{{ a.waktu }}</span>
+              </div>
+              <div class="step-user">
+                <span>{{ a.user }}</span> &bull; <small class="text-muted">{{ a.role }}</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="compliance-footer-box">
+          <i class="ri-government-line comp-icon"></i>
+          <p class="comp-text">
+            Dokumen ini diakui secara legal sebagai arsip resmi Penyelenggara Sistem Elektronik Farmasi (PSEF) sesuai standar Kementerian Kesehatan RI.
+          </p>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

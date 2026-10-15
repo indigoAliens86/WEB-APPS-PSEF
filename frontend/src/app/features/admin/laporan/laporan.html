@@ -1,0 +1,351 @@
+<div class="laporan-container">
+  <!-- Child Router Outlet for Detail View -->
+  <router-outlet></router-outlet>
+
+  <!-- Main Reports List View (hidden when viewing detail) -->
+  <div *ngIf="!showingDetails()" class="laporan-main-view">
+    <!-- Header Section -->
+    <header class="page-header">
+      <div class="header-left">
+        <div class="header-icon-box">
+          <i class="ri-file-chart-fill"></i>
+        </div>
+        <div>
+          <h1 class="page-title">Laporan & Analitik PSEF</h1>
+          <p class="page-subtitle">
+            Pusat penerbitan laporan transaksi keuangan, rekapitulasi pelayanan resep farmasi, rekam telemedisin, dan kepatuhan regulasi Kemenkes
+          </p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button type="button" class="btn btn-outline" (click)="exportAllZip()" title="Unduh seluruh arsip laporan dalam format ZIP">
+          <i class="ri-archive-line"></i>
+          <span>Unduh Semua Arsip</span>
+        </button>
+        <button type="button" class="btn btn-primary" (click)="openGenerateModal()" title="Terbitkan laporan audit atau keuangan baru">
+          <i class="ri-add-line"></i>
+          <span>Terbitkan Laporan Baru</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- 4 KPI Summary Cards -->
+    <section class="kpi-grid" aria-label="Statistik Laporan dan Analitik PSEF">
+      <div *ngFor="let kpi of kpiCards" class="kpi-card" [ngClass]="kpi.colorClass">
+        <div class="kpi-header">
+          <span class="kpi-title">{{ kpi.title }}</span>
+          <div class="kpi-icon-wrapper">
+            <i [class]="kpi.icon"></i>
+          </div>
+        </div>
+        <div class="kpi-value-row">
+          <span class="kpi-value">{{ kpi.value }}</span>
+          <span *ngIf="kpi.percentage" class="kpi-badge positive">
+            {{ kpi.percentage }}
+          </span>
+        </div>
+        <p class="kpi-period">{{ kpi.period }}</p>
+      </div>
+    </section>
+
+    <!-- Category Tabs Navigation -->
+    <div class="category-tabs-wrapper">
+      <nav class="category-tabs-nav" aria-label="Kategori Laporan">
+        <button
+          *ngFor="let tab of categoryTabs"
+          type="button"
+          class="category-tab-btn"
+          [class.active]="activeCategoryTab() === tab"
+          (click)="setCategoryTab(tab)"
+        >
+          <span class="tab-label">{{ tab }}</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Toolbar Filters -->
+    <section class="toolbar-card">
+      <div class="toolbar-search">
+        <i class="ri-search-line search-icon"></i>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Cari judul laporan, ID dokumen, atau PIC generator..."
+          [ngModel]="searchQuery()"
+          (ngModelChange)="searchQuery.set($event)"
+        />
+        <button
+          *ngIf="searchQuery()"
+          type="button"
+          class="clear-search-btn"
+          (click)="searchQuery.set('')"
+          title="Hapus pencarian"
+        >
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <div class="toolbar-filters">
+        <!-- Filter Format File -->
+        <div class="filter-item">
+          <label class="filter-label" for="filter-format">Format:</label>
+          <div class="select-wrapper">
+            <select
+              id="filter-format"
+              class="filter-select"
+              [ngModel]="filterFormat()"
+              (ngModelChange)="filterFormat.set($event)"
+            >
+              <option *ngFor="let opt of formatOptions" [value]="opt">{{ opt }}</option>
+            </select>
+            <i class="ri-arrow-down-s-line select-arrow"></i>
+          </div>
+        </div>
+
+        <!-- Filter Status -->
+        <div class="filter-item">
+          <label class="filter-label" for="filter-status">Status:</label>
+          <div class="select-wrapper">
+            <select
+              id="filter-status"
+              class="filter-select"
+              [ngModel]="filterStatus()"
+              (ngModelChange)="filterStatus.set($event)"
+            >
+              <option *ngFor="let opt of statusOptions" [value]="opt">{{ opt }}</option>
+            </select>
+            <i class="ri-arrow-down-s-line select-arrow"></i>
+          </div>
+        </div>
+
+        <!-- Filter Periode -->
+        <div class="filter-item">
+          <label class="filter-label" for="filter-periode">Periode:</label>
+          <div class="select-wrapper">
+            <select
+              id="filter-periode"
+              class="filter-select"
+              [ngModel]="filterPeriode()"
+              (ngModelChange)="filterPeriode.set($event)"
+            >
+              <option *ngFor="let opt of periodeOptions" [value]="opt">{{ opt }}</option>
+            </select>
+            <i class="ri-arrow-down-s-line select-arrow"></i>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Reports Data Table Card -->
+    <section class="table-card">
+      <div class="table-responsive">
+        <table class="report-table">
+          <thead>
+            <tr>
+              <th class="th-no">No</th>
+              <th class="th-format">Format & ID Dokumen</th>
+              <th class="th-judul">Judul Laporan & Deskripsi</th>
+              <th class="th-kategori">Kategori</th>
+              <th class="th-periode">Periode Data</th>
+              <th class="th-records">Ukuran & Records</th>
+              <th class="th-generator">Tanggal Terbit & Generator</th>
+              <th class="th-status">Status</th>
+              <th class="th-aksi">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of filteredReports(); let idx = index" class="table-row">
+              <td class="td-no text-muted font-mono">{{ idx + 1 }}</td>
+              <td class="td-format">
+                <div class="doc-format-cell">
+                  <span class="format-pill font-mono" [ngClass]="getFormatBadgeClass(item.format)">
+                    {{ item.format }}
+                  </span>
+                  <span class="doc-id font-mono">{{ item.id }}</span>
+                </div>
+              </td>
+              <td class="td-judul">
+                <div class="report-title-cell">
+                  <span class="report-title">{{ item.judul }}</span>
+                  <p class="report-desc">{{ item.deskripsi }}</p>
+                </div>
+              </td>
+              <td class="td-kategori">
+                <span class="category-tag">
+                  <i class="ri-price-tag-3-line"></i>
+                  {{ item.kategori }}
+                </span>
+              </td>
+              <td class="td-periode">
+                <span class="period-text font-mono">{{ item.periode }}</span>
+              </td>
+              <td class="td-records">
+                <div class="size-records-cell font-mono">
+                  <span class="file-size">{{ item.ukuranFile }}</span>
+                  <span class="records-count text-muted">({{ item.totalData.toLocaleString('id-ID') }} Baris)</span>
+                </div>
+              </td>
+              <td class="td-generator">
+                <div class="generator-cell">
+                  <span class="date-gen">{{ item.tanggalGenerate }}</span>
+                  <span class="pic-name text-muted">{{ item.generatorPic }}</span>
+                </div>
+              </td>
+              <td class="td-status">
+                <span class="status-badge" [ngClass]="getStatusBadgeClass(item.status)">
+                  {{ item.status }}
+                </span>
+              </td>
+              <td class="td-aksi">
+                <div class="action-btn-group">
+                  <button
+                    type="button"
+                    class="btn-icon"
+                    (click)="viewDetail(item)"
+                    title="Lihat Pratinjau & Analitik Laporan"
+                  >
+                    <i class="ri-eye-line"></i>
+                  </button>
+                  <button
+                    type="button"
+                    class="btn-icon btn-download"
+                    (click)="downloadReport(item)"
+                    title="Unduh Berkas Laporan"
+                  >
+                    <i class="ri-download-line"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <tr *ngIf="filteredReports().length === 0">
+              <td colspan="9" class="empty-state-cell">
+                <div class="empty-state-content">
+                  <i class="ri-file-search-line empty-icon"></i>
+                  <p class="empty-text">Tidak ada dokumen laporan yang sesuai dengan kriteria filter</p>
+                  <button
+                    type="button"
+                    class="btn btn-outline btn-sm"
+                    (click)="searchQuery.set(''); filterFormat.set('Semua Format'); filterStatus.set('Semua Status'); filterPeriode.set('Semua Periode'); activeCategoryTab.set('Semua Laporan')"
+                  >
+                    Reset Filter
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <!-- MODAL: TERBITKAN LAPORAN BARU -->
+  <div *ngIf="showGenerateModal()" class="modal-backdrop" (click)="closeGenerateModal()">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title-row">
+          <div class="modal-icon-badge">
+            <i class="ri-file-chart-fill"></i>
+          </div>
+          <div>
+            <h2 class="modal-title">Terbitkan Dokumen Laporan Baru</h2>
+            <p class="modal-subtitle">Generate laporan rekapitulasi transaksi, pelayanan farmasi atau audit PSEF</p>
+          </div>
+        </div>
+        <button type="button" class="btn-close-modal" (click)="closeGenerateModal()" title="Tutup modal">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Judul Laporan -->
+        <div class="form-group">
+          <label class="form-label" for="inp-judul">Judul Dokumen Laporan <span class="text-danger">*</span></label>
+          <input
+            id="inp-judul"
+            type="text"
+            class="form-control"
+            placeholder="Contoh: Laporan Rekapitulasi Pelayanan Resep Digital Bulan Juni 2026"
+            [(ngModel)]="newReportForm.judul"
+          />
+        </div>
+
+        <!-- Kategori & Periode -->
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">Kategori Laporan</label>
+            <select class="form-control" [(ngModel)]="newReportForm.kategori">
+              <option value="Keuangan & Transaksi">Keuangan & Transaksi</option>
+              <option value="Pelayanan Farmasi (PSEF)">Pelayanan Farmasi (PSEF)</option>
+              <option value="Konsultasi Medis">Konsultasi Medis</option>
+              <option value="Pasien & Demografi">Pasien & Demografi</option>
+              <option value="Kepatuhan Regulasi Kemenkes">Kepatuhan Regulasi Kemenkes</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Periode Data</label>
+            <select class="form-control" [(ngModel)]="newReportForm.periode">
+              <option value="Mei 2026">Mei 2026 (Bulan Berjalan)</option>
+              <option value="April 2026">April 2026</option>
+              <option value="Triwulan I 2026">Triwulan I 2026</option>
+              <option value="Tahun 2026">Tahun Berjalan 2026</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Format File Output -->
+        <div class="form-group">
+          <label class="form-label">Format Dokumen Output</label>
+          <div class="radio-pill-group">
+            <label class="radio-pill" [class.active]="newReportForm.format === 'PDF'">
+              <input type="radio" name="repFmt" [(ngModel)]="newReportForm.format" value="PDF" />
+              <i class="ri-file-pdf-line text-danger"></i>
+              <span>Dokumen PDF (Siap Cetak & Tanda Tangan)</span>
+            </label>
+            <label class="radio-pill" [class.active]="newReportForm.format === 'XLSX'">
+              <input type="radio" name="repFmt" [(ngModel)]="newReportForm.format" value="XLSX" />
+              <i class="ri-file-excel-line text-success"></i>
+              <span>Excel Spreadsheet (XLSX)</span>
+            </label>
+            <label class="radio-pill" [class.active]="newReportForm.format === 'CSV'">
+              <input type="radio" name="repFmt" [(ngModel)]="newReportForm.format" value="CSV" />
+              <i class="ri-file-text-line text-primary"></i>
+              <span>CSV Data Raw</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Deskripsi Singkat -->
+        <div class="form-group">
+          <label class="form-label">Deskripsi / Ruang Lingkup Dokumen</label>
+          <textarea
+            class="form-control"
+            rows="2"
+            placeholder="Keterangan audit atau catatan parameter laporan..."
+            [(ngModel)]="newReportForm.deskripsi"
+          ></textarea>
+        </div>
+
+        <!-- Options Checkbox -->
+        <div class="options-group">
+          <label class="checkbox-label">
+            <input type="checkbox" [(ngModel)]="newReportForm.sertakanGrafik" />
+            <span>Sertakan infografis visual & diagram tren data</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" [(ngModel)]="newReportForm.sertakanTtdDigital" />
+            <span>Sertakan sertifikat tanda tangan digital (Digital Signature) Kemenkes PSEF</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" (click)="closeGenerateModal()">Batal</button>
+        <button type="button" class="btn btn-primary" (click)="saveGenerateReport()">
+          <i class="ri-file-download-line"></i>
+          <span>Generate & Terbitkan Laporan</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

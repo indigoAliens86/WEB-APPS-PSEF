@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" width="80" height="80">
+  <defs>
+    <linearGradient id="vitCGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f97316"/>
+      <stop offset="100%" stop-color="#ea580c"/>
+    </linearGradient>
+  </defs>
+  <rect width="80" height="80" rx="12" fill="#fff7ed"/>
+  <rect x="12" y="18" width="56" height="44" rx="6" fill="url(#vitCGrad)"/>
+  <rect x="12" y="32" width="56" height="16" fill="#ffffff" opacity="0.95"/>
+  <circle cx="50" cy="24" r="3" fill="#ffedd5"/>
+  <text x="15" y="43" font-family="system-ui, sans-serif" font-size="8" font-weight="700" fill="#c2410c">VITAMIN C</text>
+  <text x="16" y="56" font-family="system-ui, sans-serif" font-size="7" font-weight="600" fill="#ffffff">500 mg</text>
+</svg>

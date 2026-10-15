@@ -1,0 +1,287 @@
+<div class="detail-container">
+  <!-- Top Breadcrumb & Actions -->
+  <header class="detail-header">
+    <div class="header-left">
+      <button type="button" class="btn-back" (click)="goBack()" title="Kembali ke Daftar">
+        <i class="ri-arrow-left-line"></i>
+      </button>
+      <div class="breadcrumb-info">
+        <div class="breadcrumb-trail">
+          <span class="crumb-link" (click)="goBack()">Promo, Voucher & Membership</span>
+          <i class="ri-arrow-right-s-line crumb-sep"></i>
+          <span class="crumb-current">{{ detail().id }}</span>
+        </div>
+        <h1 class="page-title">{{ detail().nama }}</h1>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <button type="button" class="btn btn-outline" (click)="printReport()" title="Cetak laporan">
+        <i class="ri-printer-line"></i>
+        <span>Cetak Laporan</span>
+      </button>
+      <button type="button" class="btn btn-outline" (click)="goBack()">
+        <i class="ri-close-line"></i>
+        <span>Tutup</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Interactive Simulation Preview Switcher -->
+  <div class="simulation-banner">
+    <div class="sim-label">
+      <i class="ri-cursor-line"></i>
+      <span>Mode Simulasi Tipe Program:</span>
+    </div>
+    <div class="sim-buttons">
+      <button
+        type="button"
+        class="sim-btn"
+        [class.active]="detail().tipe === 'Voucher'"
+        (click)="switchPreviewType('Voucher')"
+      >
+        <i class="ri-coupon-3-line"></i>
+        <span>Voucher (Kode Kupon)</span>
+      </button>
+      <button
+        type="button"
+        class="sim-btn"
+        [class.active]="detail().tipe === 'Campaign'"
+        (click)="switchPreviewType('Campaign')"
+      >
+        <i class="ri-flashlight-line"></i>
+        <span>Campaign Flash Sale</span>
+      </button>
+      <button
+        type="button"
+        class="sim-btn"
+        [class.active]="detail().tipe === 'Membership'"
+        (click)="switchPreviewType('Membership')"
+      >
+        <i class="ri-vip-crown-line"></i>
+        <span>Membership Tier</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Hero Overview Card -->
+  <section class="hero-overview-card">
+    <div class="hero-top-row">
+      <div class="hero-badges">
+        <span class="type-pill" [class.voucher-pill]="detail().tipe === 'Voucher'" [class.campaign-pill]="detail().tipe === 'Campaign'" [class.membership-pill]="detail().tipe === 'Membership'">
+          {{ detail().tipe }}
+        </span>
+        <span class="id-badge font-mono">{{ detail().id }}</span>
+        <span class="status-badge" [class.badge-aktif]="detail().status === 'Aktif'">
+          {{ detail().status }}
+        </span>
+      </div>
+
+      <div class="hero-dates">
+        <i class="ri-calendar-event-line"></i>
+        <span>{{ detail().periodeMulai }} &mdash; {{ detail().periodeSelesai }}</span>
+        <span class="days-remaining">({{ detail().sisaHari }} Hari Tersisa)</span>
+      </div>
+    </div>
+
+    <div class="hero-main-row">
+      <div class="hero-info">
+        <h2 class="hero-title">{{ detail().nama }}</h2>
+        <p class="hero-desc">{{ detail().deskripsi }}</p>
+      </div>
+
+      <!-- Voucher Code Box (If Voucher/Membership) -->
+      <div *ngIf="detail().kodeVoucher" class="voucher-big-box">
+        <span class="vbox-label">KODE VOUCHER RESMI</span>
+        <div class="vbox-code-row">
+          <span class="vbox-code font-mono">{{ detail().kodeVoucher }}</span>
+          <button type="button" class="btn-copy-code" (click)="copyCode()" title="Salin kode">
+            <i [class]="copiedCode() ? 'ri-check-line text-success' : 'ri-file-copy-line'"></i>
+            <span>{{ copiedCode() ? 'Tersalin' : 'Salin' }}</span>
+          </button>
+        </div>
+        <span class="vbox-hint">Klik tombol salin untuk membagikan ke pasien</span>
+      </div>
+
+      <!-- Auto apply banner if Campaign without code -->
+      <div *ngIf="!detail().kodeVoucher" class="campaign-auto-box">
+        <div class="auto-icon">
+          <i class="ri-flashlight-fill"></i>
+        </div>
+        <div>
+          <span class="auto-title">Flash Sale Otomatis</span>
+          <span class="auto-desc">Diskon otomatis aktif saat checkout produk terkait</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 Performance Metric Cards -->
+  <section class="metrics-grid" aria-label="Statistik Kinerja Program">
+    <div class="metric-card">
+      <div class="metric-header">
+        <span class="metric-title">Kuota & Penggunaan</span>
+        <i class="ri-pie-chart-line metric-icon text-teal"></i>
+      </div>
+      <div class="metric-value-row">
+        <span class="metric-val">{{ detail().kuotaTerpakai }}</span>
+        <span class="metric-total">/ {{ detail().kuotaTotal }} Klaim</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" [style.width.%]="detail().persentaseKuota"></div>
+      </div>
+      <span class="metric-sub">{{ detail().persentaseKuota }}% kuota program telah terpakai</span>
+    </div>
+
+    <div class="metric-card">
+      <div class="metric-header">
+        <span class="metric-title">Total Diskon Diberikan</span>
+        <i class="ri-hand-coin-line metric-icon text-emerald"></i>
+      </div>
+      <div class="metric-value-row">
+        <span class="metric-val text-emerald">{{ detail().totalPenghematanPasien }}</span>
+      </div>
+      <span class="metric-sub">Total penghematan kumulatif pasien PSEF</span>
+    </div>
+
+    <div class="metric-card">
+      <div class="metric-header">
+        <span class="metric-title">Omset Belanja Terdorong</span>
+        <i class="ri-funds-line metric-icon text-purple"></i>
+      </div>
+      <div class="metric-value-row">
+        <span class="metric-val">{{ detail().totalOmsetTerdorong }}</span>
+      </div>
+      <span class="metric-sub">Gross Merchandise Value dari promo ini</span>
+    </div>
+
+    <div class="metric-card">
+      <div class="metric-header">
+        <span class="metric-title">Target Keanggotaan</span>
+        <i class="ri-vip-crown-line metric-icon text-amber"></i>
+      </div>
+      <div class="metric-value-row">
+        <span class="metric-val-sm">{{ detail().targetTierMembership }}</span>
+      </div>
+      <span class="metric-sub">Segmen pasien yang berhak menikmati promo</span>
+    </div>
+  </section>
+
+  <!-- 2-Column Details Grid -->
+  <div class="details-content-grid">
+    <!-- Left Column: Specs & T&C -->
+    <div class="details-left-col">
+      <!-- Specification Card -->
+      <section class="spec-card">
+        <div class="section-title-row">
+          <i class="ri-file-list-3-line section-icon"></i>
+          <h3 class="section-title">Ketentuan & Spesifikasi Diskon</h3>
+        </div>
+
+        <div class="spec-list">
+          <div class="spec-item">
+            <span class="spec-label">Nilai Potongan</span>
+            <span class="spec-val highlight-val">{{ detail().diskonFormatted }}</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Maksimal Diskon</span>
+            <span class="spec-val">{{ detail().maxDiskonFormatted }}</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Minimum Transaksi</span>
+            <span class="spec-val">{{ detail().minTransaksiFormatted }}</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Target Layanan</span>
+            <span class="spec-val">
+              <span class="target-badge">{{ detail().targetLayanan }}</span>
+            </span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Periode Mulai</span>
+            <span class="spec-val">{{ detail().periodeMulai }}</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Periode Berakhir</span>
+            <span class="spec-val">{{ detail().periodeSelesai }}</span>
+          </div>
+          <div class="spec-item">
+            <span class="spec-label">Status Program</span>
+            <span class="spec-val">
+              <span class="status-badge badge-aktif">{{ detail().status }}</span>
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Terms and Conditions Card -->
+      <section class="spec-card">
+        <div class="section-title-row">
+          <i class="ri-shield-check-line section-icon"></i>
+          <h3 class="section-title">Syarat & Ketentuan Penggunaan</h3>
+        </div>
+
+        <ul class="tnc-list">
+          <li *ngFor="let term of detail().syaratKetentuan" class="tnc-item">
+            <i class="ri-checkbox-circle-fill tnc-check"></i>
+            <span>{{ term }}</span>
+          </li>
+        </ul>
+      </section>
+    </div>
+
+    <!-- Right Column: Recent Claims History Table -->
+    <div class="details-right-col">
+      <section class="claims-card">
+        <div class="claims-card-header">
+          <div class="section-title-row">
+            <i class="ri-history-line section-icon"></i>
+            <div>
+              <h3 class="section-title">Riwayat Klaim Terakhir</h3>
+              <p class="section-sub">Pasien yang baru-baru ini berhasil menggunakan program ini</p>
+            </div>
+          </div>
+          <span class="claims-badge">{{ detail().riwayatKlaim.length }} Transaksi Terdata</span>
+        </div>
+
+        <div class="table-responsive">
+          <table class="claims-table">
+            <thead>
+              <tr>
+                <th style="width: 40px;">No</th>
+                <th>Pasien</th>
+                <th>No. Transaksi</th>
+                <th>Layanan</th>
+                <th>Potongan</th>
+                <th>Waktu</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let claim of detail().riwayatKlaim" class="claim-row">
+                <td class="font-mono text-muted">{{ claim.no }}</td>
+                <td>
+                  <div class="patient-cell">
+                    <img [src]="claim.pasienAvatar" [alt]="claim.pasienNama" class="patient-avatar" />
+                    <span class="patient-name">{{ claim.pasienNama }}</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="trans-id font-mono">{{ claim.transaksiId }}</span>
+                </td>
+                <td>
+                  <span class="service-name">{{ claim.layanan }}</span>
+                </td>
+                <td>
+                  <span class="discount-saved text-emerald font-semibold">{{ claim.nilaiDiskon }}</span>
+                </td>
+                <td>
+                  <span class="claim-time text-muted">{{ claim.waktu }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

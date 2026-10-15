@@ -1,0 +1,562 @@
+<div class="cara-pesan-wrapper">
+  <!-- Header Info & Actions -->
+  <div class="sub-header">
+    <div class="sub-header-info">
+      <h3 class="sub-title">Panduan Alur Pelayanan & Pemesanan PSEF</h3>
+      <p class="sub-desc">
+        Konfigurasi langkah-langkah alur tebus resep dokter, verifikasi apoteker, pengemasan rantai dingin, dan pengantaran obat yang ditampilkan pada aplikasi mobile dan portal web pasien.
+      </p>
+    </div>
+    <div class="sub-header-actions">
+      <button type="button" class="btn btn-primary" (click)="openAddModal()">
+        <i class="ri-add-line"></i>
+        <span>Tambah Langkah Baru</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Interactive Timeline / Stepper Preview Banner -->
+  <div class="stepper-preview-card">
+    <div class="stepper-header">
+      <div class="stepper-badge">
+        <i class="ri-eye-line"></i>
+        <span>Pratinjau Alur Pasien di Aplikasi</span>
+      </div>
+      <span class="stepper-meta">{{ langkahList().length }} Tahapan Alur Terdaftar</span>
+    </div>
+    <div class="steps-flow-container">
+      <div *ngFor="let step of filteredLangkahList(); let i = index" class="step-card-flow" [class.inactive]="step.status === 'Nonaktif'">
+        <div class="step-badge-num">{{ step.urutan }}</div>
+        <div class="step-icon-circle">
+          <i [class]="step.icon"></i>
+        </div>
+        <h4 class="step-flow-title">{{ step.judul }}</h4>
+        <p class="step-flow-desc">{{ step.subjudul }}</p>
+        <span class="step-flow-time"><i class="ri-time-line"></i> {{ step.estimasiWaktu }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Management Toolbar -->
+  <div class="table-toolbar">
+    <div class="search-box">
+      <i class="ri-search-line search-icon"></i>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Cari judul, kata kunci, atau detail panduan..."
+        [ngModel]="searchQuery()"
+        (ngModelChange)="searchQuery.set($event)"
+      />
+    </div>
+
+    <div class="filter-group">
+      <label class="filter-label" for="filter-layanan">Layanan:</label>
+      <select
+        id="filter-layanan"
+        class="filter-select"
+        [ngModel]="filterLayanan()"
+        (ngModelChange)="filterLayanan.set($event)"
+      >
+        <option value="Semua">Semua Layanan</option>
+        <option value="Obat Resep Digital">Obat Resep Digital</option>
+        <option value="Telemedisin">Telemedisin</option>
+        <option value="Semua Layanan">Semua Layanan</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Steps Table Card -->
+  <div class="table-card">
+    <div class="table-responsive">
+      <table class="cms-table">
+        <thead>
+          <tr>
+            <th class="th-urutan">Urutan</th>
+            <th class="th-langkah">Langkah & Panduan</th>
+            <th class="th-layanan">Target Layanan</th>
+            <th class="th-waktu">Estimasi Waktu</th>
+            <th class="th-status">Status</th>
+            <th class="th-aksi">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of filteredLangkahList(); let idx = index" class="table-row">
+            <td class="td-urutan">
+              <div class="order-cell">
+                <span class="step-pill">#{{ item.urutan }}</span>
+                <div class="order-arrows">
+                  <button
+                    type="button"
+                    class="btn-order-arrow"
+                    (click)="moveUp(item)"
+                    [disabled]="idx === 0"
+                    title="Geser ke Atas"
+                  >
+                    <i class="ri-arrow-up-s-line"></i>
+                  </button>
+                  <button
+                    type="button"
+                    class="btn-order-arrow"
+                    (click)="moveDown(item)"
+                    [disabled]="idx === filteredLangkahList().length - 1"
+                    title="Geser ke Bawah"
+                  >
+                    <i class="ri-arrow-down-s-line"></i>
+                  </button>
+                </div>
+              </div>
+            </td>
+            <td class="td-langkah">
+              <div class="step-detail-cell">
+                <div class="step-icon-mini">
+                  <i [class]="item.icon"></i>
+                </div>
+                <div class="step-texts">
+                  <h5 class="step-name">{{ item.judul }}</h5>
+                  <p class="step-text">{{ item.deskripsi }}</p>
+                  <div *ngIf="item.tipsCatatan" class="step-patient-tip">
+                    <i class="ri-lightbulb-flash-line"></i>
+                    <span><strong>Tips Pasien:</strong> {{ item.tipsCatatan }}</span>
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td class="td-layanan">
+              <span class="service-chip">
+                <i class="ri-capsule-line"></i>
+                {{ item.tipeLayanan }}
+              </span>
+            </td>
+            <td class="td-waktu font-mono">
+              <span class="time-tag">
+                <i class="ri-timer-line"></i>
+                {{ item.estimasiWaktu }}
+              </span>
+            </td>
+            <td class="td-status">
+              <button
+                type="button"
+                class="status-toggle-btn"
+                [class.active]="item.status === 'Aktif'"
+                (click)="toggleStatus(item)"
+                [title]="item.status === 'Aktif' ? 'Klik untuk nonaktifkan' : 'Klik untuk aktifkan'"
+              >
+                <span class="toggle-dot"></span>
+                <span>{{ item.status }}</span>
+              </button>
+            </td>
+            <td class="td-aksi">
+              <div class="action-btn-group">
+                <button
+                  type="button"
+                  class="btn-icon"
+                  (click)="openEditModal(item)"
+                  title="Edit Langkah"
+                >
+                  <i class="ri-edit-line"></i>
+                </button>
+                <button
+                  type="button"
+                  class="btn-icon btn-danger-hover"
+                  (click)="openDeleteModal(item)"
+                  title="Hapus Langkah"
+                >
+                  <i class="ri-delete-bin-line"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="filteredLangkahList().length === 0">
+            <td colspan="6" class="empty-cell">
+              <i class="ri-inbox-line"></i>
+              <p>Tidak ada langkah panduan yang sesuai dengan pencarian atau filter.</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal Tambah / Edit Langkah (Enhanced & Optimized - Static Backdrop to prevent accidental dismiss) -->
+  <div *ngIf="showModal()" class="modal-backdrop">
+    <div class="modal-dialog modal-xl" (click)="$event.stopPropagation()">
+      <!-- Fixed Modal Header -->
+      <div class="modal-header">
+        <div class="modal-header-icon">
+          <i [class]="isEditing() ? 'ri-edit-box-line' : 'ri-add-circle-line'"></i>
+        </div>
+        <div>
+          <h4 class="modal-title">{{ isEditing() ? 'Edit Langkah Panduan Cara Pesan' : 'Tambah Langkah Baru Panduan Cara Pesan' }}</h4>
+          <p class="modal-subtitle">Atur detail tahapan, ikon visual medis, estimasi waktu, serta tips edukasi bagi pasien</p>
+        </div>
+        <button type="button" class="btn-close" (click)="closeModal()">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <!-- Scrollable Modal Body -->
+      <div class="modal-body modal-body-2col">
+        <!-- Error Alert -->
+        <div *ngIf="validationError()" class="modal-alert-error">
+          <i class="ri-error-warning-fill"></i>
+          <span>{{ validationError() }}</span>
+        </div>
+
+        <div class="modal-columns-wrapper">
+          <!-- Left Column: Form Inputs -->
+          <div class="modal-form-col">
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label class="form-label" for="inp-urutan">
+                  Urutan Langkah (#) <span class="text-danger">*</span>
+                </label>
+                <input
+                  id="inp-urutan"
+                  type="number"
+                  class="form-control"
+                  [(ngModel)]="currentStep.urutan"
+                  min="1"
+                  max="50"
+                />
+              </div>
+
+              <div class="form-group flex-2">
+                <label class="form-label" for="inp-layanan">Target Layanan PSEF</label>
+                <select id="inp-layanan" class="form-control" [(ngModel)]="currentStep.tipeLayanan">
+                  <option *ngFor="let opt of tipeLayananOptions" [value]="opt">{{ opt }}</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="inp-judul">
+                Judul Langkah (Headline) <span class="text-danger">*</span>
+              </label>
+              <input
+                id="inp-judul"
+                type="text"
+                class="form-control"
+                placeholder="Contoh: Unggah Foto Resep atau Pilih Dokter"
+                [(ngModel)]="currentStep.judul"
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="inp-subjudul">Subjudul / Ringkasan Pendek</label>
+              <input
+                id="inp-subjudul"
+                type="text"
+                class="form-control"
+                placeholder="Contoh: Tahapan awal pemeriksaan identitas dan kebutuhan medis"
+                [(ngModel)]="currentStep.subjudul"
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="inp-deskripsi">
+                Deskripsi Detail Instruksi <span class="text-danger">*</span>
+              </label>
+              <textarea
+                id="inp-deskripsi"
+                rows="3"
+                class="form-control"
+                placeholder="Jelaskan secara rinci apa yang harus dilakukan pasien atau apa yang sedang diproses oleh apoteker/sistem PSEF..."
+                [(ngModel)]="currentStep.deskripsi"
+              ></textarea>
+            </div>
+
+            <!-- Curated Visual Icon Picker -->
+            <div class="form-group icon-picker-group">
+              <div class="icon-picker-header">
+                <label class="form-label">Pilih Ikon Visual Langkah</label>
+                <div class="selected-icon-preview">
+                  <span class="preview-lbl">Terpilih:</span>
+                  <div class="selected-icon-badge">
+                    <i [class]="currentStep.icon"></i>
+                  </div>
+                  <span class="font-mono text-xs">{{ currentStep.icon }}</span>
+                </div>
+              </div>
+
+              <!-- Category Filter Pills -->
+              <div class="icon-category-pills">
+                <button
+                  *ngFor="let cat of iconCategories"
+                  type="button"
+                  class="btn-category-pill"
+                  [class.active]="selectedIconCategory() === cat"
+                  (click)="selectedIconCategory.set(cat)"
+                >
+                  {{ cat }}
+                </button>
+              </div>
+
+              <!-- Icon Grid -->
+              <div class="icon-selector-grid">
+                <button
+                  *ngFor="let item of filteredIcons"
+                  type="button"
+                  class="icon-grid-btn"
+                  [class.active]="currentStep.icon === item.icon"
+                  (click)="selectIcon(item.icon)"
+                  [title]="item.label"
+                >
+                  <i [class]="item.icon"></i>
+                  <span class="icon-lbl">{{ item.label }}</span>
+                </button>
+              </div>
+
+              <!-- Custom Icon Input Fallback -->
+              <div class="custom-icon-row">
+                <span class="custom-icon-hint">Atau ketik class icon Remixicon:</span>
+                <input
+                  type="text"
+                  class="form-control font-mono form-control-sm"
+                  placeholder="ri-capsule-line"
+                  [(ngModel)]="currentStep.icon"
+                />
+              </div>
+            </div>
+
+            <!-- Estimasi Waktu Selesai -->
+            <div class="form-group">
+              <label class="form-label" for="inp-waktu">Estimasi Waktu Selesai</label>
+              <div class="time-presets-pills">
+                <button
+                  *ngFor="let t of timePresets"
+                  type="button"
+                  class="btn-time-pill"
+                  [class.active]="currentStep.estimasiWaktu === t"
+                  (click)="setTimePreset(t)"
+                >
+                  <i class="ri-timer-line"></i> {{ t }}
+                </button>
+              </div>
+              <input
+                id="inp-waktu"
+                type="text"
+                class="form-control mt-2"
+                placeholder="Contoh: 5 - 10 Menit"
+                [(ngModel)]="currentStep.estimasiWaktu"
+              />
+            </div>
+
+            <!-- Tips / Catatan Penting Pasien -->
+            <div class="form-group">
+              <label class="form-label" for="inp-tips">
+                <i class="ri-lightbulb-line text-amber"></i> Tips / Catatan Edukasi Pasien (Opsional)
+              </label>
+              <input
+                id="inp-tips"
+                type="text"
+                class="form-control"
+                placeholder="Contoh: Pastikan resep dokter mencantumkan nomor SIP dan tanggal yang valid"
+                [(ngModel)]="currentStep.tipsCatatan"
+              />
+              <span class="field-hint">Catatan ini akan disorot dalam kotak panduan ramah pasien.</span>
+            </div>
+
+            <!-- Status Tayang -->
+            <div class="form-group">
+              <label class="form-label">Status Visibilitas Tahapan</label>
+              <div class="radio-options">
+                <label class="radio-card" [class.selected]="currentStep.status === 'Aktif'">
+                  <input type="radio" name="modal-step-status" value="Aktif" [(ngModel)]="currentStep.status" />
+                  <span class="radio-indicator active"></span>
+                  <div class="radio-text">
+                    <span class="radio-main">Aktif (Ditampilkan)</span>
+                    <span class="radio-sub">Langsung muncul pada panduan aplikasi</span>
+                  </div>
+                </label>
+                <label class="radio-card" [class.selected]="currentStep.status === 'Nonaktif'">
+                  <input type="radio" name="modal-step-status" value="Nonaktif" [(ngModel)]="currentStep.status" />
+                  <span class="radio-indicator inactive"></span>
+                  <div class="radio-text">
+                    <span class="radio-main">Nonaktif (Draf)</span>
+                    <span class="radio-sub">Disembunyikan sementara dari pasien</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Live Real-time Step Simulation -->
+          <div class="modal-preview-col">
+            <div class="live-preview-box">
+              <div class="preview-box-header">
+                <div class="preview-box-title">
+                  <i class="ri-smartphone-line"></i>
+                  <span>Simulasi Tampilan Pasien</span>
+                </div>
+                <span class="preview-service-tag">{{ currentStep.tipeLayanan }}</span>
+              </div>
+
+              <div class="preview-phone-card">
+                <!-- Stepper Flow Preview Tile -->
+                <div class="sim-step-flow-card">
+                  <div class="sim-flow-badge">{{ currentStep.urutan || 1 }}</div>
+                  <div class="sim-flow-icon">
+                    <i [class]="currentStep.icon"></i>
+                  </div>
+                  <h5 class="sim-flow-title">{{ currentStep.judul || 'Judul Langkah Panduan' }}</h5>
+                  <p class="sim-flow-sub">{{ currentStep.subjudul || 'Ringkasan singkat tahapan' }}</p>
+                  <span class="sim-flow-time"><i class="ri-time-line"></i> {{ currentStep.estimasiWaktu || '5 Menit' }}</span>
+                </div>
+
+                <!-- Detailed Patient Card Simulation -->
+                <div class="sim-detailed-card">
+                  <div class="sim-card-top">
+                    <div class="sim-circle-badge">
+                      <i [class]="currentStep.icon"></i>
+                    </div>
+                    <div class="sim-card-titles">
+                      <span class="sim-step-tag">Langkah {{ currentStep.urutan || 1 }} dari {{ langkahList().length }}</span>
+                      <h4 class="sim-card-h4">{{ currentStep.judul || 'Judul Lengkap Langkah Pelayanan' }}</h4>
+                    </div>
+                  </div>
+
+                  <p class="sim-card-desc">
+                    {{ currentStep.deskripsi || 'Rincian deskripsi instruksi yang akan dibaca oleh pasien di portal aplikasi PSEF saat memproses pesanan obat.' }}
+                  </p>
+
+                  <div *ngIf="currentStep.tipsCatatan" class="sim-tip-box">
+                    <i class="ri-lightbulb-flash-fill tip-icon"></i>
+                    <div>
+                      <span class="tip-title">Tips Edukasi Pasien:</span>
+                      <p class="tip-desc">{{ currentStep.tipsCatatan }}</p>
+                    </div>
+                  </div>
+
+                  <div class="sim-card-footer">
+                    <span class="sim-footer-time">
+                      <i class="ri-timer-line"></i> Estimasi: <strong>{{ currentStep.estimasiWaktu || '5 Menit' }}</strong>
+                    </span>
+                    <span class="sim-footer-status" [class.active]="currentStep.status === 'Aktif'">
+                      {{ currentStep.status === 'Aktif' ? 'Tayang di App' : 'Draf Disembunyikan' }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="preview-info-note">
+                <i class="ri-information-line"></i>
+                <span>Pratinjau otomatis menyesuaikan perubahan input nomor urutan, ikon, teks, dan estimasi waktu secara seketika (*real-time*).</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fixed Modal Footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" (click)="closeModal()">Batal</button>
+        <button type="button" class="btn btn-primary" (click)="saveStep()">
+          <i class="ri-save-line"></i>
+          <span>{{ isEditing() ? 'Simpan Perubahan' : 'Terbitkan Langkah' }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Konfirmasi Hapus Langkah Panduan (Optimized & Premium) -->
+  <div *ngIf="showDeleteModal() && stepToDelete() as targetStep" class="modal-backdrop">
+    <div class="modal-dialog modal-delete" (click)="$event.stopPropagation()">
+      <!-- Modal Header -->
+      <div class="modal-header delete-modal-header">
+        <div class="delete-icon-pulse">
+          <i class="ri-delete-bin-7-line"></i>
+        </div>
+        <div class="delete-header-titles">
+          <h4 class="modal-title text-danger">Hapus Langkah Panduan?</h4>
+          <p class="modal-subtitle">Konfirmasi tindakan penghapusan tahapan alur pelayanan pasien</p>
+        </div>
+        <button type="button" class="btn-close" (click)="closeDeleteModal()" [disabled]="isDeleting()">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body delete-modal-body">
+        <!-- Target Step Preview Card -->
+        <div class="delete-step-card">
+          <div class="delete-step-top">
+            <div class="delete-step-badge">Langkah #{{ targetStep.urutan }}</div>
+            <div class="delete-step-pill">{{ targetStep.tipeLayanan }}</div>
+            <span class="delete-status-dot" [class.active]="targetStep.status === 'Aktif'">
+              {{ targetStep.status === 'Aktif' ? 'Tayang di App' : 'Draf' }}
+            </span>
+          </div>
+
+          <div class="delete-step-main">
+            <div class="delete-step-icon-box">
+              <i [class]="targetStep.icon"></i>
+            </div>
+            <div class="delete-step-info">
+              <h5 class="delete-step-title">{{ targetStep.judul }}</h5>
+              <p class="delete-step-sub" *ngIf="targetStep.subjudul">{{ targetStep.subjudul }}</p>
+              <p class="delete-step-desc">{{ targetStep.deskripsi }}</p>
+
+              <div class="delete-step-meta-row">
+                <span class="meta-item"><i class="ri-timer-line"></i> {{ targetStep.estimasiWaktu }}</span>
+                <span class="meta-item text-amber" *ngIf="targetStep.tipsCatatan">
+                  <i class="ri-lightbulb-line"></i> Termasuk Catatan Pasien
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Warning Alert -->
+        <div class="delete-warning-box">
+          <i class="ri-alert-fill delete-warning-icon"></i>
+          <div class="delete-warning-content">
+            <h6 class="warning-title">Perhatian Dampak Pelayanan</h6>
+            <p class="warning-text">
+              Tahapan ini akan segera dihapus dari panduan aplikasi mobile dan portal web PSEF. 
+              Pasien tidak akan lagi melihat instruksi ini saat memproses tebus resep atau pesanan obat.
+            </p>
+          </div>
+        </div>
+
+        <!-- Automatic Re-ordering Toggle -->
+        <label class="delete-reorder-checkbox">
+          <input
+            type="checkbox"
+            [checked]="autoReorderAfterDelete()"
+            (change)="autoReorderAfterDelete.set($any($event.target).checked)"
+          />
+          <div class="checkbox-text-group">
+            <span class="checkbox-title">Otomatis rapikan nomor urutan langkah berikutnya</span>
+            <span class="checkbox-desc">
+              Menyesuaikan kembali urutan langkah-langkah setelahnya agar tetap tersusun rapi (1, 2, 3...) tanpa ada nomor yang melompat.
+            </span>
+          </div>
+        </label>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer delete-modal-footer">
+        <button type="button" class="btn btn-outline" (click)="closeDeleteModal()" [disabled]="isDeleting()">
+          Batal
+        </button>
+        <button type="button" class="btn btn-danger-action" (click)="confirmDelete()" [disabled]="isDeleting()">
+          <i class="ri-delete-bin-line" *ngIf="!isDeleting()"></i>
+          <i class="ri-loader-4-line ri-spin" *ngIf="isDeleting()"></i>
+          <span>{{ isDeleting() ? 'Menghapus Langkah...' : 'Ya, Hapus Langkah Ini' }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Feedback -->
+  <div *ngIf="toastMessage()" class="cara-pesan-toast" [class]="'toast-' + toastType()">
+    <i class="ri-checkbox-circle-fill toast-icon" *ngIf="toastType() === 'success'"></i>
+    <i class="ri-error-warning-fill toast-icon" *ngIf="toastType() === 'danger'"></i>
+    <i class="ri-information-fill toast-icon" *ngIf="toastType() === 'info'"></i>
+    <span class="toast-text">{{ toastMessage() }}</span>
+    <button type="button" class="toast-close" (click)="toastMessage.set('')">
+      <i class="ri-close-line"></i>
+    </button>
+  </div>
+</div>

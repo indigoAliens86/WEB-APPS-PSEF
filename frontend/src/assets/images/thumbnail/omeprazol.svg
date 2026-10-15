@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" width="80" height="80">
+  <defs>
+    <linearGradient id="omeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#6d28d9"/>
+    </linearGradient>
+  </defs>
+  <rect width="80" height="80" rx="12" fill="#f5f3ff"/>
+  <rect x="12" y="18" width="56" height="44" rx="6" fill="url(#omeGrad)"/>
+  <rect x="12" y="32" width="56" height="16" fill="#ffffff" opacity="0.95"/>
+  <rect x="16" y="23" width="14" height="4" rx="2" fill="#c4b5fd"/>
+  <text x="14" y="43" font-family="system-ui, sans-serif" font-size="7.5" font-weight="700" fill="#5b21b6">OMEPRAZOL</text>
+  <text x="16" y="56" font-family="system-ui, sans-serif" font-size="7" font-weight="600" fill="#ffffff">20 mg</text>
+</svg>

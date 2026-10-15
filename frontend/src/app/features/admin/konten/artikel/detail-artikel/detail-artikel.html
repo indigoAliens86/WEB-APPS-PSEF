@@ -1,0 +1,407 @@
+<div class="detail-page-container">
+  <!-- Toast Notification -->
+  <div *ngIf="copiedAlert()" class="toast-notification">
+    <i class="ri-checkbox-circle-fill"></i>
+    <span>Tautan publik artikel berhasil disalin ke clipboard!</span>
+  </div>
+
+  <!-- Breadcrumbs & Top Action Bar -->
+  <div class="top-nav-bar">
+    <div class="breadcrumb-group">
+      <button type="button" class="btn-back" (click)="goBack()">
+        <i class="ri-arrow-left-line"></i>
+        <span>Kembali ke Daftar</span>
+      </button>
+      <span class="breadcrumb-divider">/</span>
+      <span class="breadcrumb-item">Konten</span>
+      <span class="breadcrumb-divider">/</span>
+      <span class="breadcrumb-item">Artikel Edukasi</span>
+      <span class="breadcrumb-divider">/</span>
+      <span class="breadcrumb-current">Detail Artikel #{{ artikel()?.id }}</span>
+    </div>
+
+    <div class="action-buttons-group">
+      <button type="button" class="btn btn-outline" (click)="copyArticleUrl()" title="Salin tautan artikel">
+        <i class="ri-share-line"></i>
+        <span class="hide-mobile">Bagikan Tautan</span>
+      </button>
+
+      <button
+        type="button"
+        class="btn btn-outline"
+        (click)="toggleStatus()"
+        [title]="'Ubah status: ' + (artikel()?.status === 'Diterbitkan' ? 'Jadikan Draf' : 'Publikasikan')"
+      >
+        <i [class]="artikel()?.status === 'Diterbitkan' ? 'ri-draft-line' : 'ri-checkbox-circle-line'"></i>
+        <span class="hide-mobile">{{ artikel()?.status === 'Diterbitkan' ? 'Arsipkan ke Draf' : 'Terbitkan Sekarang' }}</span>
+      </button>
+
+      <button type="button" class="btn btn-primary" (click)="goToEdit()">
+        <i class="ri-edit-line"></i>
+        <span>Sunting Artikel</span>
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="artikel() as item; else notFoundTemplate" class="detail-content-layout">
+    <!-- Main Left Column: Article Body & Medical Review -->
+    <div class="detail-main-col">
+      <!-- Article Hero Card -->
+      <article class="article-hero-card">
+        <div class="hero-image-wrapper">
+          <img [src]="item.coverUrl" [alt]="item.judul" class="hero-cover-img" />
+          <div class="hero-badges-overlay">
+            <span class="badge-category">{{ item.kategori }}</span>
+            <span class="badge-read-time"><i class="ri-timer-line"></i> {{ item.waktuBaca }}</span>
+          </div>
+        </div>
+
+        <div class="hero-content-padding">
+          <div class="status-indicator-row">
+            <span
+              class="status-pill"
+              [class.status-published]="item.status === 'Diterbitkan'"
+              [class.status-draft]="item.status === 'Draf'"
+              [class.status-review]="item.status === 'Menunggu Review'"
+            >
+              <span class="status-dot"></span>
+              {{ item.status }}
+            </span>
+            <span class="meta-date"><i class="ri-calendar-line"></i> Dipublikasikan {{ item.tanggalPublikasi }}</span>
+            <span class="meta-views"><i class="ri-eye-line"></i> {{ item.views.toLocaleString('id-ID') }} Total Pembaca</span>
+          </div>
+
+          <h1 class="article-detail-title">{{ item.judul }}</h1>
+
+          <!-- Author Info Card -->
+          <div class="author-profile-box">
+            <div class="author-avatar-circle">
+              <i class="ri-user-star-fill"></i>
+            </div>
+            <div class="author-details">
+              <div class="author-name-row">
+                <span class="author-name">{{ item.penulis }}</span>
+                <span class="author-verified-tag"><i class="ri-shield-check-fill"></i> Verifikator Nakes PSEF</span>
+              </div>
+              <p class="author-role-desc">{{ item.peranPenulis }}</p>
+            </div>
+          </div>
+
+          <!-- Executive Summary -->
+          <div class="summary-highlight-card">
+            <div class="summary-header">
+              <i class="ri-information-line"></i>
+              <span>Ringkasan Eksekutif Artikel</span>
+            </div>
+            <p class="summary-text">{{ item.ringkasan }}</p>
+          </div>
+
+          <!-- Full Article Body -->
+          <div class="article-body-content">
+            <h3 class="body-section-title">Uraian & Panduan Lengkap</h3>
+            <div class="body-paragraphs">
+              <p *ngFor="let paragraph of item.konten.split('\n\n')" class="content-paragraph">
+                {{ paragraph }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Clinical Standard & Compliance Banner -->
+          <div class="compliance-banner-box">
+            <div class="compliance-icon-box">
+              <i class="ri-shield-cross-fill"></i>
+            </div>
+            <div class="compliance-text-box">
+              <h5 class="compliance-title">Standar Mutu & Regulasi Farmasi PSEF</h5>
+              <p class="compliance-desc">
+                Artikel ini disusun dan disetujui untuk memenuhi ketentuan <strong>Permenkes No. 14 Tahun 2021</strong> dan standar <strong>Badan Pengawas Obat dan Makanan (BPOM) RI</strong> guna memberikan edukasi kefarmasian yang akurat, berimbang, dan tidak menyesatkan publik.
+              </p>
+            </div>
+          </div>
+
+          <!-- Tags List -->
+          <div class="article-tags-section">
+            <span class="tags-label"><i class="ri-price-tag-3-line"></i> Tag Terkait:</span>
+            <div class="tags-chips-wrapper">
+              <span *ngFor="let tag of item.tags" class="tag-chip">#{{ tag }}</span>
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <!-- Sidebar Right Column: Metadata & Controls -->
+    <aside class="detail-sidebar-col">
+      <!-- Metadata Info Card -->
+      <div class="sidebar-card">
+        <h4 class="sidebar-card-title">
+          <i class="ri-file-info-line"></i>
+          <span>Informasi Publikasi</span>
+        </h4>
+
+        <div class="meta-list">
+          <div class="meta-item">
+            <span class="meta-key">ID Dokumen</span>
+            <span class="meta-val font-mono">#ART-{{ item.id }}</span>
+          </div>
+
+          <div class="meta-item">
+            <span class="meta-key">Status Publikasi</span>
+            <span
+              class="status-pill-small"
+              [class.status-published]="item.status === 'Diterbitkan'"
+              [class.status-draft]="item.status === 'Draf'"
+              [class.status-review]="item.status === 'Menunggu Review'"
+            >
+              {{ item.status }}
+            </span>
+          </div>
+
+          <div class="meta-item">
+            <span class="meta-key">Kategori Konten</span>
+            <span class="meta-val">{{ item.kategori }}</span>
+          </div>
+
+          <div class="meta-item">
+            <span class="meta-key">Estimasi Membaca</span>
+            <span class="meta-val">{{ item.waktuBaca }}</span>
+          </div>
+
+          <div class="meta-item">
+            <span class="meta-key">Total Tayangan</span>
+            <span class="meta-val font-bold">{{ item.views.toLocaleString('id-ID') }} views</span>
+          </div>
+
+          <div class="meta-item">
+            <span class="meta-key">Slug URL Publik</span>
+            <span class="meta-val slug-val font-mono" [title]="item.slug">/{{ item.slug }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions Card -->
+      <div class="sidebar-card">
+        <h4 class="sidebar-card-title">
+          <i class="ri-tools-line"></i>
+          <span>Tindakan Pengelolaan</span>
+        </h4>
+
+        <div class="sidebar-actions-grid">
+          <button type="button" class="btn btn-primary btn-block" (click)="goToEdit()">
+            <i class="ri-edit-2-line"></i>
+            <span>Edit Konten Artikel</span>
+          </button>
+
+          <button type="button" class="btn btn-outline btn-block" (click)="toggleStatus()">
+            <i class="ri-toggle-line"></i>
+            <span>{{ item.status === 'Diterbitkan' ? 'Ubah ke Status Draf' : 'Terbitkan Artikel' }}</span>
+          </button>
+
+          <button type="button" class="btn btn-outline btn-block" (click)="copyArticleUrl()">
+            <i class="ri-links-line"></i>
+            <span>Salin Tautan Artikel</span>
+          </button>
+
+          <button type="button" class="btn btn-danger-outline btn-block" (click)="deleteArtikel()">
+            <i class="ri-delete-bin-line"></i>
+            <span>Hapus Artikel</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <ng-template #notFoundTemplate>
+    <div class="not-found-card">
+      <i class="ri-error-warning-line not-found-icon"></i>
+      <h3>Artikel Tidak Ditemukan</h3>
+      <p>Data artikel yang Anda cari tidak tersedia dalam repositori sistem PSEF.</p>
+      <button type="button" class="btn btn-primary" (click)="goBack()">
+        <i class="ri-arrow-left-line"></i>
+        <span>Kembali ke Daftar Artikel</span>
+      </button>
+    </div>
+  </ng-template>
+
+  <!-- Modal Konfirmasi Nonaktifkan / Hapus Artikel (Anti-Analytics Disruption) -->
+  <div *ngIf="showDeleteModal() && artikel() as targetArt" class="modal-backdrop" (click)="closeDeleteModal()">
+    <div class="modal-dialog modal-art-delete" (click)="$event.stopPropagation()">
+      <!-- Modal Header -->
+      <div class="modal-header delete-modal-header">
+        <div class="delete-icon-pulse" [class.danger]="deleteMode() === 'permanent'">
+          <i [class]="deleteMode() === 'deactivate' ? 'ri-archive-line' : 'ri-delete-bin-7-line'"></i>
+        </div>
+        <div class="delete-header-titles">
+          <h4 class="modal-title" [class.text-amber]="deleteMode() === 'deactivate'" [class.text-danger]="deleteMode() === 'permanent'">
+            {{ deleteMode() === 'deactivate' ? 'Nonaktifkan Artikel Edukasi?' : 'Hapus Artikel Permanen?' }}
+          </h4>
+          <p class="modal-subtitle">Kelola status penayangan artikel dengan perlindungan data analitik PSEF</p>
+        </div>
+        <button type="button" class="btn-close" (click)="closeDeleteModal()" [disabled]="isProcessing()">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body delete-modal-body">
+        <!-- Target Article Preview Card with Live Analytics -->
+        <div class="art-preview-delete-card">
+          <div class="art-preview-thumb">
+            <img [src]="targetArt.coverUrl" [alt]="targetArt.judul" />
+          </div>
+          <div class="art-preview-info">
+            <div class="art-preview-tags">
+              <span class="preview-cat-badge">{{ targetArt.kategori }}</span>
+              <span class="preview-status-pill" [class]="'status-' + targetArt.status.toLowerCase().replace(' ', '-')">
+                {{ targetArt.status }}
+              </span>
+            </div>
+            <h5 class="art-preview-title">{{ targetArt.judul }}</h5>
+            <p class="art-preview-author">
+              <i class="ri-stethoscope-line"></i> {{ targetArt.penulis }}
+            </p>
+
+            <!-- Prominent Analytics Highlight -->
+            <div class="art-analytics-pill-box">
+              <div class="analytics-stat">
+                <i class="ri-eye-fill stat-icon text-indigo"></i>
+                <span class="stat-num font-mono">{{ targetArt.views.toLocaleString('id-ID') }}</span>
+                <span class="stat-lbl">Tayangan (Views)</span>
+              </div>
+              <div class="stat-divider"></div>
+              <div class="analytics-stat">
+                <i class="ri-timer-fill stat-icon text-sky"></i>
+                <span class="stat-num">{{ targetArt.waktuBaca }}</span>
+                <span class="stat-lbl">Waktu Baca</span>
+              </div>
+              <div class="stat-divider"></div>
+              <div class="analytics-stat">
+                <i class="ri-calendar-check-fill stat-icon text-emerald"></i>
+                <span class="stat-num">{{ targetArt.tanggalPublikasi }}</span>
+                <span class="stat-lbl">Terbit</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Analytics Protection Callout Box -->
+        <div class="analytics-notice-box" [class.warning-border]="deleteMode() === 'permanent'">
+          <div class="notice-icon-box" [class.danger-bg]="deleteMode() === 'permanent'">
+            <i [class]="deleteMode() === 'deactivate' ? 'ri-shield-star-line' : 'ri-error-warning-fill'"></i>
+          </div>
+          <div class="notice-text-content">
+            <h6 class="notice-title">
+              {{ deleteMode() === 'deactivate' ? 'Perlindungan Metrik & Analitik Pembaca' : 'Peringatan Kehilangan Data Analitik' }}
+            </h6>
+            <p class="notice-desc" *ngIf="deleteMode() === 'deactivate'">
+              Dengan <strong>menonaktifkan</strong>, artikel langsung ditarik dari portal pasien, namun 
+              <strong>{{ targetArt.views.toLocaleString('id-ID') }} views</strong> dan data performa PSEF 
+              <strong>tetap utuh tersimpan</strong>. Artikel dapat diterbitkan kembali sewaktu-waktu.
+            </p>
+            <p class="notice-desc text-danger-text" *ngIf="deleteMode() === 'permanent'">
+              Menghapus permanen akan <strong>menghilangkan total {{ targetArt.views.toLocaleString('id-ID') }} views</strong> 
+              dan riwayat analitik dari dashboard secara permanen. Tindakan ini tidak dapat dibatalkan!
+            </p>
+          </div>
+        </div>
+
+        <!-- Mode Selection Options -->
+        <div class="delete-options-group">
+          <div
+            class="action-choice-card"
+            role="button"
+            tabindex="0"
+            [class.selected]="deleteMode() === 'deactivate'"
+            (click)="setDeleteMode('deactivate')"
+            (keydown.enter)="setDeleteMode('deactivate')"
+            (keydown.space)="setDeleteMode('deactivate')"
+          >
+            <div class="choice-indicator radio-amber"></div>
+            <div class="choice-content">
+              <div class="choice-header-row">
+                <span class="choice-title">Nonaktifkan / Arsipkan Artikel</span>
+                <span class="recommend-badge"><i class="ri-star-fill"></i> Disarankan</span>
+              </div>
+              <p class="choice-desc">
+                Sembunyikan dari aplikasi mobile dan web pasien tanpa menghapus riwayat analitik & pembaca.
+              </p>
+            </div>
+          </div>
+
+          <div
+            class="action-choice-card"
+            role="button"
+            tabindex="0"
+            [class.selected]="deleteMode() === 'permanent'"
+            (click)="setDeleteMode('permanent')"
+            (keydown.enter)="setDeleteMode('permanent')"
+            (keydown.space)="setDeleteMode('permanent')"
+          >
+            <div class="choice-indicator radio-danger"></div>
+            <div class="choice-content">
+              <div class="choice-header-row">
+                <span class="choice-title text-danger">Hapus Permanen dari Basis Data</span>
+                <span class="danger-badge">Merusak Analitik</span>
+              </div>
+              <p class="choice-desc">
+                Hanya gunakan jika artikel adalah kesalahan input atau duplikat yang belum pernah ditayangkan.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer delete-modal-footer">
+        <button
+          id="btn-detail-cancel-art-action"
+          type="button"
+          class="btn btn-outline"
+          (click)="closeDeleteModal()"
+          [disabled]="isProcessing()"
+        >
+          Batal
+        </button>
+
+        <!-- Button changes based on selected mode -->
+        <button
+          *ngIf="deleteMode() === 'deactivate'"
+          id="btn-detail-confirm-art-action"
+          type="button"
+          class="btn btn-warning-action"
+          (click)="confirmAction()"
+          [disabled]="isProcessing()"
+        >
+          <i class="ri-eye-off-line" *ngIf="!isProcessing()"></i>
+          <i class="ri-loader-4-line ri-spin" *ngIf="isProcessing()"></i>
+          <span>{{ isProcessing() ? 'Memproses...' : 'Nonaktifkan Artikel' }}</span>
+        </button>
+
+        <button
+          *ngIf="deleteMode() === 'permanent'"
+          id="btn-detail-confirm-art-action"
+          type="button"
+          class="btn btn-danger-action"
+          (click)="confirmAction()"
+          [disabled]="isProcessing()"
+        >
+          <i class="ri-delete-bin-line" *ngIf="!isProcessing()"></i>
+          <i class="ri-loader-4-line ri-spin" *ngIf="isProcessing()"></i>
+          <span>{{ isProcessing() ? 'Menghapus...' : 'Ya, Hapus Permanen' }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Feedback -->
+  <div *ngIf="toastMessage()" class="artikel-toast" [class]="'toast-' + toastType()">
+    <i class="ri-checkbox-circle-fill toast-icon" *ngIf="toastType() === 'success'"></i>
+    <i class="ri-error-warning-fill toast-icon" *ngIf="toastType() === 'danger'"></i>
+    <i class="ri-information-fill toast-icon" *ngIf="toastType() === 'info'"></i>
+    <i class="ri-alert-fill toast-icon" *ngIf="toastType() === 'warning'"></i>
+    <span class="toast-text">{{ toastMessage() }}</span>
+    <button type="button" class="toast-close" (click)="toastMessage.set('')">
+      <i class="ri-close-line"></i>
+    </button>
+  </div>
+</div>

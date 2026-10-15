@@ -1,0 +1,948 @@
+<div class="detail-container">
+  <!-- Top Navigation & Actions Bar -->
+  <header class="detail-nav-bar no-print">
+    <div class="nav-left">
+      <button type="button" class="btn-back" (click)="goBack()" title="Kembali ke Daftar Resep" aria-label="Kembali ke daftar resep">
+        <i class="ri-arrow-left-line" aria-hidden="true"></i>
+        <span>Kembali ke Daftar</span>
+      </button>
+
+      <nav class="breadcrumb-trail" aria-label="Breadcrumb">
+        <span class="crumb-link" (click)="goBack()">Resep Dokter</span>
+        <i class="ri-arrow-right-s-line crumb-sep" aria-hidden="true"></i>
+        <span class="crumb-current font-mono">{{ resep().id }}</span>
+      </nav>
+    </div>
+
+    <div class="nav-right">
+      <button type="button" class="btn btn-outline" (click)="copyResepNumber()" title="Salin nomor resep ke clipboard">
+        <i [class]="copied() ? 'ri-check-line text-emerald' : 'ri-file-copy-line'" aria-hidden="true"></i>
+        <span>{{ copied() ? 'ID Tersalin!' : 'Salin No. Resep' }}</span>
+      </button>
+
+      <button type="button" class="btn btn-outline" (click)="openSignatureModal()" title="Cek validitas tanda tangan digital dokter PSEF">
+        <i class="ri-shield-keyhole-line text-primary" aria-hidden="true"></i>
+        <span>Cek e-Sign Dokter</span>
+      </button>
+
+      <button type="button" class="btn btn-primary" (click)="printLembarResep()" title="Cetak lembar kajian & salinan resep">
+        <i class="ri-printer-line" aria-hidden="true"></i>
+        <span>Cetak Lembar Telaah</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Eye-Catching Hero Prescription Banner -->
+  <section class="hero-rx-card no-print" aria-label="Ringkasan Resep Elektronik">
+    <div class="hero-main-content">
+      <div class="rx-icon-glyph">
+        <span class="rx-symbol">℞</span>
+      </div>
+
+      <div class="rx-header-info">
+        <div class="rx-badges-row">
+          <span class="rx-code-tag font-mono">
+            {{ resep().id }}
+            <button type="button" class="btn-mini-copy" (click)="copyResepNumber()" title="Salin No. Resep">
+              <i [class]="copied() ? 'ri-check-line' : 'ri-file-copy-line'"></i>
+            </button>
+          </span>
+
+          <span
+            class="status-pill"
+            [class.pill-menunggu]="resep().status === 'Menunggu Telaah'"
+            [class.pill-lolos]="resep().status === 'Lolos Skrining'"
+            [class.pill-konfirmasi]="resep().status === 'Perlu Konfirmasi'"
+            [class.pill-selesai]="resep().status === 'Selesai Ditebus'"
+          >
+            <i
+              [class]="
+                resep().status === 'Menunggu Telaah'
+                  ? 'ri-time-line'
+                  : resep().status === 'Lolos Skrining'
+                  ? 'ri-checkbox-circle-fill'
+                  : resep().status === 'Perlu Konfirmasi'
+                  ? 'ri-alert-fill'
+                  : 'ri-check-double-line'
+              "
+            ></i>
+            {{ resep().status }}
+          </span>
+
+          <span class="type-pill" [class.type-racikan]="resep().tipeResep === 'Racikan'">
+            <i [class]="resep().tipeResep === 'Racikan' ? 'ri-flask-line' : 'ri-capsule-line'"></i>
+            {{ resep().tipeResep }}
+          </span>
+
+          @if (resep().isUrgent) {
+            <span class="cito-pulse-badge">
+              <i class="ri-alarm-warning-fill"></i> PRIORITAS CITO
+            </span>
+          }
+        </div>
+
+        <h1 class="rx-title">
+          Resep Medis Pasien: <strong>{{ resep().pasien.nama }}</strong>
+        </h1>
+
+        <div class="rx-meta-row">
+          <span class="meta-item">
+            <i class="ri-calendar-line"></i> Terbit: {{ resep().tanggal }}
+          </span>
+          <span class="meta-item">
+            <i class="ri-hospital-line"></i> {{ resep().dokter.faskesAsal }}
+          </span>
+          <span class="meta-item">
+            <i class="ri-nurse-line"></i> {{ resep().dokter.nama }} ({{ resep().dokter.spesialisasi }})
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Read-Only Notice Tag inside Hero -->
+    <div class="facility-lock-badge">
+      <div class="lock-icon-circle">
+        <i class="ri-lock-2-line"></i>
+      </div>
+      <div class="lock-text">
+        <strong>Akses Fasilitas: Read-Only</strong>
+        <p>Apotek bertindak sebagai penelaah & penyedia obat resmi. Formularium dokter bersifat immutable.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 Quick Stats Cards -->
+  <section class="stats-overview-grid no-print" aria-label="Statistik Resep">
+    <!-- Stat 1: Status Skrining -->
+    <div class="stat-card" [class.stat-pass]="resep().skrining.statusTotal === 'Lolos Skrining'">
+      <div class="stat-header">
+        <span class="stat-title">Status Skrining APJ</span>
+        <div class="stat-icon-box emerald">
+          <i class="ri-microscope-line"></i>
+        </div>
+      </div>
+      <div class="stat-value-group">
+        <span class="stat-main-val">{{ resep().skrining.statusTotal }}</span>
+        <span class="stat-sub-badge badge-pass">3 Tahap Terverifikasi</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill emerald" [style.width.%]="skriningScore().percent"></div>
+      </div>
+    </div>
+
+    <!-- Stat 2: Item Obat R/ -->
+    <div class="stat-card">
+      <div class="stat-header">
+        <span class="stat-title">Formularium Obat (R/)</span>
+        <div class="stat-icon-box purple">
+          <i class="ri-capsule-line"></i>
+        </div>
+      </div>
+      <div class="stat-value-group">
+        <span class="stat-main-val">{{ resep().obatList.length }} Item Obat</span>
+        <span class="stat-sub-badge badge-info">{{ resep().tipeResep }}</span>
+      </div>
+      <span class="stat-caption">Stok seluruh obat tersedia di apotek</span>
+    </div>
+
+    <!-- Stat 3: Prioritas Pelayanan -->
+    <div class="stat-card">
+      <div class="stat-header">
+        <span class="stat-title">Prioritas & Kategori</span>
+        <div class="stat-icon-box amber">
+          <i class="ri-flashlight-line"></i>
+        </div>
+      </div>
+      <div class="stat-value-group">
+        <span class="stat-main-val">{{ resep().isUrgent ? 'CITO / Segera' : 'Rutin' }}</span>
+        <span class="stat-sub-badge badge-kategori">{{ resep().kategori }}</span>
+      </div>
+      <span class="stat-caption">Estimasi dispensing: ~15-20 menit</span>
+    </div>
+
+    <!-- Stat 4: Total Biaya Penebusan -->
+    <div class="stat-card">
+      <div class="stat-header">
+        <span class="stat-title">Total Biaya Penebusan</span>
+        <div class="stat-icon-box blue">
+          <i class="ri-wallet-3-line"></i>
+        </div>
+      </div>
+      <div class="stat-value-group">
+        <span class="stat-main-val text-primary font-mono">
+          {{ formatRupiah(resep().totalBiayaObat + resep().jasaPelayananResep) }}
+        </span>
+        <span class="stat-sub-badge badge-fee">Termasuk Jasa APJ</span>
+      </div>
+      <span class="stat-caption font-mono">Obat: {{ formatRupiah(resep().totalBiayaObat) }}</span>
+    </div>
+  </section>
+
+  <!-- Print Header Only -->
+  <div class="print-header-only">
+    <div class="print-logo-row">
+      <div>
+        <h2 class="print-title">LEMBAR SALINAN & TELAAH RESEP ELEKTRONIK</h2>
+        <p class="print-sub">{{ resepService.currentFacilityName }} — {{ resepService.currentFacilitySia }}</p>
+        <p class="print-address">{{ resepService.currentFacilityAddress }}</p>
+      </div>
+      <div class="print-rx-stamp">
+        <strong>APOTEK RESMI PSEF</strong>
+        <span>KEMENKES RI</span>
+      </div>
+    </div>
+    <hr class="print-divider" />
+  </div>
+
+  <!-- Main View Navigation Tabs -->
+  <div class="main-segmented-nav no-print" role="tablist" aria-label="Navigasi Utama Resep">
+    <button
+      type="button"
+      class="segmented-btn"
+      [class.active]="activeMainTab() === 'skrining'"
+      (click)="setMainTab('skrining')"
+      role="tab"
+      [attr.aria-selected]="activeMainTab() === 'skrining'"
+    >
+      <i class="ri-microscope-line"></i>
+      <span>Pusat Skrining 3 Tahap</span>
+      <span class="tab-pill-badge">Permenkes 73</span>
+    </button>
+    <button
+      type="button"
+      class="segmented-btn"
+      [class.active]="activeMainTab() === 'formularium'"
+      (click)="setMainTab('formularium')"
+      role="tab"
+      [attr.aria-selected]="activeMainTab() === 'formularium'"
+    >
+      <i class="ri-capsule-line"></i>
+      <span>Formularium Obat (R/)</span>
+      <span class="tab-pill-badge pill-count">{{ resep().obatList.length }} Item</span>
+    </button>
+    <button
+      type="button"
+      class="segmented-btn"
+      [class.active]="activeMainTab() === 'timeline'"
+      (click)="setMainTab('timeline')"
+      role="tab"
+      [attr.aria-selected]="activeMainTab() === 'timeline'"
+    >
+      <i class="ri-route-line"></i>
+      <span>Riwayat & Audit Trail</span>
+      <span class="tab-pill-badge">{{ resep().riwayatTimeline.length }} Event</span>
+    </button>
+    <button
+      type="button"
+      class="segmented-btn"
+      [class.active]="activeMainTab() === 'semua'"
+      (click)="setMainTab('semua')"
+      role="tab"
+      [attr.aria-selected]="activeMainTab() === 'semua'"
+    >
+      <i class="ri-layout-grid-line"></i>
+      <span>Semua Modul</span>
+      <span class="tab-pill-badge pill-all">Full View</span>
+    </button>
+  </div>
+
+  <!-- Two-Column Master-Detail Layout -->
+  <div class="two-column-workspace">
+    <!-- LEFT COLUMN: Main Functional Modules -->
+    <main class="left-main-pane">
+      <!-- 1. PUSAT SKRINING RESEP 3 TAHAP (Permenkes 73/2016) -->
+      @if (activeMainTab() === 'skrining' || activeMainTab() === 'semua') {
+        <section class="pane-card skrining-card-master" aria-label="Hasil Skrining Resep 3 Tahap">
+          <div class="pane-card-header">
+            <div class="pane-title-group">
+              <div class="pane-icon-box">
+                <i class="ri-microscope-line text-emerald"></i>
+              </div>
+              <div>
+                <div class="pane-title-row">
+                  <h2 class="pane-title">Hasil Skrining & Telaah Resep (3 Tahap)</h2>
+                  <span class="badge-standard">Permenkes RI No. 73/2016</span>
+                </div>
+                <p class="pane-desc">
+                  Telaah kefarmasian komprehensif oleh Apoteker Penanggung Jawab (APJ) sebelum obat diracik/diserahkan
+                </p>
+              </div>
+            </div>
+            <div class="skrining-header-meta">
+              <span class="audit-status-badge">
+                <i class="ri-shield-check-line text-emerald"></i> Terverifikasi APJ
+              </span>
+            </div>
+          </div>
+
+          <!-- Optimized Skrining Stage Tabs Deck -->
+          <div class="skrining-tabs-deck no-print" role="tablist" aria-label="Pilihan Tahap Skrining Resep">
+            <!-- Tab 0: Semua Tahap -->
+            <button
+              type="button"
+              class="stage-tab-btn tab-all"
+              [class.active]="activeSkriningTab() === 'semua'"
+              (click)="setSkriningTab('semua')"
+              role="tab"
+              [attr.aria-selected]="activeSkriningTab() === 'semua'"
+            >
+              <div class="tab-icon-badge">
+                <i class="ri-dashboard-3-line"></i>
+              </div>
+              <div class="tab-label-group">
+                <div class="tab-title-row">
+                  <span class="tab-main-title">Semua Tahap</span>
+                  <span class="tab-badge-count">3 Tahap</span>
+                </div>
+                <span class="tab-sub-title">Ringkasan Lengkap</span>
+              </div>
+              <div class="tab-active-indicator"></div>
+            </button>
+
+            <!-- Tab 1: Kajian Administratif -->
+            <button
+              type="button"
+              class="stage-tab-btn tab-blue"
+              [class.active]="activeSkriningTab() === 'administratif'"
+              (click)="setSkriningTab('administratif')"
+              role="tab"
+              [attr.aria-selected]="activeSkriningTab() === 'administratif'"
+            >
+              <div class="tab-icon-badge">
+                <span class="stage-num-glyph">1</span>
+              </div>
+              <div class="tab-label-group">
+                <div class="tab-title-row">
+                  <span class="tab-main-title">1. Administratif</span>
+                  <span
+                    class="tab-chip"
+                    [class.chip-success]="resep().skrining.kajianAdministratif.status === 'Memenuhi Syarat'"
+                    [class.chip-warn]="resep().skrining.kajianAdministratif.status !== 'Memenuhi Syarat'"
+                  >
+                    <i [class]="resep().skrining.kajianAdministratif.status === 'Memenuhi Syarat' ? 'ri-checkbox-circle-fill' : 'ri-alert-fill'"></i>
+                    {{ resep().skrining.kajianAdministratif.status === 'Memenuhi Syarat' ? 'MS' : 'Catatan' }}
+                  </span>
+                </div>
+                <span class="tab-sub-title">{{ resep().skrining.kajianAdministratif.items.length }} Parameter Keabsahan</span>
+              </div>
+              <div class="tab-active-indicator"></div>
+            </button>
+
+            <!-- Tab 2: Kajian Farmasetis -->
+            <button
+              type="button"
+              class="stage-tab-btn tab-emerald"
+              [class.active]="activeSkriningTab() === 'farmasetis'"
+              (click)="setSkriningTab('farmasetis')"
+              role="tab"
+              [attr.aria-selected]="activeSkriningTab() === 'farmasetis'"
+            >
+              <div class="tab-icon-badge">
+                <span class="stage-num-glyph">2</span>
+              </div>
+              <div class="tab-label-group">
+                <div class="tab-title-row">
+                  <span class="tab-main-title">2. Farmasetis</span>
+                  <span
+                    class="tab-chip"
+                    [class.chip-success]="resep().skrining.kajianFarmasetis.status === 'Memenuhi Syarat'"
+                    [class.chip-warn]="resep().skrining.kajianFarmasetis.status !== 'Memenuhi Syarat'"
+                  >
+                    <i [class]="resep().skrining.kajianFarmasetis.status === 'Memenuhi Syarat' ? 'ri-checkbox-circle-fill' : 'ri-alert-fill'"></i>
+                    {{ resep().skrining.kajianFarmasetis.status === 'Memenuhi Syarat' ? 'MS' : 'Catatan' }}
+                  </span>
+                </div>
+                <span class="tab-sub-title">{{ resep().skrining.kajianFarmasetis.items.length }} Parameter Bentuk & Dosis</span>
+              </div>
+              <div class="tab-active-indicator"></div>
+            </button>
+
+            <!-- Tab 3: Kajian Klinis -->
+            <button
+              type="button"
+              class="stage-tab-btn tab-purple"
+              [class.active]="activeSkriningTab() === 'klinis'"
+              (click)="setSkriningTab('klinis')"
+              role="tab"
+              [attr.aria-selected]="activeSkriningTab() === 'klinis'"
+            >
+              <div class="tab-icon-badge">
+                <span class="stage-num-glyph">3</span>
+              </div>
+              <div class="tab-label-group">
+                <div class="tab-title-row">
+                  <span class="tab-main-title">3. Klinis (DRP)</span>
+                  <span
+                    class="tab-chip"
+                    [class.chip-success]="resep().skrining.kajianKlinis.status === 'Memenuhi Syarat'"
+                    [class.chip-warn]="resep().skrining.kajianKlinis.status !== 'Memenuhi Syarat'"
+                  >
+                    <i [class]="resep().skrining.kajianKlinis.status === 'Memenuhi Syarat' ? 'ri-checkbox-circle-fill' : 'ri-error-warning-fill'"></i>
+                    {{ resep().skrining.kajianKlinis.status === 'Memenuhi Syarat' ? 'MS' : 'Catatan' }}
+                  </span>
+                </div>
+                <span class="tab-sub-title">{{ resep().skrining.kajianKlinis.items.length }} Parameter DRP & Alergi</span>
+              </div>
+              <div class="tab-active-indicator"></div>
+            </button>
+          </div>
+
+          <!-- TAHAP 1: KAJIAN ADMINISTRATIF -->
+          @if (activeSkriningTab() === 'semua' || activeSkriningTab() === 'administratif') {
+            <div class="stage-block stage-blue">
+              <div class="stage-head-row">
+                <div class="stage-identity">
+                  <span class="stage-number num-blue">1</span>
+                  <div>
+                    <h3 class="stage-heading">Kajian Administratif Resep</h3>
+                    <span class="stage-caption">Pemeriksaan keabsahan dokumen, tanda tangan elektronik dokter & identitas pasien</span>
+                  </div>
+                </div>
+                <span class="stage-badge badge-ms">
+                  <i class="ri-checkbox-circle-fill"></i> {{ resep().skrining.kajianAdministratif.status }}
+                </span>
+              </div>
+
+              <div class="table-container">
+                <table class="stage-table" aria-label="Tabel Kajian Administratif">
+                  <thead>
+                    <tr>
+                      <th scope="col" style="width: 28%;">Parameter Indikator</th>
+                      <th scope="col" style="width: 38%;">Deskripsi Standar</th>
+                      <th scope="col" style="width: 14%;">Hasil Telaah</th>
+                      <th scope="col" style="width: 20%;">Catatan APJ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (item of resep().skrining.kajianAdministratif.items; track item.indikator) {
+                      <tr>
+                        <td class="font-semibold">{{ item.indikator }}</td>
+                        <td class="text-muted">{{ item.deskripsi }}</td>
+                        <td>
+                          <span class="result-pill pill-lengkap">
+                            <i class="ri-check-line"></i> {{ item.status }}
+                          </span>
+                        </td>
+                        <td class="notes-text">{{ item.catatan }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="stage-summary-callout callout-blue">
+                <i class="ri-chat-check-line"></i>
+                <div>
+                  <strong>Kesimpulan Telaah Administratif:</strong>
+                  <p>{{ resep().skrining.kajianAdministratif.catatanKeseluruhan }}</p>
+                </div>
+              </div>
+            </div>
+          }
+
+          <!-- TAHAP 2: KAJIAN FARMASETIS -->
+          @if (activeSkriningTab() === 'semua' || activeSkriningTab() === 'farmasetis') {
+            <div class="stage-block stage-emerald">
+              <div class="stage-head-row">
+                <div class="stage-identity">
+                  <span class="stage-number num-emerald">2</span>
+                  <div>
+                    <h3 class="stage-heading">Kajian Farmasetis</h3>
+                    <span class="stage-caption">Kesesuaian bentuk sediaan, kekuatan, batas dosis lazim, stabilitas & inkompatibilitas</span>
+                  </div>
+                </div>
+                <span class="stage-badge badge-ms">
+                  <i class="ri-checkbox-circle-fill"></i> {{ resep().skrining.kajianFarmasetis.status }}
+                </span>
+              </div>
+
+              <div class="table-container">
+                <table class="stage-table" aria-label="Tabel Kajian Farmasetis">
+                  <thead>
+                    <tr>
+                      <th scope="col" style="width: 28%;">Parameter Indikator</th>
+                      <th scope="col" style="width: 38%;">Deskripsi Standar</th>
+                      <th scope="col" style="width: 14%;">Hasil Telaah</th>
+                      <th scope="col" style="width: 20%;">Catatan APJ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (item of resep().skrining.kajianFarmasetis.items; track item.indikator) {
+                      <tr>
+                        <td class="font-semibold">{{ item.indikator }}</td>
+                        <td class="text-muted">{{ item.deskripsi }}</td>
+                        <td>
+                          <span class="result-pill pill-sesuai">
+                            <i class="ri-check-line"></i> {{ item.status }}
+                          </span>
+                        </td>
+                        <td class="notes-text">{{ item.catatan }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="stage-summary-callout callout-emerald">
+                <i class="ri-chat-check-line"></i>
+                <div>
+                  <strong>Kesimpulan Telaah Farmasetis:</strong>
+                  <p>{{ resep().skrining.kajianFarmasetis.catatanKeseluruhan }}</p>
+                </div>
+              </div>
+            </div>
+          }
+
+          <!-- TAHAP 3: KAJIAN KLINIS -->
+          @if (activeSkriningTab() === 'semua' || activeSkriningTab() === 'klinis') {
+            <div class="stage-block stage-purple">
+              <div class="stage-head-row">
+                <div class="stage-identity">
+                  <span class="stage-number num-purple">3</span>
+                  <div>
+                    <h3 class="stage-heading">Kajian Klinis (Drug-Related Problems / DRP)</h3>
+                    <span class="stage-caption">Ketepatan indikasi, penapisan alergi, potensi interaksi obat, dan kontraindikasi</span>
+                  </div>
+                </div>
+                <span
+                  class="stage-badge"
+                  [class.badge-ms]="resep().skrining.kajianKlinis.status === 'Lolos'"
+                  [class.badge-attention]="resep().skrining.kajianKlinis.status === 'Ada Catatan Klinis'"
+                >
+                  <i [class]="resep().skrining.kajianKlinis.status === 'Lolos' ? 'ri-checkbox-circle-fill' : 'ri-alert-fill'"></i>
+                  {{ resep().skrining.kajianKlinis.status }}
+                </span>
+              </div>
+
+              <div class="table-container">
+                <table class="stage-table" aria-label="Tabel Kajian Klinis">
+                  <thead>
+                    <tr>
+                      <th scope="col" style="width: 28%;">Parameter Indikator</th>
+                      <th scope="col" style="width: 38%;">Deskripsi Standar</th>
+                      <th scope="col" style="width: 14%;">Hasil Telaah</th>
+                      <th scope="col" style="width: 20%;">Catatan APJ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (item of resep().skrining.kajianKlinis.items; track item.indikator) {
+                      <tr>
+                        <td class="font-semibold">{{ item.indikator }}</td>
+                        <td class="text-muted">{{ item.deskripsi }}</td>
+                        <td>
+                          <span
+                            class="result-pill"
+                            [class.pill-tepat]="item.status === 'Tepat'"
+                            [class.pill-perhatian]="item.status === 'Perhatian'"
+                          >
+                            <i [class]="item.status === 'Tepat' ? 'ri-check-line' : 'ri-alert-line'"></i>
+                            {{ item.status }}
+                          </span>
+                        </td>
+                        <td class="notes-text" [class.highlight-note]="item.status === 'Perhatian'">
+                          {{ item.catatan }}
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="stage-summary-callout" [class.callout-attention]="resep().skrining.kajianKlinis.status === 'Ada Catatan Klinis'">
+                <i [class]="resep().skrining.kajianKlinis.status === 'Ada Catatan Klinis' ? 'ri-alert-fill text-amber' : 'ri-chat-check-line text-emerald'"></i>
+                <div>
+                  <strong>Kesimpulan Telaah Klinis:</strong>
+                  <p>{{ resep().skrining.kajianKlinis.catatanKeseluruhan }}</p>
+                </div>
+              </div>
+            </div>
+          }
+
+          <!-- Official APJ Approval & Seal Box -->
+          <div class="apj-stamp-panel">
+            <div class="apj-left-meta">
+              <div class="apj-avatar-icon">
+                <i class="ri-user-star-line"></i>
+              </div>
+              <div class="apj-texts">
+                <span class="apj-role-badge">{{ resep().skrining.apotekerPengkaji.jabatan }}</span>
+                <strong class="apj-name-text">{{ resep().skrining.apotekerPengkaji.nama }}</strong>
+                <span class="apj-sipa-text font-mono">SIPA: {{ resep().skrining.apotekerPengkaji.sipa }}</span>
+                <span class="apj-place-text">{{ resepService.currentFacilityName }} ({{ resepService.currentFacilitySia }})</span>
+              </div>
+            </div>
+
+            <div class="apj-seal-box">
+              <div class="seal-header">
+                <i class="ri-shield-check-fill text-emerald"></i>
+                <span>TERTELAAH & MEMENUHI SYARAT</span>
+              </div>
+              <span class="seal-timestamp">Waktu Verifikasi: {{ resep().skrining.apotekerPengkaji.waktuKajian }}</span>
+              <span class="seal-hash font-mono">HASH: SHA256-{{ resep().id }}-PSEF-OK</span>
+            </div>
+          </div>
+        </section>
+      }
+
+      <!-- 2. DAFTAR FORMULARIUM OBAT RESEP (R/) -->
+      @if (activeMainTab() === 'formularium' || activeMainTab() === 'semua') {
+        <section class="pane-card rx-card-master" [class.mt-4]="activeMainTab() === 'semua'" aria-label="Daftar Obat Resep">
+          <div class="pane-card-header">
+            <div class="pane-title-group">
+              <div class="pane-icon-box rx-box">
+                <i class="ri-capsule-line text-primary"></i>
+              </div>
+              <div>
+                <h2 class="pane-title">Daftar Formularium & Obat Resep (R/)</h2>
+                <p class="pane-desc">Instruksi sediaan, dosis, jumlah, dan aturan pakai dari dokter</p>
+              </div>
+            </div>
+            <span class="count-badge">{{ resep().obatList.length }} Item Obat</span>
+          </div>
+
+          <!-- Prescription Cards Layout (Modern Perforated Cards) -->
+          <div class="rx-items-container">
+            @for (med of resep().obatList; track med.no) {
+              <div class="rx-item-card">
+                <div class="rx-glyph-col">
+                  <span class="r-symbol-badge font-serif">{{ med.rCode }}</span>
+                  <span class="med-order-num">#{{ med.no }}</span>
+                </div>
+
+                <div class="rx-detail-col">
+                  <div class="rx-title-row">
+                    <h3 class="med-name-heading">{{ med.namaObat }}</h3>
+                    <div class="rx-tag-group">
+                      <span class="med-form-pill">{{ med.bentukSediaan }}</span>
+                      <span class="route-pill">{{ med.rute }}</span>
+                    </div>
+                  </div>
+
+                  @if (med.keterangan) {
+                    <p class="med-desc-pill">{{ med.keterangan }}</p>
+                  }
+
+                  <div class="rx-metrics-row">
+                    <div class="rx-spec-box">
+                      <span class="spec-label">Kekuatan & Dosis</span>
+                      <strong class="spec-val">{{ med.kekuatan }} &bull; {{ med.dosis }}</strong>
+                    </div>
+
+                    <div class="rx-spec-box">
+                      <span class="spec-label">Jumlah / Iter</span>
+                      <strong class="spec-val font-mono">{{ med.jumlah }}</strong>
+                    </div>
+
+                    <div class="rx-spec-box">
+                      <span class="spec-label">Status Stok Apotek</span>
+                      <span
+                        class="stock-badge"
+                        [class.stock-ok]="med.stokStatus === 'Tersedia'"
+                        [class.stock-low]="med.stokStatus === 'Stok Menipis'"
+                      >
+                        <i class="ri-checkbox-circle-fill"></i> {{ med.stokStatus }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Prominent Signa / Directions Box -->
+                  <div class="signa-alert-bar">
+                    <div class="signa-icon-circle">
+                      <i class="ri-time-line"></i>
+                    </div>
+                    <div class="signa-texts">
+                      <span class="signa-label">Signa / Aturan Pemakaian:</span>
+                      <strong class="signa-instruction">{{ med.aturanPakai }}</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Price Column -->
+                <div class="rx-price-col">
+                  <span class="price-sub-label">Subtotal</span>
+                  <strong class="price-main-val font-mono">{{ formatRupiah(med.totalHarga) }}</strong>
+                  <span class="price-unit-val font-mono">@ {{ formatRupiah(med.hargaSatuan) }}</span>
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- Total Calculation Footer -->
+          <div class="rx-calc-footer">
+            <div class="calc-row">
+              <span class="calc-label">Subtotal Biaya Obat:</span>
+              <span class="calc-val font-mono">{{ formatRupiah(resep().totalBiayaObat) }}</span>
+            </div>
+            <div class="calc-row">
+              <span class="calc-label">Jasa Pelayanan & Telaah Farmasi (APJ):</span>
+              <span class="calc-val font-mono">{{ formatRupiah(resep().jasaPelayananResep) }}</span>
+            </div>
+            <div class="calc-row calc-total">
+              <div class="total-title-group">
+                <i class="ri-wallet-3-line text-primary"></i>
+                <span class="total-title">Total Penebusan Resep:</span>
+              </div>
+              <strong class="total-val font-mono text-primary">
+                {{ formatRupiah(resep().totalBiayaObat + resep().jasaPelayananResep) }}
+              </strong>
+            </div>
+          </div>
+        </section>
+      }
+
+      <!-- 3. TIMELINE & AUDIT TRAIL -->
+      @if (activeMainTab() === 'timeline' || activeMainTab() === 'semua') {
+        <section class="pane-card timeline-card-master" [class.mt-4]="activeMainTab() === 'semua'" aria-label="Riwayat dan Audit Trail">
+          <div class="pane-card-header">
+            <div class="pane-title-group">
+              <div class="pane-icon-box">
+                <i class="ri-route-line text-primary"></i>
+              </div>
+              <div>
+                <h2 class="pane-title">Riwayat Proses & Audit Trail Resep</h2>
+                <p class="pane-desc">Pelacakan otomatis waktu, petugas pengkaji, dan status dispensing</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-stepper">
+            @for (step of resep().riwayatTimeline; track step.tahap) {
+              <div class="stepper-item" [class.completed]="step.completed" [class.active]="step.active">
+                <div class="stepper-bullet">
+                  <i [class]="step.completed ? 'ri-check-line' : 'ri-time-line'"></i>
+                </div>
+                <div class="stepper-content">
+                  <div class="stepper-top">
+                    <strong class="stepper-title">{{ step.tahap }}</strong>
+                    <span class="stepper-time font-mono">{{ step.waktu }}</span>
+                  </div>
+                  <span class="stepper-author">
+                    <i class="ri-user-line"></i> Petugas: {{ step.petugas }}
+                  </span>
+                  <p class="stepper-desc">{{ step.keterangan }}</p>
+                </div>
+              </div>
+            }
+          </div>
+        </section>
+      }
+    </main>
+
+    <!-- RIGHT COLUMN: Patient, Doctor & Prescription Summary Sidebar -->
+    <aside class="right-sidebar-pane">
+      <!-- Card A: Pasien & Profil Medis -->
+      <div class="sidebar-card patient-card">
+        <div class="sidebar-card-header">
+          <div class="sidebar-title-group">
+            <i class="ri-user-heart-line text-teal"></i>
+            <h3>Data Pasien</h3>
+          </div>
+          <span class="patient-id-tag font-mono">{{ resep().pasien.id }}</span>
+        </div>
+
+        <div class="patient-avatar-row">
+          <div class="patient-avatar-circle">
+            <i class="ri-user-3-line"></i>
+          </div>
+          <div class="patient-title-group">
+            <strong class="patient-name">{{ resep().pasien.nama }}</strong>
+            <span class="patient-meta-text">{{ resep().pasien.usia }} &bull; {{ resep().pasien.gender }}</span>
+            <span class="patient-rm font-mono">No. RM: {{ resep().pasien.noRm }}</span>
+          </div>
+        </div>
+
+        <!-- Vital Badges: BB & TB (Crucial for dosage screening) -->
+        <div class="patient-vitals-row">
+          <div class="vital-pill">
+            <span class="vital-lbl">Berat Badan</span>
+            <strong class="vital-val">{{ resep().pasien.beratBadan }}</strong>
+          </div>
+          <div class="vital-pill">
+            <span class="vital-lbl">Tinggi Badan</span>
+            <strong class="vital-val">{{ resep().pasien.tinggiBadan }}</strong>
+          </div>
+        </div>
+
+        <!-- Allergy Alert Box -->
+        <div class="allergy-alert-card" [class.allergy-danger]="hasAllergyWarning()">
+          <div class="allergy-header">
+            <i [class]="hasAllergyWarning() ? 'ri-alarm-warning-fill text-amber' : 'ri-shield-check-fill text-emerald'"></i>
+            <strong>Riwayat Alergi Obat:</strong>
+          </div>
+          <p class="allergy-detail">{{ resep().pasien.alergi.join(', ') }}</p>
+        </div>
+
+        <!-- Diagnosis Box -->
+        <div class="diagnosis-card">
+          <div class="diagnosis-header">
+            <i class="ri-stethoscope-line text-primary"></i>
+            <span>Diagnosis Medis (ICD-10):</span>
+          </div>
+          <strong class="diagnosis-title">{{ resep().pasien.diagnosis }}</strong>
+        </div>
+
+        <!-- Contact & Address -->
+        <div class="contact-info-list">
+          <div class="contact-row">
+            <i class="ri-phone-line"></i>
+            <span>{{ resep().pasien.telepon }}</span>
+          </div>
+          <div class="contact-row">
+            <i class="ri-map-pin-line"></i>
+            <span>{{ resep().pasien.alamat }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card B: Dokter Penulis Resep -->
+      <div class="sidebar-card doctor-card">
+        <div class="sidebar-card-header">
+          <div class="sidebar-title-group">
+            <i class="ri-nurse-line text-primary"></i>
+            <h3>Dokter Penulis</h3>
+          </div>
+          <span class="doctor-badge">PSEF Partner</span>
+        </div>
+
+        <div class="doctor-avatar-row">
+          <div class="doctor-avatar-circle">
+            <i class="ri-user-star-line"></i>
+          </div>
+          <div class="doctor-title-group">
+            <strong class="doctor-name">{{ resep().dokter.nama }}</strong>
+            <span class="doctor-spec">{{ resep().dokter.spesialisasi }}</span>
+            <span class="doctor-sip font-mono">SIP: {{ resep().dokter.sip }}</span>
+          </div>
+        </div>
+
+        <div class="doctor-faskes-box">
+          <span class="faskes-lbl">Unit / Faskes Pengirim:</span>
+          <strong class="faskes-val">{{ resep().dokter.faskesAsal }}</strong>
+        </div>
+
+        <!-- Digital Signature Verified Badge -->
+        <div class="signature-card-badge" (click)="openSignatureModal()" title="Klik untuk melihat sertifikat digital SHA-256">
+          <div class="sig-badge-icon">
+            <i class="ri-shield-check-fill text-emerald"></i>
+          </div>
+          <div class="sig-badge-text">
+            <strong>Tanda Tangan Digital Sah</strong>
+            <span>Tervalidasi SHA-256 Kemenkes PSEF</span>
+          </div>
+          <i class="ri-arrow-right-s-line sig-arrow"></i>
+        </div>
+      </div>
+
+      <!-- Card C: Apotek Pelaksana -->
+      <div class="sidebar-card pharmacy-card">
+        <div class="sidebar-card-header">
+          <div class="sidebar-title-group">
+            <i class="ri-building-line text-blue"></i>
+            <h3>Apotek Pelaksana</h3>
+          </div>
+        </div>
+        <strong class="pharmacy-name">{{ resepService.currentFacilityName }}</strong>
+        <span class="pharmacy-sia font-mono">{{ resepService.currentFacilitySia }}</span>
+        <p class="pharmacy-address">{{ resepService.currentFacilityAddress }}</p>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Bottom Action Bar (Floating on Desktop) -->
+  <div class="bottom-action-bar no-print">
+    <button type="button" class="btn btn-outline" (click)="goBack()">
+      <i class="ri-arrow-left-line"></i>
+      <span>Kembali ke Daftar Resep</span>
+    </button>
+
+    <div class="bottom-right-group">
+      <button type="button" class="btn btn-outline" (click)="openSignatureModal()">
+        <i class="ri-shield-keyhole-line"></i>
+        <span>Sertifikat Digital PSEF</span>
+      </button>
+
+      <button type="button" class="btn btn-primary" (click)="printLembarResep()">
+        <i class="ri-printer-line"></i>
+        <span>Cetak Lembar Telaah & Resep</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal Validasi Tanda Tangan Digital Dokter PSEF -->
+  @if (showSignatureModal()) {
+    <div class="modal-backdrop" (click)="closeSignatureModal()">
+      <div class="modal-dialog" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <div class="modal-icon-box">
+              <i class="ri-shield-keyhole-line"></i>
+            </div>
+            <div>
+              <h3 id="modal-title" class="modal-title">Validasi Tanda Tangan Digital Dokter PSEF</h3>
+              <span class="modal-subtitle">Keaslian & integritas dokumen resep elektronik terenkripsi</span>
+            </div>
+          </div>
+          <button type="button" class="modal-close-btn" (click)="closeSignatureModal()" aria-label="Tutup modal">
+            <i class="ri-close-line"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div class="cert-status-banner">
+            <div class="cert-icon-circle">
+              <i class="ri-checkbox-circle-fill text-emerald"></i>
+            </div>
+            <div>
+              <strong class="cert-heading">Tanda Tangan Elektronik Sah & Tervalidasi</strong>
+              <p class="cert-desc">Dokumen resep ini ditandatangani secara kriptografis oleh dokter terdaftar Kementerian Kesehatan RI.</p>
+            </div>
+          </div>
+
+          <div class="cert-details-grid">
+            <div class="cert-row">
+              <span class="cert-label">Penandatangan:</span>
+              <strong class="cert-val">{{ resep().dokter.nama }}</strong>
+            </div>
+            <div class="cert-row">
+              <span class="cert-label">Nomor SIP Dokter:</span>
+              <span class="cert-val font-mono">{{ resep().dokter.sip }}</span>
+            </div>
+            <div class="cert-row">
+              <span class="cert-label">Waktu Penandatanganan:</span>
+              <span class="cert-val">{{ resep().dokter.digitalSignature.signedAt }}</span>
+            </div>
+            <div class="cert-row">
+              <span class="cert-label">Algoritma Enkripsi:</span>
+              <span class="cert-val font-mono">{{ resep().dokter.digitalSignature.algorithm }}</span>
+            </div>
+            <div class="cert-row full-row">
+              <div class="hash-label-row">
+                <span class="cert-label">Hash SHA-256 Integritas Data:</span>
+                <button type="button" class="btn-copy-hash" (click)="copyHash()" title="Salin hash">
+                  <i [class]="copiedHash() ? 'ri-check-line text-emerald' : 'ri-file-copy-line'"></i>
+                  <span>{{ copiedHash() ? 'Tersalin' : 'Salin Hash' }}</span>
+                </button>
+              </div>
+              <div class="hash-code-box font-mono">
+                {{ resep().dokter.digitalSignature.hash }}
+              </div>
+            </div>
+            <div class="cert-row full-row">
+              <span class="cert-label">Kode Verifikasi QR PSEF:</span>
+              <div class="qr-verify-box font-mono">
+                <i class="ri-qr-code-line qr-icon"></i>
+                <span>{{ resep().dokter.digitalSignature.qrCode }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" (click)="closeSignatureModal()">
+            <span>Tutup</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

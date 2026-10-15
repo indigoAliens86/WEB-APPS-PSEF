@@ -1,0 +1,178 @@
+<header class="navbar">
+    <div class="navbar-left">
+        <!-- Sidebar Toggle -->
+        <button class="icon-button menu-toggle" type="button" aria-label="Buka atau tutup sidebar fasilitas"
+            (click)="sidebarToggle.emit()">
+            <i class="ri-menu-2-line" aria-hidden="true"></i>
+        </button>
+
+        <!-- Pharmacy Live Operational Status Toggle -->
+        <div class="pharmacy-status-bar">
+            <button
+                type="button"
+                class="status-toggle-btn"
+                [class.is-open]="isApotekOpen()"
+                [class.is-closed]="!isApotekOpen()"
+                (click)="toggleApotekStatus()"
+                [title]="isApotekOpen() ? 'Klik untuk ubah status ke Tutup Sementara' : 'Klik untuk Buka Layanan Resep'"
+            >
+                <span class="status-pulse-dot" aria-hidden="true"></span>
+                <span class="status-label font-semibold">
+                    {{ isApotekOpen() ? 'Apotek Buka • Siap Terima Resep' : 'Tutup Sementara • Jeda Shift' }}
+                </span>
+                <i class="ri-arrow-down-s-line status-chevron" aria-hidden="true"></i>
+            </button>
+
+            <div class="compliance-chip">
+                <i class="ri-shield-check-fill text-emerald" aria-hidden="true"></i>
+                <span class="chip-text font-mono">SIA-32.73/2025</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="navbar-actions">
+        <!-- Theme Mode Switch -->
+        <button class="icon-button" type="button"
+            [attr.aria-label]="isDarkTheme() ? 'Gunakan tema terang' : 'Gunakan tema gelap'"
+            (click)="toggleTheme()"
+            [title]="isDarkTheme() ? 'Beralih ke Tema Terang' : 'Beralih ke Tema Gelap'">
+            <i [class]="isDarkTheme() ? 'ri-sun-line text-amber' : 'ri-moon-line'" aria-hidden="true"></i>
+        </button>
+
+        <!-- Resep Masuk Notifications Dropdown -->
+        <div class="action-dropdown">
+            <button class="icon-button resep-btn" type="button" aria-label="Notifikasi Resep Masuk"
+                aria-haspopup="true" [attr.aria-expanded]="activeDropdown() === 'resep'"
+                (click)="toggleDropdown('resep')"
+                title="Resep Masuk Perlu Telaah APJ">
+                <i class="ri-file-list-3-line" aria-hidden="true"></i>
+                <span *ngIf="pendingResepList().length > 0" class="notification-badge" aria-hidden="true">
+                    {{ pendingResepList().length }}
+                </span>
+            </button>
+
+            <section class="action-menu resep-menu" [attr.hidden]="activeDropdown() !== 'resep' ? '' : null"
+                aria-label="Daftar resep masuk terbaru">
+                <div class="action-menu-heading">
+                    <div class="heading-title-group">
+                        <i class="ri-medicine-bottle-line text-emerald"></i>
+                        <strong>Resep Perlu Telaah APJ</strong>
+                    </div>
+                    <span class="menu-badge badge-amber">{{ pendingResepList().length }} Antrean</span>
+                </div>
+
+                <div class="resep-items-scroll">
+                    <a *ngFor="let rx of pendingResepList()" routerLink="/fasilitas/resep" (click)="closeDropdown()" class="resep-item-card">
+                        <div class="resep-card-top">
+                            <span class="resep-id font-mono">{{ rx.id }}</span>
+                            <span class="resep-time"><i class="ri-time-line"></i> {{ rx.waktu }}</span>
+                        </div>
+                        <div class="resep-patient font-semibold">{{ rx.pasien }}</div>
+                        <div class="resep-drugs">{{ rx.itemObat }}</div>
+                        <div class="resep-tag-row">
+                            <span class="rx-tag" [class.tag-urgent]="rx.isUrgent">{{ rx.status }}</span>
+                            <span *ngIf="rx.isUrgent" class="rx-urgent"><i class="ri-alarm-warning-line"></i> Prioritas</span>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="action-menu-footer">
+                    <a routerLink="/fasilitas/resep" (click)="closeDropdown()" class="footer-link">
+                        <span>Lihat Semua Resep</span>
+                        <i class="ri-arrow-right-line"></i>
+                    </a>
+                </div>
+            </section>
+        </div>
+
+        <!-- Telefarmasi Chat Dropdown -->
+        <div class="action-dropdown">
+            <button class="icon-button chat-btn" type="button" aria-label="Konseling Telefarmasi & Chat Pasien"
+                aria-haspopup="true" [attr.aria-expanded]="activeDropdown() === 'messages'"
+                (click)="toggleDropdown('messages')"
+                title="Konseling Telefarmasi (PIO)">
+                <i class="ri-customer-service-2-line" aria-hidden="true"></i>
+                <span *ngIf="incomingMessages().length > 0" class="notification-dot" aria-hidden="true"></span>
+            </button>
+
+            <section class="action-menu message-menu" [attr.hidden]="activeDropdown() !== 'messages' ? '' : null"
+                aria-label="Konseling pasien terbaru">
+                <div class="action-menu-heading">
+                    <div class="heading-title-group">
+                        <i class="ri-chat-voice-line text-teal"></i>
+                        <strong>Konseling Telefarmasi (PIO)</strong>
+                    </div>
+                    <span class="menu-badge badge-teal">{{ incomingMessages().length }} Baru</span>
+                </div>
+
+                <div class="messages-items-scroll">
+                    <a *ngFor="let msg of incomingMessages()" routerLink="/fasilitas/telefarmasi" (click)="closeDropdown()" class="message-item-card">
+                        <div class="message-avatar">
+                            <i class="ri-user-smile-line"></i>
+                        </div>
+                        <div class="message-content">
+                            <div class="msg-header-row">
+                                <span class="patient-name">{{ msg.namaPasien }}</span>
+                                <span class="msg-time">{{ msg.waktu }}</span>
+                            </div>
+                            <p class="msg-text">{{ msg.pertanyaan }}</p>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="action-menu-footer">
+                    <a routerLink="/fasilitas/telefarmasi" (click)="closeDropdown()" class="footer-link">
+                        <span>Buka Ruang Konseling</span>
+                        <i class="ri-arrow-right-line"></i>
+                    </a>
+                </div>
+            </section>
+        </div>
+
+        <!-- Apotek Facility Profile Dropdown -->
+        <div class="profile">
+            <button class="profile-toggle" type="button" aria-haspopup="true"
+                [attr.aria-expanded]="activeDropdown() === 'profile'" (click)="toggleDropdown('profile')">
+                <span class="avatar-pharmacy" aria-hidden="true">
+                    <i class="ri-store-2-line"></i>
+                </span>
+                <span class="profile-details">
+                    <span class="profile-name">Apotek Kimia Sehat</span>
+                    <span class="profile-role">apt. Farhan Pratama (APJ)</span>
+                </span>
+                <i class="ri-arrow-down-s-line profile-chevron" aria-hidden="true"></i>
+            </button>
+
+            <div class="profile-menu" [attr.hidden]="activeDropdown() !== 'profile' ? '' : null">
+                <div class="profile-menu-header">
+                    <span class="pm-name">Apotek Kimia Sehat PSEF</span>
+                    <span class="pm-sub font-mono">NIB: 0129003884712 • SIPA Aktif</span>
+                </div>
+                <div class="menu-divider" role="separator"></div>
+
+                <a routerLink="/fasilitas/profile" routerLinkActive="active" (click)="closeDropdown()">
+                    <i class="ri-store-3-line"></i>
+                    <span>Profil & Sarana</span>
+                </a>
+                <a routerLink="/fasilitas/apoteker" routerLinkActive="active" (click)="closeDropdown()">
+                    <i class="ri-nurse-line"></i>
+                    <span>Jadwal Shift & APJ</span>
+                </a>
+                <a routerLink="/fasilitas/produk" routerLinkActive="active" (click)="closeDropdown()">
+                    <i class="ri-capsule-line"></i>
+                    <span>Katalog Sediaan Obat</span>
+                </a>
+                <a routerLink="/fasilitas/laporan" routerLinkActive="active" (click)="closeDropdown()">
+                    <i class="ri-file-chart-line"></i>
+                    <span>Laporan SIPNAP Kemenkes</span>
+                </a>
+
+                <div class="menu-divider" role="separator"></div>
+                <button type="button" class="logout-btn" (click)="closeDropdown()">
+                    <i class="ri-logout-box-r-line"></i>
+                    <span>Keluar Sistem</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</header>

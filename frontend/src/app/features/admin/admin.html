@@ -1,0 +1,15 @@
+<div class="admin-layout" [class.sidebar-collapsed]="isSidebarCollapsed()">
+    <button class="sidebar-backdrop" type="button" aria-label="Tutup sidebar"
+        (click)="toggleSidebar()" [attr.aria-hidden]="!isSidebarCollapsed()"></button>
+    <app-sidebar class="admin-sidebar" [class.sidebar-compact]="isSidebarCollapsed()"></app-sidebar>
+
+    <div class="admin-content">
+        <app-navbar class="admin-navbar" (sidebarToggle)="toggleSidebar()"></app-navbar>
+        <div class="admin-scroll-area">
+            <main class="admin-main">
+                <router-outlet></router-outlet>
+            </main>
+            <app-footer class="admin-footer"></app-footer>
+        </div>
+    </div>
+</div>

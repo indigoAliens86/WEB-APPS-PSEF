@@ -1,0 +1,81 @@
+<aside class="sidebar">
+    <a class="sidebar-brand" routerLink="/admin/dashboard">
+        <span class="brand-mark"><i class="ri-heart-pulse-line" aria-hidden="true"></i></span>
+        <span class="brand-label">PSEF Admin</span>
+    </a>
+
+    <nav aria-label="Menu admin">
+        <section class="menu-group">
+            <h2 class="menu-heading">Menu Utama</h2>
+            <a class="menu-link" title="Dashboard" aria-label="Dashboard" routerLink="/admin/dashboard" routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }">
+                <i class="ri-dashboard-line" aria-hidden="true"></i>
+                <span>Dashboard</span>
+            </a>
+        </section>
+
+        <section class="menu-group">
+            <h2 class="menu-heading">Manajemen</h2>
+            <a class="menu-link" title="Fasilitas" aria-label="Fasilitas" routerLink="/admin/fasilitas" routerLinkActive="active">
+                <i class="ri-hospital-line" aria-hidden="true"></i>
+                <span>Fasilitas</span>
+            </a>
+            <a class="menu-link" title="Dokter" aria-label="Dokter" routerLink="/admin/dokter" routerLinkActive="active">
+                <i class="ri-stethoscope-line" aria-hidden="true"></i>
+                <span>Dokter</span>
+            </a>
+            <a class="menu-link" title="Apoteker" aria-label="Apoteker" routerLink="/admin/apoteker" routerLinkActive="active">
+                <i class="ri-capsule-line" aria-hidden="true"></i>
+                <span>Apoteker</span>
+            </a>
+            <a class="menu-link" title="Pasien" aria-label="Pasien" routerLink="/admin/pasien" routerLinkActive="active">
+                <i class="ri-user-heart-line" aria-hidden="true"></i>
+                <span>Pasien</span>
+            </a>
+        </section>
+
+        <section class="menu-group">
+            <h2 class="menu-heading">Operasional</h2>
+            <a class="menu-link" title="Telemedisin" aria-label="Telemedisin" routerLink="/admin/telemedisin" routerLinkActive="active">
+                <i class="ri-video-chat-line" aria-hidden="true"></i>
+                <span>Telemedisin</span>
+            </a>
+            <a class="menu-link" title="Telefarmasi" aria-label="Telefarmasi" routerLink="/admin/telefarmasi" routerLinkActive="active">
+                <i class="ri-medicine-bottle-line" aria-hidden="true"></i>
+                <span>Telefarmasi</span>
+            </a>
+            <a class="menu-link" title="Pesanan" aria-label="Pesanan" routerLink="/admin/pesanan" routerLinkActive="active">
+                <i class="ri-shopping-bag-3-line" aria-hidden="true"></i>
+                <span>Pesanan</span>
+            </a>
+            <a class="menu-link" title="Transaksi" aria-label="Transaksi" routerLink="/admin/transaksi" routerLinkActive="active">
+                <i class="ri-exchange-funds-line" aria-hidden="true"></i>
+                <span>Transaksi</span>
+            </a>
+        </section>
+
+        <section class="menu-group">
+            <h2 class="menu-heading">Lainnya</h2>
+            <a class="menu-link" title="Promo" aria-label="Promo" routerLink="/admin/promo" routerLinkActive="active">
+                <i class="ri-price-tag-3-line" aria-hidden="true"></i>
+                <span>Promo</span>
+            </a>
+            <a class="menu-link" title="Point" aria-label="Point" routerLink="/admin/point" routerLinkActive="active">
+                <i class="ri-medal-line" aria-hidden="true"></i>
+                <span>Point</span>
+            </a>
+            <a class="menu-link" title="Konten" aria-label="Konten" routerLink="/admin/konten" routerLinkActive="active">
+                <i class="ri-file-text-line" aria-hidden="true"></i>
+                <span>Konten</span>
+            </a>
+            <a class="menu-link" title="Laporan" aria-label="Laporan" routerLink="/admin/laporan" routerLinkActive="active">
+                <i class="ri-bar-chart-box-line" aria-hidden="true"></i>
+                <span>Laporan</span>
+            </a>
+            <a class="menu-link" title="Pengaturan" aria-label="Pengaturan" routerLink="/admin/pengaturan" routerLinkActive="active">
+                <i class="ri-settings-3-line" aria-hidden="true"></i>
+                <span>Pengaturan</span>
+            </a>
+        </section>
+    </nav>
+</aside>

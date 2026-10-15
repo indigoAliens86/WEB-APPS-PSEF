@@ -1,0 +1,638 @@
+<div class="promo-container">
+  <!-- Child Router Outlet for Detail View -->
+  <router-outlet></router-outlet>
+
+  <!-- Main Promo, Voucher & Membership List (hidden when viewing detail) -->
+  <div *ngIf="!showingDetails()" class="promo-main-view">
+    <!-- Header Section -->
+    <header class="page-header">
+      <div class="header-left">
+        <div class="header-icon-box">
+          <i class="ri-price-tag-3-line"></i>
+        </div>
+        <div>
+          <h1 class="page-title">Voucher, Promo & Membership</h1>
+          <p class="page-subtitle">
+            Kelola kode voucher diskon, campaign promosi telemedisin & farmasi, serta program loyalitas keanggotaan pasien PSEF
+          </p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button type="button" class="btn btn-outline" (click)="exportData()" title="Ekspor data rekapitulasi">
+          <i class="ri-download-2-line"></i>
+          <span>Ekspor Data</span>
+        </button>
+        <button type="button" class="btn btn-primary" (click)="openCreateModal()" title="Buat promo atau voucher baru">
+          <i class="ri-add-line"></i>
+          <span>Buat Program Baru</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- 4 KPI Summary Cards -->
+    <section class="kpi-grid" aria-label="Statistik Program Promo dan Loyalitas">
+      <div *ngFor="let kpi of kpiCards" class="kpi-card" [ngClass]="kpi.colorClass">
+        <div class="kpi-header">
+          <span class="kpi-title">{{ kpi.title }}</span>
+          <div class="kpi-icon-wrapper">
+            <i [class]="kpi.icon"></i>
+          </div>
+        </div>
+        <div class="kpi-value-row">
+          <span class="kpi-value">{{ kpi.value }}</span>
+          <span *ngIf="kpi.percentage" class="kpi-badge positive">
+            <i class="ri-arrow-up-line"></i> {{ kpi.percentage }}
+          </span>
+        </div>
+        <p class="kpi-period">{{ kpi.period }}</p>
+      </div>
+    </section>
+
+    <!-- Main Navigation Tabs -->
+    <div class="main-tabs-wrapper">
+      <nav class="main-tabs-nav" aria-label="Kategori Program">
+        <button
+          *ngFor="let tab of mainTabs"
+          type="button"
+          class="main-tab-btn"
+          [class.active]="activeMainTab() === tab"
+          (click)="setMainTab(tab)"
+        >
+          <span class="tab-label">{{ tab }}</span>
+          <span class="tab-counter" *ngIf="tab === 'Semua Program'">{{ promoList().length }}</span>
+          <span class="tab-counter" *ngIf="tab === 'Voucher Diskon'">{{ voucherCount() }}</span>
+          <span class="tab-counter" *ngIf="tab === 'Campaign Promo'">{{ campaignCount() }}</span>
+          <span class="tab-counter tier-counter" *ngIf="tab === 'Tingkatan Membership'">{{ membershipCount() }} Tiers</span>
+        </button>
+      </nav>
+
+      <!-- View Switcher (Table vs Cards) - Shown on voucher/campaign tabs -->
+      <div *ngIf="activeMainTab() !== 'Tingkatan Membership'" class="view-switch-group">
+        <button
+          type="button"
+          class="view-toggle-btn"
+          [class.active]="viewMode() === 'table'"
+          (click)="setViewMode('table')"
+          title="Tampilan Tabel"
+        >
+          <i class="ri-table-line"></i>
+          <span class="hide-mobile">Tabel</span>
+        </button>
+        <button
+          type="button"
+          class="view-toggle-btn"
+          [class.active]="viewMode() === 'cards'"
+          (click)="setViewMode('cards')"
+          title="Tampilan Katalog Kupon"
+        >
+          <i class="ri-grid-fill"></i>
+          <span class="hide-mobile">Katalog Kupon</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- VIEW: VOUCHER & CAMPAIGN (Tabel / Cards) -->
+    <ng-container *ngIf="activeMainTab() !== 'Tingkatan Membership'">
+      <!-- Toolbar Filters -->
+      <section class="toolbar-card">
+        <div class="toolbar-search">
+          <i class="ri-search-line search-icon"></i>
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Cari voucher, kode, atau nama promo..."
+            [ngModel]="searchQuery()"
+            (ngModelChange)="searchQuery.set($event)"
+          />
+          <button
+            *ngIf="searchQuery()"
+            type="button"
+            class="clear-search-btn"
+            (click)="searchQuery.set('')"
+            title="Hapus pencarian"
+          >
+            <i class="ri-close-line"></i>
+          </button>
+        </div>
+
+        <div class="toolbar-filters">
+          <!-- Filter Status -->
+          <div class="filter-item">
+            <label class="filter-label" for="filter-status">Status:</label>
+            <div class="select-wrapper">
+              <select
+                id="filter-status"
+                class="filter-select"
+                [ngModel]="filterStatus()"
+                (ngModelChange)="filterStatus.set($event)"
+              >
+                <option *ngFor="let opt of statusOptions" [value]="opt">{{ opt }}</option>
+              </select>
+              <i class="ri-arrow-down-s-line select-arrow"></i>
+            </div>
+          </div>
+
+          <!-- Filter Target Layanan -->
+          <div class="filter-item">
+            <label class="filter-label" for="filter-layanan">Layanan:</label>
+            <div class="select-wrapper">
+              <select
+                id="filter-layanan"
+                class="filter-select"
+                [ngModel]="filterTargetLayanan()"
+                (ngModelChange)="filterTargetLayanan.set($event)"
+              >
+                <option *ngFor="let opt of targetOptions" [value]="opt">{{ opt }}</option>
+              </select>
+              <i class="ri-arrow-down-s-line select-arrow"></i>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sub-view 1: Table List View -->
+      <section *ngIf="viewMode() === 'table'" class="table-card">
+        <div class="table-responsive">
+          <table class="promo-table">
+            <thead>
+              <tr>
+                <th class="th-center" style="width: 50px;">No</th>
+                <th>Program & Tipe</th>
+                <th>Kode Voucher</th>
+                <th>Diskon & Min. Belanja</th>
+                <th>Target Layanan</th>
+                <th>Periode Berlaku</th>
+                <th>Kuota Pemakaian</th>
+                <th>Status</th>
+                <th class="th-center" style="width: 120px;">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of filteredPromoList(); let idx = index" class="table-row">
+                <td class="td-center text-muted font-mono">{{ idx + 1 }}</td>
+                <td>
+                  <div class="program-title-cell">
+                    <span class="program-name">{{ item.nama }}</span>
+                    <div class="program-tags">
+                      <span class="type-pill" [class.voucher-pill]="item.tipe === 'Voucher'" [class.campaign-pill]="item.tipe === 'Campaign'">
+                        {{ item.tipe }}
+                      </span>
+                      <span class="id-sub font-mono">{{ item.id }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div *ngIf="item.kodeVoucher; else noCode" class="voucher-code-chip" (click)="copyVoucherCode(item.kodeVoucher)">
+                    <span class="code-text">{{ item.kodeVoucher }}</span>
+                    <button type="button" class="copy-btn" title="Salin kode voucher">
+                      <i [class]="copiedCode() === item.kodeVoucher ? 'ri-check-line text-success' : 'ri-file-copy-line'"></i>
+                    </button>
+                  </div>
+                  <ng-template #noCode>
+                    <span class="badge-auto-apply">Otomatis / Flash Sale</span>
+                  </ng-template>
+                </td>
+                <td>
+                  <div class="discount-cell">
+                    <span class="discount-value">{{ item.diskon.formatted }}</span>
+                    <span class="min-order text-muted">Min: {{ item.minTransaksi }}</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="target-tag">
+                    <i class="ri-capsule-line" *ngIf="item.targetLayanan.includes('Obat')"></i>
+                    <i class="ri-stethoscope-line" *ngIf="item.targetLayanan.includes('Dokter')"></i>
+                    <i class="ri-nurse-line" *ngIf="item.targetLayanan.includes('Apoteker')"></i>
+                    <i class="ri-apps-line" *ngIf="item.targetLayanan === 'Semua Layanan'"></i>
+                    {{ item.targetLayanan }}
+                  </span>
+                </td>
+                <td>
+                  <div class="period-cell">
+                    <span class="date-start">{{ item.periodeMulai }}</span>
+                    <span class="date-sep">s.d.</span>
+                    <span class="date-end">{{ item.periodeSelesai }}</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="quota-progress-cell">
+                    <div class="quota-text">
+                      <span class="quota-used">{{ item.kuotaTerpakai }}</span> /
+                      <span class="quota-total">{{ item.kuotaTotal }}</span>
+                      <span class="quota-pct">({{ getQuotaPercentage(item.kuotaTerpakai, item.kuotaTotal) }}%)</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                      <div
+                        class="progress-bar-fill"
+                        [style.width.%]="getQuotaPercentage(item.kuotaTerpakai, item.kuotaTotal)"
+                        [class.progress-danger]="getQuotaPercentage(item.kuotaTerpakai, item.kuotaTotal) >= 90"
+                      ></div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="status-badge" [ngClass]="getStatusClass(item.status)">
+                    {{ item.status }}
+                  </span>
+                </td>
+                <td class="td-center">
+                  <div class="action-btn-group">
+                    <button
+                      type="button"
+                      class="btn-icon"
+                      (click)="viewDetail(item)"
+                      title="Lihat Detail Program"
+                    >
+                      <i class="ri-eye-line"></i>
+                    </button>
+                    <button
+                      type="button"
+                      class="btn-icon"
+                      (click)="toggleProgramStatus(item)"
+                      [title]="item.status === 'Aktif' ? 'Nonaktifkan' : 'Aktifkan'"
+                    >
+                      <i [class]="item.status === 'Aktif' ? 'ri-pause-circle-line text-warning' : 'ri-play-circle-line text-success'"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr *ngIf="filteredPromoList().length === 0">
+                <td colspan="9" class="empty-state-cell">
+                  <div class="empty-state-content">
+                    <i class="ri-coupon-line empty-icon"></i>
+                    <p class="empty-text">Tidak ada program voucher atau promo yang sesuai kriteria pencarian</p>
+                    <button type="button" class="btn btn-outline btn-sm" (click)="searchQuery.set(''); filterStatus.set('Semua Status'); filterTargetLayanan.set('Semua Layanan')">
+                      Reset Filter
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Sub-view 2: Cards Grid View (Coupon Tickets) -->
+      <section *ngIf="viewMode() === 'cards'" class="cards-grid-view">
+        <div *ngFor="let item of filteredPromoList()" class="coupon-ticket-card">
+          <!-- Ticket Left / Header Accent -->
+          <div class="coupon-badge-strip" [style.background]="item.bannerBg">
+            <span class="coupon-type-badge">{{ item.tipe }}</span>
+            <div class="coupon-discount-highlight">
+              <span class="discount-big">{{ item.diskon.formatted }}</span>
+              <span *ngIf="item.diskon.maxDiskon" class="max-disc">Maks. {{ item.diskon.maxDiskon }}</span>
+            </div>
+          </div>
+
+          <!-- Ticket Cutouts / Notches -->
+          <div class="ticket-notch top-notch"></div>
+          <div class="ticket-notch bottom-notch"></div>
+
+          <!-- Ticket Body -->
+          <div class="coupon-body">
+            <div class="coupon-header-row">
+              <span class="status-badge" [ngClass]="getStatusClass(item.status)">{{ item.status }}</span>
+              <span class="target-tag-sm">{{ item.targetLayanan }}</span>
+            </div>
+
+            <h3 class="coupon-name">{{ item.nama }}</h3>
+            <p class="coupon-desc">{{ item.deskripsi }}</p>
+
+            <!-- Voucher Code Area -->
+            <div *ngIf="item.kodeVoucher; else autoPromoCard" class="coupon-code-box" (click)="copyVoucherCode(item.kodeVoucher)">
+              <div class="code-inner">
+                <span class="label-code">KODE VOUCHER</span>
+                <span class="val-code">{{ item.kodeVoucher }}</span>
+              </div>
+              <button type="button" class="copy-ticket-btn" title="Salin kode">
+                <i [class]="copiedCode() === item.kodeVoucher ? 'ri-check-line text-success' : 'ri-file-copy-line'"></i>
+              </button>
+            </div>
+            <ng-template #autoPromoCard>
+              <div class="auto-campaign-box">
+                <i class="ri-flashlight-line"></i>
+                <span>Promo Otomatis Di Checkout (Tanpa Kode)</span>
+              </div>
+            </ng-template>
+
+            <!-- Meta details & quota -->
+            <div class="coupon-meta-row">
+              <div class="meta-item">
+                <span class="meta-label">Min. Belanja:</span>
+                <span class="meta-val">{{ item.minTransaksi }}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Berlaku s.d:</span>
+                <span class="meta-val">{{ item.periodeSelesai }}</span>
+              </div>
+            </div>
+
+            <!-- Quota Bar -->
+            <div class="coupon-quota-block">
+              <div class="quota-header">
+                <span>Kuota Terpakai</span>
+                <span class="quota-numbers">{{ item.kuotaTerpakai }} / {{ item.kuotaTotal }}</span>
+              </div>
+              <div class="progress-bar-bg">
+                <div
+                  class="progress-bar-fill"
+                  [style.width.%]="getQuotaPercentage(item.kuotaTerpakai, item.kuotaTotal)"
+                  [class.progress-danger]="getQuotaPercentage(item.kuotaTerpakai, item.kuotaTotal) >= 90"
+                ></div>
+              </div>
+            </div>
+
+            <!-- Footer Action -->
+            <div class="coupon-footer">
+              <span class="coupon-id font-mono">{{ item.id }}</span>
+              <button type="button" class="btn btn-outline btn-sm" (click)="viewDetail(item)">
+                <span>Detail Program</span>
+                <i class="ri-arrow-right-line"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </ng-container>
+
+    <!-- VIEW: MEMBERSHIP TIERS TAB -->
+    <ng-container *ngIf="activeMainTab() === 'Tingkatan Membership'">
+      <section class="membership-section">
+        <!-- Banner Info Membership -->
+        <div class="membership-info-banner">
+          <div class="banner-left">
+            <div class="banner-icon-circle">
+              <i class="ri-vip-crown-2-line"></i>
+            </div>
+            <div class="banner-text">
+              <h2 class="banner-title">Program Loyalitas & Tingkatan Membership Pasien PSEF</h2>
+              <p class="banner-desc">
+                Sistem reward tier otomatis berbasis akumulasi transaksi, poin resep, dan keaktifan layanan kesehatan dalam 12 bulan terakhir. Pasien dapat menikmati diskon konsultasi, subsidi pengiriman obat, dan prioritas layanan farmasi.
+              </p>
+            </div>
+          </div>
+          <div class="banner-right">
+            <div class="banner-stat">
+              <span class="stat-num">8.420</span>
+              <span class="stat-lbl">Total Anggota Member</span>
+            </div>
+            <div class="banner-stat">
+              <span class="stat-num">4 Tier</span>
+              <span class="stat-lbl">Tingkat Keanggotaan</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 Loyalty Tier Cards Grid -->
+        <div class="tier-cards-grid">
+          <div *ngFor="let tier of membershipTiers()" class="tier-card" [ngClass]="'tier-' + tier.colorTheme">
+            <!-- Tier Header Card -->
+            <div class="tier-card-header">
+              <div class="tier-badge-top">
+                <span class="tier-level-pill">LEVEL {{ tier.tierLevel }}</span>
+                <span class="tier-status-pill">{{ tier.status }}</span>
+              </div>
+              <div class="tier-icon-container">
+                <i [class]="tier.icon"></i>
+              </div>
+              <h3 class="tier-name">{{ tier.nama }}</h3>
+              <p class="tier-tagline">{{ tier.tagline }}</p>
+            </div>
+
+            <!-- Tier Spending & Poin Criteria -->
+            <div class="tier-criteria-box">
+              <div class="criteria-row">
+                <span class="criteria-label"><i class="ri-money-dollar-circle-line"></i> Min. Belanja/Th:</span>
+                <span class="criteria-value">{{ tier.minBelanjaTahunan }}</span>
+              </div>
+              <div class="criteria-row">
+                <span class="criteria-label"><i class="ri-medal-line"></i> Min. Poin Pasien:</span>
+                <span class="criteria-value">{{ tier.minPoin }} Poin</span>
+              </div>
+            </div>
+
+            <!-- Key Quick Benefits Summary -->
+            <div class="tier-highlights-grid">
+              <div class="highlight-item">
+                <i class="ri-coin-line"></i>
+                <div class="highlight-text">
+                  <span class="hl-val">{{ tier.cashbackPoin }}</span>
+                  <span class="hl-lbl">Reward</span>
+                </div>
+              </div>
+              <div class="highlight-item">
+                <i class="ri-stethoscope-line"></i>
+                <div class="highlight-text">
+                  <span class="hl-val">{{ tier.diskonKonsultasi }}</span>
+                  <span class="hl-lbl">Telemedisin</span>
+                </div>
+              </div>
+              <div class="highlight-item">
+                <i class="ri-truck-line"></i>
+                <div class="highlight-text">
+                  <span class="hl-val">{{ tier.diskonOngkir }}</span>
+                  <span class="hl-lbl">Pengiriman</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tier Full Benefits List -->
+            <div class="tier-benefits-section">
+              <h4 class="benefits-title">Keuntungan Eksklusif:</h4>
+              <ul class="benefits-list">
+                <li *ngFor="let b of tier.benefits" class="benefit-item">
+                  <i class="ri-checkbox-circle-fill benefit-check"></i>
+                  <span>{{ b }}</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Tier Card Footer -->
+            <div class="tier-card-footer">
+              <div class="tier-members-count">
+                <i class="ri-user-heart-line"></i>
+                <span><strong>{{ tier.totalAnggota.toLocaleString('id-ID') }}</strong> Pasien Terdaftar</span>
+              </div>
+              <button type="button" class="btn btn-tier-action" (click)="viewTierDetail(tier)">
+                <span>Detail & Kelola Tier</span>
+                <i class="ri-arrow-right-s-line"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </ng-container>
+  </div>
+
+  <!-- MODAL: BUAT PROGRAM BARU (VOUCHER / PROMO) -->
+  <div *ngIf="showCreateModal()" class="modal-backdrop" (click)="closeCreateModal()">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title-row">
+          <div class="modal-icon-badge">
+            <i class="ri-price-tag-3-fill"></i>
+          </div>
+          <div>
+            <h2 class="modal-title">Buat Program Promo / Voucher Baru</h2>
+            <p class="modal-subtitle">Terbitkan kupon diskon atau promosi otomatis layanan kesehatan PSEF</p>
+          </div>
+        </div>
+        <button type="button" class="btn-close-modal" (click)="closeCreateModal()" title="Tutup modal">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Radio Selector Tipe Program -->
+        <div class="form-group">
+          <label class="form-label">Tipe Program</label>
+          <div class="radio-pill-group">
+            <label class="radio-pill" [class.active]="newProgram.tipe === 'Voucher'">
+              <input type="radio" name="programType" [(ngModel)]="newProgram.tipe" value="Voucher" />
+              <i class="ri-coupon-3-line"></i>
+              <span>Voucher (Kode Kupon)</span>
+            </label>
+            <label class="radio-pill" [class.active]="newProgram.tipe === 'Campaign'">
+              <input type="radio" name="programType" [(ngModel)]="newProgram.tipe" value="Campaign" />
+              <i class="ri-flashlight-line"></i>
+              <span>Campaign / Flash Sale</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Nama Program -->
+        <div class="form-group">
+          <label class="form-label" for="inp-nama">Nama Program Promo <span class="text-danger">*</span></label>
+          <input
+            id="inp-nama"
+            type="text"
+            class="form-control"
+            placeholder="Contoh: Diskon Penebusan Resep Digital Ramadhan"
+            [(ngModel)]="newProgram.nama"
+          />
+        </div>
+
+        <!-- Kode Voucher (jika Tipe Voucher) -->
+        <div *ngIf="newProgram.tipe === 'Voucher'" class="form-group">
+          <label class="form-label" for="inp-kode">Kode Kupon / Voucher <span class="text-danger">*</span></label>
+          <div class="input-with-prefix">
+            <i class="ri-ticket-line prefix-icon"></i>
+            <input
+              id="inp-kode"
+              type="text"
+              class="form-control font-mono uppercase-input"
+              placeholder="CONTOH: SEHAT50K"
+              [(ngModel)]="newProgram.kodeVoucher"
+            />
+          </div>
+          <small class="form-hint">Huruf kapital dan angka tanpa spasi.</small>
+        </div>
+
+        <!-- Tipe Diskon & Nilai -->
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">Tipe Pemotongan</label>
+            <select class="form-control" [(ngModel)]="newProgram.diskonTipe">
+              <option value="Persentase">Persentase (%)</option>
+              <option value="Nominal">Nominal Rupiah (Rp)</option>
+              <option value="Gratis Ongkir">Gratis Ongkos Kirim</option>
+              <option value="Cashback Point">Cashback Poin Reward</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Besaran Diskon</label>
+            <input
+              type="number"
+              class="form-control"
+              placeholder="Contoh: 20"
+              [(ngModel)]="newProgram.nilaiDiskon"
+            />
+          </div>
+        </div>
+
+        <!-- Maks Diskon & Min Belanja -->
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">Maksimal Diskon</label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Contoh: Rp 50.000"
+              [(ngModel)]="newProgram.maxDiskon"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Min. Transaksi</label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Contoh: Rp 100.000"
+              [(ngModel)]="newProgram.minTransaksi"
+            />
+          </div>
+        </div>
+
+        <!-- Target Layanan & Kuota -->
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">Target Layanan</label>
+            <select class="form-control" [(ngModel)]="newProgram.targetLayanan">
+              <option value="Semua Layanan">Semua Layanan PSEF</option>
+              <option value="Telemedisin Dokter">Telemedisin Dokter</option>
+              <option value="Telefarmasi Apoteker">Telefarmasi Apoteker</option>
+              <option value="Pesanan Obat Resep">Pesanan Obat Resep</option>
+              <option value="Marketplace Obat">Marketplace Obat Bebas</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Total Kuota Penggunaan</label>
+            <input
+              type="number"
+              class="form-control"
+              placeholder="Contoh: 500"
+              [(ngModel)]="newProgram.kuotaTotal"
+            />
+          </div>
+        </div>
+
+        <!-- Periode Mulai & Selesai -->
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">Tanggal Mulai</label>
+            <input type="date" class="form-control" [(ngModel)]="newProgram.periodeMulai" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tanggal Berakhir</label>
+            <input type="date" class="form-control" [(ngModel)]="newProgram.periodeSelesai" />
+          </div>
+        </div>
+
+        <!-- Deskripsi -->
+        <div class="form-group">
+          <label class="form-label">Syarat & Ketentuan Singkat</label>
+          <textarea
+            class="form-control"
+            rows="2"
+            placeholder="Keterangan batasan pemakaian atau ketentuan khusus pasien..."
+            [(ngModel)]="newProgram.deskripsi"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" (click)="closeCreateModal()">Batal</button>
+        <button type="button" class="btn btn-primary" (click)="saveNewProgram()">
+          <i class="ri-check-line"></i>
+          <span>Simpan & Aktifkan Program</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Feedback Notifikasi Salin Kode -->
+  <div *ngIf="copiedCode()" class="floating-toast">
+    <i class="ri-checkbox-circle-fill toast-icon"></i>
+    <span>Kode voucher <strong>{{ copiedCode() }}</strong> berhasil disalin!</span>
+  </div>
+</div>

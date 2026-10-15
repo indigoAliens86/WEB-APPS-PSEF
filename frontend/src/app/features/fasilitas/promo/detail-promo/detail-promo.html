@@ -1,0 +1,249 @@
+<div class="detail-container">
+  <!-- Top Breadcrumb & Actions -->
+  <header class="detail-header">
+    <div class="header-left">
+      <button type="button" class="btn-back" (click)="goBack()" title="Kembali ke Daftar Promo" aria-label="Kembali ke daftar promo">
+        <i class="ri-arrow-left-line" aria-hidden="true"></i>
+      </button>
+      <div class="breadcrumb-info">
+        <nav class="breadcrumb-trail" aria-label="Breadcrumb">
+          <span class="crumb-link" (click)="goBack()">Promo & Voucher Apotek</span>
+          <i class="ri-arrow-right-s-line crumb-sep" aria-hidden="true"></i>
+          <span class="crumb-current">{{ detail().id }}</span>
+        </nav>
+        <h1 class="page-title">{{ detail().nama }}</h1>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <button type="button" class="btn btn-outline" (click)="goToEdit()" title="Ubah data dan ketentuan promo">
+        <i class="ri-edit-line" aria-hidden="true"></i>
+        <span>Edit Promo</span>
+      </button>
+      <button type="button" class="btn btn-outline" (click)="printReport()" title="Cetak ringkasan laporan">
+        <i class="ri-printer-line" aria-hidden="true"></i>
+        <span>Cetak Laporan</span>
+      </button>
+      <button type="button" class="btn btn-outline" (click)="goBack()" aria-label="Tutup">
+        <i class="ri-close-line" aria-hidden="true"></i>
+        <span>Tutup</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Hero Overview Card -->
+  <section class="hero-overview-card" aria-label="Ringkasan Program Promo">
+    <div class="hero-top-row">
+      <div class="hero-badges">
+        <span class="type-pill" [ngClass]="detail().tipe === 'Voucher' ? 'voucher-pill' : detail().tipe === 'Diskon Telefarmasi' ? 'telefarm-pill' : 'campaign-pill'">
+          {{ detail().tipe }}
+        </span>
+        <span class="id-badge font-mono">{{ detail().id }}</span>
+        <span class="status-badge" [ngClass]="{'badge-aktif': detail().status === 'Aktif', 'badge-segera': detail().status === 'Segera Hadir', 'badge-berakhir': detail().status === 'Berakhir', 'badge-nonaktif': detail().status === 'Nonaktif'}">
+          {{ detail().status }}
+        </span>
+      </div>
+
+      <div class="hero-dates">
+        <i class="ri-calendar-event-line" aria-hidden="true"></i>
+        <span>{{ detail().periodeMulai }} &mdash; {{ detail().periodeSelesai }}</span>
+        <span class="days-remaining">({{ detail().sisaHari }} Hari Tersisa)</span>
+      </div>
+    </div>
+
+    <div class="hero-main-row">
+      <div class="hero-info">
+        <h2 class="hero-title">{{ detail().nama }}</h2>
+        <p class="hero-desc">{{ detail().deskripsi }}</p>
+      </div>
+
+      <!-- Voucher Code Box (If Voucher/Code Exists) -->
+      @if (detail().kodeVoucher) {
+        <div class="voucher-big-box">
+          <span class="vbox-label">KODE VOUCHER RESMI</span>
+          <div class="vbox-code-row">
+            <span class="vbox-code font-mono">{{ detail().kodeVoucher }}</span>
+            <button type="button" class="btn-copy-code" (click)="copyCode()" title="Salin kode voucher">
+              <i [class]="copiedCode() ? 'ri-check-line text-success' : 'ri-file-copy-line'" aria-hidden="true"></i>
+              <span>{{ copiedCode() ? 'Tersalin' : 'Salin' }}</span>
+            </button>
+          </div>
+          <span class="vbox-sub">Gunakan kode ini saat proses checkout obat</span>
+        </div>
+      } @else {
+        <div class="direct-discount-box">
+          <i class="ri-flashlight-fill" aria-hidden="true"></i>
+          <div>
+            <strong>Diskon Otomatis Apotek</strong>
+            <p>Potongan langsung tanpa perlu kode kupon manual</p>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- 4 Performance Metric Cards -->
+  <section class="metrics-grid" aria-label="Statistik Pemakaian Kupon">
+    <!-- Card 1: Kuota -->
+    <div class="metric-card">
+      <div class="metric-top">
+        <span class="metric-lbl">Klaim Kuota Terpakai</span>
+        <div class="metric-icon purple">
+          <i class="ri-pie-chart-line" aria-hidden="true"></i>
+        </div>
+      </div>
+      <div class="metric-body">
+        <span class="metric-val">{{ detail().kuotaTerpakai }} <small class="text-muted">/ {{ detail().kuotaTotal }}</small></span>
+        <div class="progress-bar-bg mt-2">
+          <div class="progress-bar-fill purple" [style.width.%]="detail().persentaseKuota"></div>
+        </div>
+      </div>
+      <span class="metric-foot font-mono">{{ detail().persentaseKuota }}% kuota telah diklaim pasien</span>
+    </div>
+
+    <!-- Card 2: Penghematan Pasien -->
+    <div class="metric-card">
+      <div class="metric-top">
+        <span class="metric-lbl">Total Diskon Diberikan</span>
+        <div class="metric-icon emerald">
+          <i class="ri-hand-coin-line" aria-hidden="true"></i>
+        </div>
+      </div>
+      <div class="metric-body">
+        <span class="metric-val">{{ detail().totalPenghematanPasien }}</span>
+      </div>
+      <span class="metric-foot text-success">
+        <i class="ri-arrow-up-line" aria-hidden="true"></i> Manfaat langsung bagi pasien
+      </span>
+    </div>
+
+    <!-- Card 3: Omset Terdorong -->
+    <div class="metric-card">
+      <div class="metric-top">
+        <span class="metric-lbl">Omset Penjualan Terdorong</span>
+        <div class="metric-icon teal">
+          <i class="ri-line-chart-line" aria-hidden="true"></i>
+        </div>
+      </div>
+      <div class="metric-body">
+        <span class="metric-val">{{ detail().totalOmsetTerdorong }}</span>
+      </div>
+      <span class="metric-foot text-teal">
+        <i class="ri-check-double-line" aria-hidden="true"></i> Transaksi di {{ detail().fasilitasPenerbit }}
+      </span>
+    </div>
+
+    <!-- Card 4: Fasilitas Penerbit -->
+    <div class="metric-card">
+      <div class="metric-top">
+        <span class="metric-lbl">Fasilitas Penyelenggara</span>
+        <div class="metric-icon blue">
+          <i class="ri-building-line" aria-hidden="true"></i>
+        </div>
+      </div>
+      <div class="metric-body">
+        <strong class="faskes-val">{{ detail().fasilitasPenerbit }}</strong>
+      </div>
+      <span class="metric-foot text-muted font-mono">
+        SIA-32.73/2025 • Apotek Terverifikasi
+      </span>
+    </div>
+  </section>
+
+  <!-- 2-Column Content Layout -->
+  <div class="detail-columns-layout">
+    <!-- Left Column: Aturan Program & Syarat Ketentuan -->
+    <div class="col-main">
+      <!-- Section: Aturan Program -->
+      <section class="section-card">
+        <h3 class="section-title">
+          <i class="ri-equalizer-line text-teal" aria-hidden="true"></i>
+          <span>Ketentuan & Aturan Promosi</span>
+        </h3>
+
+        <div class="rules-grid">
+          <div class="rule-item">
+            <span class="rule-label">Nilai Potongan / Diskon</span>
+            <strong class="rule-val text-success">{{ detail().diskonFormatted }}</strong>
+          </div>
+          <div class="rule-item">
+            <span class="rule-label">Maksimal Nilai Diskon</span>
+            <strong class="rule-val">{{ detail().maxDiskonFormatted }}</strong>
+          </div>
+          <div class="rule-item">
+            <span class="rule-label">Minimum Pembelian</span>
+            <strong class="rule-val">{{ detail().minTransaksiFormatted }}</strong>
+          </div>
+          <div class="rule-item">
+            <span class="rule-label">Target Layanan / Produk</span>
+            <strong class="rule-val text-teal">{{ detail().targetLayanan }}</strong>
+          </div>
+          <div class="rule-item">
+            <span class="rule-label">Periode Program</span>
+            <strong class="rule-val">{{ detail().periodeMulai }} s/d {{ detail().periodeSelesai }}</strong>
+          </div>
+          <div class="rule-item">
+            <span class="rule-label">Fasilitas Penerbit</span>
+            <strong class="rule-val font-semibold">{{ detail().fasilitasPenerbit }}</strong>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: Syarat & Ketentuan -->
+      <section class="section-card">
+        <h3 class="section-title">
+          <i class="ri-file-list-3-line text-purple" aria-hidden="true"></i>
+          <span>Syarat & Ketentuan Penggunaan</span>
+        </h3>
+
+        <ul class="tnc-list">
+          @for (syarat of detail().syaratKetentuan; track syarat) {
+            <li class="tnc-item">
+              <i class="ri-checkbox-circle-fill text-teal" aria-hidden="true"></i>
+              <span>{{ syarat }}</span>
+            </li>
+          }
+        </ul>
+      </section>
+    </div>
+
+    <!-- Right Column: Riwayat Klaim Pasien Terbaru -->
+    <div class="col-side">
+      <section class="section-card">
+        <div class="section-header-row">
+          <h3 class="section-title">
+            <i class="ri-history-line text-blue" aria-hidden="true"></i>
+            <span>Riwayat Klaim Pasien Terbaru</span>
+          </h3>
+          <span class="badge-count">{{ detail().riwayatKlaim.length }} Transaksi</span>
+        </div>
+
+        <div class="claims-list">
+          @for (claim of detail().riwayatKlaim; track claim.transaksiId) {
+            <article class="claim-card">
+              <div class="claim-top">
+                <div class="patient-info">
+                  <img [src]="claim.pasienAvatar" [alt]="claim.pasienNama" class="patient-avatar" />
+                  <div>
+                    <strong class="patient-name">{{ claim.pasienNama }}</strong>
+                    <span class="claim-time">{{ claim.waktu }}</span>
+                  </div>
+                </div>
+                <strong class="claim-discount">-{{ claim.nilaiDiskon }}</strong>
+              </div>
+
+              <div class="claim-bottom">
+                <span class="claim-trx font-mono">{{ claim.transaksiId }}</span>
+                <span class="claim-service">{{ claim.layanan }}</span>
+              </div>
+            </article>
+          } @empty {
+            <div class="empty-claims">
+              <p>Belum ada riwayat klaim untuk program promo ini.</p>
+            </div>
+          }
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

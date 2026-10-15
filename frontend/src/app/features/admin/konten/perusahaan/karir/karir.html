@@ -1,0 +1,434 @@
+<div class="karir-wrapper">
+  <!-- Sub Header -->
+  <div class="sub-header">
+    <div class="sub-header-info">
+      <h3 class="sub-title">Pusat Karir & Rekrutmen Tenaga Kesehatan PSEF</h3>
+      <p class="sub-desc">
+        Kelola publikasi lowongan kerja Apoteker Penanggung Jawab, Tenaga Teknis Kefarmasian, Dokter Spesialis Telemedisin, serta tim operasional teknologi farmasi.
+      </p>
+    </div>
+    <button type="button" class="btn btn-primary" (click)="openAddModal()" id="btn-tambah-karir">
+      <i class="ri-add-line"></i>
+      <span>Buat Lowongan Baru</span>
+    </button>
+  </div>
+
+  <!-- KPI Summary Cards -->
+  <div class="kpi-grid">
+    <div *ngFor="let stat of kpiStats" class="kpi-card" [class]="'kpi-' + stat.color">
+      <div class="kpi-icon-box">
+        <i [class]="stat.icon"></i>
+      </div>
+      <div class="kpi-info">
+        <span class="kpi-value font-mono">{{ stat.value }}</span>
+        <span class="kpi-label">{{ stat.label }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search & Filter Toolbar -->
+  <div class="karir-toolbar">
+    <div class="search-box">
+      <i class="ri-search-line search-icon"></i>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Cari nama posisi, lokasi penempatan, atau kata kunci keahlian..."
+        [ngModel]="searchQuery()"
+        (ngModelChange)="searchQuery.set($event)"
+      />
+    </div>
+
+    <div class="filter-actions">
+      <select class="filter-select" [ngModel]="filterDepartemen()" (ngModelChange)="filterDepartemen.set($event)">
+        <option value="Semua">Semua Departemen</option>
+        <option value="Pelayanan Farmasi">Pelayanan Farmasi</option>
+        <option value="Medis & Klinis">Medis & Klinis</option>
+        <option value="Teknologi & IT">Teknologi & IT</option>
+        <option value="Regulasi & Mutu">Regulasi & Mutu</option>
+        <option value="Operasional">Operasional</option>
+      </select>
+
+      <select class="filter-select" [ngModel]="filterStatus()" (ngModelChange)="filterStatus.set($event)">
+        <option value="Semua">Semua Status</option>
+        <option value="Aktif">Aktif Buka</option>
+        <option value="Ditutup">Ditutup (Arsip)</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Jobs Grid -->
+  <div class="jobs-grid">
+    <div *ngFor="let item of filteredLowonganList()" class="job-card" [class.job-nonaktif]="item.status === 'Ditutup'">
+      <div class="job-card-header">
+        <div class="job-badges-row">
+          <span class="badge-dept">{{ item.departemen }}</span>
+          <span class="badge-type">{{ item.tipeKerja }}</span>
+
+          <button
+            type="button"
+            class="status-pill-toggle"
+            [class.active]="item.status === 'Aktif'"
+            (click)="toggleStatus(item)"
+            [title]="item.status === 'Aktif' ? 'Klik untuk tutup lowongan' : 'Klik untuk buka lowongan'"
+          >
+            <span class="dot"></span>
+            <span>{{ item.status === 'Aktif' ? 'Buka' : 'Ditutup' }}</span>
+          </button>
+        </div>
+
+        <div class="job-actions">
+          <button type="button" class="btn-icon" (click)="openEditModal(item)" title="Edit Lowongan">
+            <i class="ri-edit-line"></i>
+          </button>
+          <button type="button" class="btn-icon btn-danger-hover" (click)="openDeleteModal(item)" title="Tutup / Hapus Lowongan">
+            <i class="ri-delete-bin-line"></i>
+          </button>
+        </div>
+      </div>
+
+      <h4 class="job-title">{{ item.posisi }}</h4>
+
+      <div class="job-meta-row">
+        <span><i class="ri-map-pin-line"></i> {{ item.lokasi }}</span>
+        <span><i class="ri-money-dollar-circle-line"></i> {{ item.gajiPerkiraan }}</span>
+      </div>
+
+      <p class="job-desc">{{ item.deskripsi }}</p>
+
+      <div class="job-reqs">
+        <span class="req-title">Kualifikasi Utama:</span>
+        <ul class="req-list">
+          <li *ngFor="let r of item.persyaratan">
+            <i class="ri-checkbox-circle-line"></i>
+            <span>{{ r }}</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="job-card-footer">
+        <div class="deadline-info">
+          <i class="ri-time-line"></i>
+          <span>Batas: {{ item.batasLamaran }}</span>
+        </div>
+
+        <div class="applicant-stat font-mono">
+          <i class="ri-user-shared-line"></i>
+          <span><strong>{{ item.totalPelamar }}</strong> Pelamar</span>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="filteredLowonganList().length === 0" class="empty-job">
+      <i class="ri-briefcase-line"></i>
+      <p>Tidak ada lowongan karir yang cocok dengan filter pencarian.</p>
+    </div>
+  </div>
+
+  <!-- Modal Tambah / Edit Lowongan (Static Backdrop) -->
+  <div *ngIf="showModal()" class="modal-backdrop">
+    <div class="modal-dialog modal-lg" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-header-icon" [class.edit-mode]="isEditing()">
+          <i [class]="isEditing() ? 'ri-edit-line' : 'ri-briefcase-line'"></i>
+        </div>
+        <div>
+          <h4 class="modal-title">{{ isEditing() ? 'Edit Lowongan #' + currentJob.id : 'Buka Lowongan Pekerjaan Baru' }}</h4>
+          <p class="modal-subtitle">Daftarkan formasi lowongan rekrutmen tim kesehatan & teknologi platform PSEF</p>
+        </div>
+        <button type="button" class="btn-close" (click)="closeModal()">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <div class="form-label-row">
+            <label class="form-label" for="inp-posisi-job">Nama Posisi / Jabatan <span class="text-danger">*</span></label>
+            <span class="char-counter font-mono">{{ currentJob.posisi.length }} karakter</span>
+          </div>
+          <input
+            id="inp-posisi-job"
+            type="text"
+            class="form-control"
+            placeholder="Contoh: Apoteker Pendamping (Aping) - Telefarmasi"
+            [(ngModel)]="currentJob.posisi"
+            [class.is-invalid]="formSubmitted() && !currentJob.posisi.trim()"
+          />
+          <span *ngIf="formSubmitted() && !currentJob.posisi.trim()" class="form-error-msg">
+            <i class="ri-error-warning-fill"></i> Nama posisi wajib diisi
+          </span>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label class="form-label" for="inp-dept-job">Departemen <span class="text-danger">*</span></label>
+            <select id="inp-dept-job" class="form-control" [(ngModel)]="currentJob.departemen">
+              <option value="Pelayanan Farmasi">Pelayanan Farmasi</option>
+              <option value="Medis & Klinis">Medis & Klinis</option>
+              <option value="Teknologi & IT">Teknologi & IT</option>
+              <option value="Regulasi & Mutu">Regulasi & Mutu</option>
+              <option value="Operasional">Operasional</option>
+            </select>
+          </div>
+          <div class="form-group flex-1">
+            <label class="form-label" for="inp-tipe-job">Tipe Kerja <span class="text-danger">*</span></label>
+            <select id="inp-tipe-job" class="form-control" [(ngModel)]="currentJob.tipeKerja">
+              <option value="Penuh Waktu">Penuh Waktu</option>
+              <option value="Paruh Waktu">Paruh Waktu</option>
+              <option value="Shift Apotek">Shift Apotek</option>
+              <option value="Remote">Remote / WFH</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label class="form-label" for="inp-lokasi-job">Lokasi Penempatan</label>
+            <input
+              id="inp-lokasi-job"
+              type="text"
+              class="form-control"
+              placeholder="Contoh: Jakarta Selatan (Fulfillment Hub)"
+              [(ngModel)]="currentJob.lokasi"
+            />
+          </div>
+          <div class="form-group flex-1">
+            <label class="form-label" for="inp-gaji-job">Perkiraan Gaji / Fee</label>
+            <input
+              id="inp-gaji-job"
+              type="text"
+              class="form-control"
+              placeholder="Contoh: Rp 7.500.000 - Rp 9.500.000"
+              [(ngModel)]="currentJob.gajiPerkiraan"
+            />
+          </div>
+          <div class="form-group flex-1">
+            <label class="form-label" for="inp-batas-job">Batas Akhir Lamaran</label>
+            <input
+              id="inp-batas-job"
+              type="text"
+              class="form-control"
+              placeholder="Contoh: 30 November 2026"
+              [(ngModel)]="currentJob.batasLamaran"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="form-label-row">
+            <label class="form-label" for="inp-desc-job">Deskripsi Pekerjaan & Tanggung Jawab <span class="text-danger">*</span></label>
+            <span class="char-counter font-mono">{{ currentJob.deskripsi.length }} karakter</span>
+          </div>
+          <textarea
+            id="inp-desc-job"
+            rows="3"
+            class="form-control"
+            placeholder="Jelaskan peran tugas utama, tanggung jawab telaah resep, atau dispensing..."
+            [(ngModel)]="currentJob.deskripsi"
+            [class.is-invalid]="formSubmitted() && !currentJob.deskripsi.trim()"
+          ></textarea>
+          <span *ngIf="formSubmitted() && !currentJob.deskripsi.trim()" class="form-error-msg">
+            <i class="ri-error-warning-fill"></i> Deskripsi pekerjaan wajib diisi
+          </span>
+        </div>
+
+        <div class="form-group">
+          <div class="form-label-row">
+            <label class="form-label" for="inp-reqs-job">Kualifikasi & Persyaratan (Satu butir per baris)</label>
+          </div>
+          <textarea
+            id="inp-reqs-job"
+            rows="3"
+            class="form-control"
+            placeholder="Pendidikan Profesi Apoteker (S.Farm, Apt)&#10;Memiliki STRA aktif dan bersedia mengurus SIPA&#10;Komunikatif dan teliti"
+            [(ngModel)]="currentJob.persyaratanInput"
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Status Lowongan</label>
+          <div class="radio-options">
+            <label class="radio-card" [class.selected]="currentJob.status === 'Aktif'">
+              <input type="radio" name="job-status" value="Aktif" [(ngModel)]="currentJob.status" />
+              <div class="radio-card-content">
+                <span class="radio-title"><i class="ri-checkbox-circle-fill text-emerald"></i> Buka Lamaran</span>
+                <span class="radio-sub">Tampil di portal karir publik PSEF untuk menerima berkas</span>
+              </div>
+            </label>
+            <label class="radio-card" [class.selected]="currentJob.status === 'Ditutup'">
+              <input type="radio" name="job-status" value="Ditutup" [(ngModel)]="currentJob.status" />
+              <div class="radio-card-content">
+                <span class="radio-title"><i class="ri-lock-line text-amber"></i> Ditutup (Arsip)</span>
+                <span class="radio-sub">Penerimaan berkas dihentikan tanpa menghapus riwayat pelamar</span>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" (click)="closeModal()">Batal</button>
+        <button type="button" class="btn btn-primary" (click)="saveJob()" id="btn-save-job">
+          <i [class]="isEditing() ? 'ri-save-line' : 'ri-check-line'"></i>
+          <span>{{ isEditing() ? 'Simpan Perubahan' : 'Terbitkan Lowongan' }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Konfirmasi Nonaktifkan / Hapus Lowongan (Static Backdrop) -->
+  <div *ngIf="showDeleteModal() && selectedJob() as targetJob" class="modal-backdrop">
+    <div class="modal-dialog modal-delete-dialog" (click)="$event.stopPropagation()">
+      <div class="delete-modal-header">
+        <div class="delete-icon-pulse" [class.danger]="deleteMode() === 'permanent'">
+          <i [class]="deleteMode() === 'deactivate' ? 'ri-archive-line' : 'ri-delete-bin-line'"></i>
+        </div>
+        <div class="delete-header-titles">
+          <h4 class="modal-title" [class.text-amber]="deleteMode() === 'deactivate'" [class.text-danger]="deleteMode() === 'permanent'">
+            {{ deleteMode() === 'deactivate' ? 'Tutup / Nonaktifkan Lowongan?' : 'Hapus Lowongan Permanen?' }}
+          </h4>
+          <p class="modal-subtitle">Pengelolaan posisi karir dengan perlindungan data histori pelamar</p>
+        </div>
+        <button type="button" class="btn-close" (click)="closeDeleteModal()" [disabled]="isProcessing()">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <div class="delete-modal-body">
+        <!-- Target Job Preview Card -->
+        <div class="job-preview-card">
+          <div class="preview-header">
+            <span class="preview-cat-badge">{{ targetJob.departemen }}</span>
+            <span class="preview-status-pill" [class.status-aktif]="targetJob.status === 'Aktif'">
+              {{ targetJob.status === 'Aktif' ? 'Buka Lamaran' : 'Ditutup' }}
+            </span>
+          </div>
+          <h5 class="preview-title">{{ targetJob.posisi }}</h5>
+          <p class="preview-desc">{{ targetJob.deskripsi }}</p>
+
+          <div class="preview-stat-row">
+            <div class="stat-pill">
+              <i class="ri-user-shared-line text-indigo"></i>
+              <span class="stat-lbl">Berkas Pelamar:</span>
+              <span class="stat-num font-mono">{{ targetJob.totalPelamar }} CV Masuk</span>
+            </div>
+            <div class="stat-pill">
+              <i class="ri-map-pin-line text-sky"></i>
+              <span class="stat-lbl">Lokasi:</span>
+              <span class="stat-num">{{ targetJob.lokasi }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Audit Protection Notice Box -->
+        <div class="analytics-notice-box" [class.warning-border]="deleteMode() === 'permanent'">
+          <div class="notice-icon-box" [class.danger-bg]="deleteMode() === 'permanent'">
+            <i [class]="deleteMode() === 'deactivate' ? 'ri-shield-star-line' : 'ri-error-warning-fill'"></i>
+          </div>
+          <div class="notice-text-content">
+            <h6 class="notice-title">
+              {{ deleteMode() === 'deactivate' ? 'Perlindungan Arsip Rekrutmen & Berkas Pelamar' : 'Peringatan Kehilangan Data Pelamar' }}
+            </h6>
+            <p class="notice-desc" *ngIf="deleteMode() === 'deactivate'">
+              Dengan <strong>menonaktifkan / menutup lowongan</strong>, formulir pendaftaran ditutup untuk kandidat baru, namun 
+              <strong>{{ targetJob.totalPelamar }} berkas lamaran yang telah masuk tetap aman tersimpan</strong> 
+              untuk database talent pool perusahaan di masa depan.
+            </p>
+            <p class="notice-desc text-danger-text" *ngIf="deleteMode() === 'permanent'">
+              Menghapus permanen akan <strong>menghilangkan formasi dan riwayat {{ targetJob.totalPelamar }} berkas pelamar</strong> 
+              dari sistem. Tindakan ini tidak dapat dibatalkan!
+            </p>
+          </div>
+        </div>
+
+        <!-- Action Choice Cards -->
+        <div class="delete-options-group">
+          <div
+            class="action-choice-card"
+            role="button"
+            tabindex="0"
+            [class.selected]="deleteMode() === 'deactivate'"
+            (click)="setDeleteMode('deactivate')"
+            (keydown.enter)="setDeleteMode('deactivate')"
+          >
+            <div class="choice-indicator radio-amber"></div>
+            <div class="choice-content">
+              <div class="choice-header-row">
+                <span class="choice-title">Tutup / Nonaktifkan Lowongan</span>
+                <span class="recommend-badge"><i class="ri-star-fill"></i> Disarankan</span>
+              </div>
+              <p class="choice-desc">Tutup pendaftaran publik dengan menjaga rekam jejak CV kandidat yang telah masuk.</p>
+            </div>
+          </div>
+
+          <div
+            class="action-choice-card"
+            role="button"
+            tabindex="0"
+            [class.selected]="deleteMode() === 'permanent'"
+            (click)="setDeleteMode('permanent')"
+            (keydown.enter)="setDeleteMode('permanent')"
+          >
+            <div class="choice-indicator radio-danger"></div>
+            <div class="choice-content">
+              <div class="choice-header-row">
+                <span class="choice-title text-danger">Hapus Lowongan Permanen</span>
+                <span class="danger-badge">Merusak Riwayat</span>
+              </div>
+              <p class="choice-desc">Hanya gunakan bila posisi merupakan draf salah input yang belum pernah dipublikasikan.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="delete-modal-footer">
+        <button
+          type="button"
+          class="btn btn-outline"
+          (click)="closeDeleteModal()"
+          [disabled]="isProcessing()"
+        >
+          Batal
+        </button>
+
+        <button
+          *ngIf="deleteMode() === 'deactivate'"
+          type="button"
+          class="btn btn-warning-action"
+          (click)="confirmDeleteAction()"
+          [disabled]="isProcessing()"
+          id="btn-confirm-deactivate-job"
+        >
+          <i [class]="isProcessing() ? 'ri-loader-4-line ri-spin' : 'ri-archive-line'"></i>
+          <span>{{ isProcessing() ? 'Memproses...' : 'Tutup Lowongan' }}</span>
+        </button>
+
+        <button
+          *ngIf="deleteMode() === 'permanent'"
+          type="button"
+          class="btn btn-danger-action"
+          (click)="confirmDeleteAction()"
+          [disabled]="isProcessing()"
+          id="btn-confirm-permanent-job"
+        >
+          <i [class]="isProcessing() ? 'ri-loader-4-line ri-spin' : 'ri-delete-bin-line'"></i>
+          <span>{{ isProcessing() ? 'Menghapus...' : 'Ya, Hapus Permanen' }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Feedback -->
+  <div *ngIf="toastMessage()" class="karir-toast" [class]="'toast-' + toastType()">
+    <div class="toast-icon">
+      <i [class]="toastType() === 'success' ? 'ri-checkbox-circle-fill' : toastType() === 'danger' ? 'ri-error-warning-fill' : 'ri-information-fill'"></i>
+    </div>
+    <div class="toast-content">
+      <p class="toast-text">{{ toastMessage() }}</p>
+    </div>
+    <button type="button" class="toast-close" (click)="toastMessage.set('')">
+      <i class="ri-close-line"></i>
+    </button>
+  </div>
+</div>

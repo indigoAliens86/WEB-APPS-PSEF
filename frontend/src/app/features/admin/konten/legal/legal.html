@@ -1,0 +1,54 @@
+<div class="legal-container">
+  <!-- Sub Navigation Tabs -->
+  <div class="sub-nav-wrapper">
+    <nav class="sub-tabs-nav" aria-label="Menu Legalitas">
+      <button
+        type="button"
+        class="sub-tab-btn"
+        [class.active]="activeSubTab() === 'kebijakan-privasi'"
+        (click)="setSubTab('kebijakan-privasi')"
+      >
+        <i class="ri-shield-keyhole-line"></i>
+        <span>Kebijakan Privasi & PDP</span>
+      </button>
+
+      <button
+        type="button"
+        class="sub-tab-btn"
+        [class.active]="activeSubTab() === 'perizinan'"
+        (click)="setSubTab('perizinan')"
+      >
+        <i class="ri-government-line"></i>
+        <span>Perizinan & Regulasi PSEF</span>
+      </button>
+
+      <button
+        type="button"
+        class="sub-tab-btn"
+        [class.active]="activeSubTab() === 'sop'"
+        (click)="setSubTab('sop')"
+      >
+        <i class="ri-file-shield-line"></i>
+        <span>SOP Layanan Farmasi</span>
+      </button>
+
+      <button
+        type="button"
+        class="sub-tab-btn"
+        [class.active]="activeSubTab() === 'syarat-ketentuan'"
+        (click)="setSubTab('syarat-ketentuan')"
+      >
+        <i class="ri-file-list-3-line"></i>
+        <span>Syarat & Ketentuan</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Sub Content Area -->
+  <div class="sub-content-area">
+    <app-kebijakan-privasi *ngIf="activeSubTab() === 'kebijakan-privasi'"></app-kebijakan-privasi>
+    <app-perizinan *ngIf="activeSubTab() === 'perizinan'"></app-perizinan>
+    <app-sop *ngIf="activeSubTab() === 'sop'"></app-sop>
+    <app-syarat-ketentuan *ngIf="activeSubTab() === 'syarat-ketentuan'"></app-syarat-ketentuan>
+  </div>
+</div>

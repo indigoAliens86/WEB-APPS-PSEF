@@ -1,0 +1,499 @@
+<div class="detail-produk-page">
+  <!-- Top Navigation & Header -->
+  <div class="detail-top-nav">
+    <button type="button" class="btn-back" (click)="goBack()" aria-label="Kembali ke Daftar Produk">
+      <i class="ri-arrow-left-line"></i>
+      <span>Kembali ke Daftar Produk</span>
+    </button>
+
+    <div class="top-action-group">
+      <button type="button" class="btn-action-outline" (click)="printBarcode()" title="Cetak label harga dan barcode rak">
+        <i class="ri-printer-line"></i>
+        <span>Cetak Label & Barcode</span>
+      </button>
+
+      <button type="button" class="btn-action-outline" (click)="openAdjustModal()" title="Sesuaikan jumlah stok fisik apotek">
+        <i class="ri-stock-line"></i>
+        <span>Penyesuaian Stok</span>
+      </button>
+
+      <button type="button" class="btn-action-primary" (click)="goToEdit()" title="Edit data harga dan stok produk">
+        <i class="ri-edit-line"></i>
+        <span>Edit Produk</span>
+      </button>
+    </div>
+  </div>
+
+  @if (product(); as p) {
+    <!-- HERO PRODUCT IDENTITY CARD -->
+    <section class="product-hero-card">
+      <div class="hero-main-content">
+        <!-- Thumbnail -->
+        <div class="hero-thumb-wrapper">
+          <img
+            [src]="p.thumbnail"
+            [alt]="p.name"
+            class="hero-thumb-img"
+            onerror="this.src='assets/images/thumbnail/ibuprofen.svg'"
+          />
+          <span class="source-stamp" [class.katalog]="p.source === 'Katalog'" [class.manual]="p.source === 'Manual'">
+            <i [class]="p.source === 'Katalog' ? 'ri-verified-badge-fill' : 'ri-edit-box-line'"></i>
+            {{ p.source === 'Katalog' ? 'Master Katalog PSEF' : 'Input Manual' }}
+          </span>
+        </div>
+
+        <!-- Identity Meta -->
+        <div class="hero-details">
+          <div class="badges-row">
+            <!-- Golongan Obat Badge -->
+            <span
+              class="golongan-tag"
+              [class.gol-bebas]="p.golongan === 'Bebas'"
+              [class.gol-terbatas]="p.golongan === 'Bebas Terbatas'"
+              [class.gol-keras]="p.golongan === 'Keras'"
+              [class.gol-herbal]="p.golongan === 'Herbal'"
+              [class.gol-alkes]="p.golongan === 'Alat Kesehatan'"
+            >
+              <span class="circle-dot"></span>
+              Obat {{ p.golongan }}
+            </span>
+
+            <!-- Kategori -->
+            <span class="category-tag">
+              <i class="ri-folder-2-line"></i>
+              {{ p.kategori }}
+            </span>
+
+            <!-- Status Stok Badge -->
+            <span
+              class="status-tag"
+              [class.status-tersedia]="p.status === 'Tersedia'"
+              [class.status-menipis]="p.status === 'Menipis'"
+              [class.status-habis]="p.status === 'Habis'"
+            >
+              <i
+                [class]="
+                  p.status === 'Tersedia'
+                    ? 'ri-checkbox-circle-fill'
+                    : p.status === 'Menipis'
+                    ? 'ri-error-warning-fill'
+                    : 'ri-close-circle-fill'
+                "
+              ></i>
+              {{ p.status === 'Tersedia' ? 'Stok Tersedia' : p.status === 'Menipis' ? 'Stok Menipis' : 'Stok Habis' }}
+            </span>
+          </div>
+
+          <h1 class="hero-title">{{ p.name }}</h1>
+          <p class="hero-generic">
+            <span class="label-zat">Zat Aktif:</span>
+            <strong>{{ p.genericName }}</strong>
+          </p>
+
+          <!-- Essential Code Ribbons -->
+          <div class="meta-pills-grid">
+            <div class="meta-pill">
+              <span class="pill-label">SKU Produk</span>
+              <span class="pill-value font-mono">{{ p.sku }}</span>
+            </div>
+            <div class="meta-pill">
+              <span class="pill-label">No. Barcode</span>
+              <span class="pill-value font-mono">{{ p.barcode }}</span>
+            </div>
+            <div class="meta-pill">
+              <span class="pill-label">No. Izin Edar BPOM</span>
+              <span class="pill-value font-mono text-primary">{{ p.bpomNumber }}</span>
+            </div>
+            <div class="meta-pill">
+              <span class="pill-label">Pabrik / Produsen</span>
+              <span class="pill-value">{{ p.manufacturer }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 FINANCIAL & STOCK KPI CARDS -->
+    <section class="kpi-metrics-grid" aria-label="Ringkasan Finansial dan Stok">
+      <!-- Card 1: Harga Jual Pasien -->
+      <div class="metric-card">
+        <div class="metric-icon bg-emerald">
+          <i class="ri-price-tag-3-line"></i>
+        </div>
+        <div class="metric-info">
+          <span class="metric-label">Harga Jual Pasien</span>
+          <div class="metric-val text-emerald">
+            Rp {{ p.hargaJual | number }}
+          </div>
+          <span class="metric-sub">
+            @if (p.diskon > 0) {
+              <span class="disc-pill">Diskon {{ p.diskon }}%</span>
+              <span class="strike">Rp {{ p.hargaJual / (1 - p.diskon / 100) | number:'1.0-0' }}</span>
+            } @else {
+              Harga reguler per {{ p.satuan }}
+            }
+          </span>
+        </div>
+      </div>
+
+      <!-- Card 2: Harga Pokok Beli (HPP) -->
+      <div class="metric-card">
+        <div class="metric-icon bg-blue">
+          <i class="ri-money-dollar-box-line"></i>
+        </div>
+        <div class="metric-info">
+          <span class="metric-label">Harga Pokok Pembelian (HPP)</span>
+          <div class="metric-val text-blue">
+            Rp {{ p.hargaBeli | number }}
+          </div>
+          <span class="metric-sub">Biaya pengadaan per {{ p.satuan }}</span>
+        </div>
+      </div>
+
+      <!-- Card 3: Margin Keuntungan -->
+      <div class="metric-card">
+        <div class="metric-icon bg-indigo">
+          <i class="ri-line-chart-line"></i>
+        </div>
+        <div class="metric-info">
+          <span class="metric-label">Margin Keuntungan Bersih</span>
+          <div class="metric-val text-indigo">
+            Rp {{ profitMargin | number }}
+          </div>
+          <span class="metric-sub">
+            <span class="badge-profit">+{{ profitMarginPercentage }}</span>
+            margin dari HPP
+          </span>
+        </div>
+      </div>
+
+      <!-- Card 4: Stok Fisik -->
+      <div class="metric-card">
+        <div
+          class="metric-icon"
+          [class.bg-emerald]="p.stok > p.stokMin"
+          [class.bg-amber]="p.stok > 0 && p.stok <= p.stokMin"
+          [class.bg-red]="p.stok <= 0"
+        >
+          <i class="ri-archive-line"></i>
+        </div>
+        <div class="metric-info">
+          <span class="metric-label">Stok Fisik Tersedia</span>
+          <div
+            class="metric-val"
+            [class.text-emerald]="p.stok > p.stokMin"
+            [class.text-amber]="p.stok > 0 && p.stok <= p.stokMin"
+            [class.text-red]="p.stok <= 0"
+          >
+            {{ p.stok }} <span class="unit-text">{{ p.satuan }}</span>
+          </div>
+          <span class="metric-sub">
+            Batas Minimum Stok: <strong>{{ p.stokMin }} {{ p.satuan }}</strong>
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2-COLUMN MAIN CONTENT -->
+    <div class="detail-columns-layout">
+      <!-- LEFT COLUMN: INFORMASI KLINIS & FARMAKOLOGI -->
+      <div class="col-clinical">
+        <!-- Panel 1: Deskripsi & Indikasi -->
+        <article class="content-panel">
+          <div class="panel-header">
+            <h2 class="panel-title">
+              <i class="ri-file-text-line"></i>
+              Deskripsi & Indikasi Farmakologis
+            </h2>
+          </div>
+          <div class="panel-body">
+            <div class="text-block">
+              <p class="paragraph">{{ p.deskripsi }}</p>
+            </div>
+
+            <!-- Komposisi / Zat Aktif -->
+            <div class="info-callout">
+              <h3 class="callout-title">
+                <i class="ri-flask-line"></i>
+                Komposisi & Kandungan Zat Aktif
+              </h3>
+              <p class="callout-desc">{{ p.komposisi }}</p>
+            </div>
+
+            <!-- Aturan Pakai -->
+            <div class="info-callout">
+              <h3 class="callout-title">
+                <i class="ri-time-line"></i>
+                Aturan Pakai & Dosis Rekomendasi
+              </h3>
+              <p class="callout-desc">{{ p.aturanPakai }}</p>
+            </div>
+
+            @if (p.efekSamping) {
+              <!-- Efek Samping -->
+              <div class="info-alert warning">
+                <i class="ri-alert-line alert-icon"></i>
+                <div>
+                  <h4 class="alert-title">Perhatian & Kemungkinan Efek Samping</h4>
+                  <p class="alert-desc">{{ p.efekSamping }}</p>
+                </div>
+              </div>
+            }
+
+            @if (p.kontraindikasi) {
+              <!-- Kontraindikasi -->
+              <div class="info-alert danger">
+                <i class="ri-forbid-2-line alert-icon"></i>
+                <div>
+                  <h4 class="alert-title">Kontraindikasi</h4>
+                  <p class="alert-desc">{{ p.kontraindikasi }}</p>
+                </div>
+              </div>
+            }
+          </div>
+        </article>
+
+        <!-- Panel 2: Spesifikasi Kemasan & Farmasi -->
+        <article class="content-panel">
+          <div class="panel-header">
+            <h2 class="panel-title">
+              <i class="ri-medicine-bottle-line"></i>
+              Spesifikasi Bentuk Sediaan & Kemasan
+            </h2>
+          </div>
+          <div class="panel-body">
+            <div class="spec-grid">
+              <div class="spec-item">
+                <span class="spec-label">Bentuk Sediaan</span>
+                <span class="spec-value">{{ p.bentukSediaan }}</span>
+              </div>
+              <div class="spec-item">
+                <span class="spec-label">Satuan Terkecil</span>
+                <span class="spec-value">{{ p.satuan }}</span>
+              </div>
+              <div class="spec-item">
+                <span class="spec-label">Golongan Registrasi</span>
+                <span class="spec-value">{{ p.golongan }}</span>
+              </div>
+              <div class="spec-item">
+                <span class="spec-label">Klasifikasi PSEF</span>
+                <span class="spec-value">{{ p.kategori }}</span>
+              </div>
+              <div class="spec-item">
+                <span class="spec-label">Terakhir Diperbarui</span>
+                <span class="spec-value">{{ p.updatedAt }}</span>
+              </div>
+              <div class="spec-item">
+                <span class="spec-label">ID Internal Fasilitas</span>
+                <span class="spec-value font-mono">{{ p.id }}</span>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- RIGHT COLUMN: LOGISTIK, KONTROL BATCH & MUTASI STOK -->
+      <div class="col-inventory">
+        <!-- Panel 1: Kontrol Batch & Lokasi Fisik -->
+        <article class="content-panel">
+          <div class="panel-header">
+            <h2 class="panel-title">
+              <i class="ri-map-pin-2-line"></i>
+              Penyimpanan & Kedaluwarsa
+            </h2>
+          </div>
+          <div class="panel-body">
+            <div class="logistics-pills-list">
+              <div class="logistics-row">
+                <div class="logistics-icon bg-slate">
+                  <i class="ri-barcode-box-line"></i>
+                </div>
+                <div class="logistics-details">
+                  <span class="label">Nomor Batch Pabrikan</span>
+                  <span class="val font-mono">{{ p.batchNumber }}</span>
+                </div>
+              </div>
+
+              <div class="logistics-row">
+                <div class="logistics-icon bg-red-soft">
+                  <i class="ri-calendar-event-line"></i>
+                </div>
+                <div class="logistics-details">
+                  <span class="label">Tanggal Kedaluwarsa (ED)</span>
+                  <span class="val font-bold text-red">{{ p.expiredDate }}</span>
+                </div>
+              </div>
+
+              <div class="logistics-row">
+                <div class="logistics-icon bg-indigo-soft">
+                  <i class="ri-archive-drawer-line"></i>
+                </div>
+                <div class="logistics-details">
+                  <span class="label">Lokasi Rak / Lemari Apotek</span>
+                  <span class="val font-bold text-indigo">{{ p.rakLokasi }}</span>
+                </div>
+              </div>
+
+              <div class="logistics-row">
+                <div class="logistics-icon bg-emerald-soft">
+                  <i class="ri-shield-check-line"></i>
+                </div>
+                <div class="logistics-details">
+                  <span class="label">Asal Entri Data</span>
+                  <span class="val">
+                    {{ p.source === 'Katalog' ? 'Katalog Pusat (' + (p.catalogCode || '-') + ')' : 'Input Manual Mandiri' }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Panel 2: Riwayat Mutasi Stok Fisik -->
+        <article class="content-panel">
+          <div class="panel-header justify-between">
+            <h2 class="panel-title">
+              <i class="ri-history-line"></i>
+              Riwayat Mutasi Stok
+            </h2>
+            <button type="button" class="btn-sm-adjust" (click)="openAdjustModal()">
+              <i class="ri-add-line"></i>
+              <span>Sesuaikan</span>
+            </button>
+          </div>
+          <div class="panel-body p-0">
+            <div class="table-container">
+              <table class="movement-table">
+                <thead>
+                  <tr>
+                    <th>Waktu & Referensi</th>
+                    <th>Tipe</th>
+                    <th class="text-right">Qty</th>
+                    <th class="text-right">Sisa</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (m of stockMovements(); track $index) {
+                    <tr>
+                      <td>
+                        <div class="movement-time">{{ m.tanggal }}</div>
+                        <div class="movement-ref">{{ m.referensi }}</div>
+                        <div class="movement-officer">
+                          <i class="ri-user-line"></i>
+                          {{ m.petugas }}
+                        </div>
+                      </td>
+                      <td>
+                        <span
+                          class="type-badge"
+                          [class.type-in]="m.tipe === 'Masuk'"
+                          [class.type-out]="m.tipe === 'Keluar'"
+                          [class.type-adj]="m.tipe === 'Penyesuaian'"
+                        >
+                          {{ m.tipe }}
+                        </span>
+                      </td>
+                      <td class="text-right font-mono" [class.text-emerald]="m.jumlah > 0" [class.text-red]="m.jumlah < 0">
+                        {{ m.jumlah > 0 ? '+' + m.jumlah : m.jumlah }}
+                      </td>
+                      <td class="text-right font-mono font-bold">
+                        {{ m.sisaStok }}
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  } @else {
+    <div class="product-not-found">
+      <i class="ri-error-warning-line"></i>
+      <h3>Produk Tidak Ditemukan</h3>
+      <p>Data produk dengan ID ini tidak terdaftar pada inventaris apotek Anda.</p>
+      <button type="button" class="btn-action-primary" (click)="goBack()">
+        Kembali ke Daftar Produk
+      </button>
+    </div>
+  }
+
+  <!-- MODAL PENYESUAIAN STOK (STOCK OPNAME) -->
+  @if (isAdjustModalOpen()) {
+    <div class="modal-backdrop" (click)="closeAdjustModal()">
+      <div class="modal-dialog" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <div class="modal-title-wrap">
+            <i class="ri-stock-line"></i>
+            <h3 class="modal-title">Penyesuaian Stok Fisik (Stock Opname)</h3>
+          </div>
+          <button type="button" class="btn-close-modal" (click)="closeAdjustModal()" aria-label="Tutup Modal">
+            <i class="ri-close-line"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          @if (product(); as p) {
+            <div class="current-stock-info">
+              <div class="cs-label">Produk:</div>
+              <div class="cs-name">{{ p.name }} ({{ p.sku }})</div>
+              <div class="cs-badges">
+                <span>Stok Tercatat: <strong>{{ p.stok }} {{ p.satuan }}</strong></span>
+                <span>Batas Minimum: <strong>{{ p.stokMin }} {{ p.satuan }}</strong></span>
+              </div>
+            </div>
+
+            <div class="form-group-modal">
+              <label class="modal-label">Jumlah Stok Fisik Riil Terhitung <span class="req">*</span></label>
+              <div class="input-with-unit">
+                <input
+                  type="number"
+                  class="modal-input font-bold"
+                  [(ngModel)]="adjustQuantity"
+                  name="adjustQuantity"
+                  min="0"
+                  required
+                />
+                <span class="unit-addon">{{ p.satuan }}</span>
+              </div>
+              <div class="selisih-preview">
+                Selisih:
+                <strong
+                  [class.text-emerald]="adjustQuantity - p.stok > 0"
+                  [class.text-red]="adjustQuantity - p.stok < 0"
+                >
+                  {{ adjustQuantity - p.stok > 0 ? '+' + (adjustQuantity - p.stok) : adjustQuantity - p.stok }}
+                  {{ p.satuan }}
+                </strong>
+                ({{ adjustQuantity - p.stok >= 0 ? 'Surplus Fisik' : 'Defisit Fisik' }})
+              </div>
+            </div>
+
+            <div class="form-group-modal">
+              <label class="modal-label">Alasan / Dasar Penyesuaian <span class="req">*</span></label>
+              <select class="modal-select" [(ngModel)]="adjustReason" name="adjustReason">
+                <option value="Stock Opname Rutin Bulanan">Stock Opname Rutin Bulanan</option>
+                <option value="Koreksi Selisih Fisik Rak">Koreksi Selisih Fisik Rak</option>
+                <option value="Barang Rusak / Pecah di Apotek">Barang Rusak / Pecah di Apotek</option>
+                <option value="Barang Kedaluwarsa Ditarik (Expired)">Barang Kedaluwarsa Ditarik (Expired)</option>
+                <option value="Retur Pengembalian dari Pasien">Retur Pengembalian dari Pasien</option>
+                <option value="Penerimaan Bonus dari PBF Distributor">Penerimaan Bonus dari PBF Distributor</option>
+              </select>
+            </div>
+          }
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-modal-cancel" (click)="closeAdjustModal()">
+            Batal
+          </button>
+          <button type="button" class="btn-modal-save" (click)="saveStockAdjust()">
+            <i class="ri-check-line"></i>
+            Simpan Penyesuaian
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

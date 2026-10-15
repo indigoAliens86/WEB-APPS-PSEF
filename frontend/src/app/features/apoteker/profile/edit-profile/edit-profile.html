@@ -1,0 +1,1638 @@
+<div class="form-page-container">
+  <!-- Top Navigation & Breadcrumbs Bar -->
+  <nav class="top-breadcrumb-bar" aria-label="Navigasi Halaman">
+    <div class="breadcrumb-left">
+      <button
+        type="button"
+        class="btn-back"
+        (click)="goBack()"
+        aria-label="Kembali ke Halaman Profil"
+      >
+        <i class="ri-arrow-left-line" aria-hidden="true"></i>
+        <span>Kembali ke Profil</span>
+      </button>
+
+      <div class="breadcrumbs-list">
+        <span class="crumb-item">Apoteker</span>
+        <i class="ri-arrow-right-s-line crumb-sep" aria-hidden="true"></i>
+        <a [routerLink]="['/apoteker/profil']" class="crumb-link">Profil Apoteker</a>
+        <i class="ri-arrow-right-s-line crumb-sep" aria-hidden="true"></i>
+        <span class="crumb-current">Edit Data Lengkap</span>
+      </div>
+    </div>
+
+    <div class="header-status-indicators">
+      @if (isDirty()) {
+        <span class="status-chip warning" title="Ada perubahan pada form yang belum disimpan">
+          <i class="ri-error-warning-fill" aria-hidden="true"></i>
+          <span>Perubahan Belum Disimpan</span>
+        </span>
+      } @else {
+        <span class="status-chip success" title="Semua data sesuai dengan server">
+          <i class="ri-check-double-line" aria-hidden="true"></i>
+          <span>Data Tersinkronisasi</span>
+        </span>
+      }
+    </div>
+  </nav>
+
+  <!-- Hero Header Card with Live Meta & Avatar Uploader -->
+  <header class="edit-hero-card">
+    <div class="hero-left-profile">
+      <!-- Avatar with Live Preview & Upload -->
+      <div class="avatar-uploader-box">
+        <div class="avatar-ring-wrapper">
+          <img
+            [src]="avatarPreview() || formData.avatar"
+            [alt]="formData.name"
+            class="edit-avatar-image"
+          />
+          <span class="avatar-online-status" title="Status Keaktifan: {{ formData.status }}"></span>
+        </div>
+        <label for="avatar-file-input" class="btn-camera-upload" title="Klik untuk mengganti foto profil resmi">
+          <i class="ri-camera-lens-fill" aria-hidden="true"></i>
+        </label>
+        <input
+          type="file"
+          id="avatar-file-input"
+          accept="image/jpeg,image/png,image/webp"
+          (change)="onFileSelected($event); markDirty()"
+          class="hidden-file-input"
+        />
+      </div>
+
+      <!-- Main Profile Metadata -->
+      <div class="hero-text-details">
+        <div class="hero-badge-tags">
+          <span class="badge-role-tag">
+            <i class="ri-capsule-fill" aria-hidden="true"></i> {{ formData.roleTag || 'Apoteker Penanggung Jawab' }}
+          </span>
+          <span class="badge-faskes-tag">
+            <i class="ri-store-2-line" aria-hidden="true"></i> {{ formData.facility }}
+          </span>
+          <span class="badge-id-pill font-mono" title="ID Kredensial Apoteker">
+            ID: {{ formData.id }}
+            <button
+              type="button"
+              class="btn-inline-copy"
+              (click)="copyToClipboard(formData.id, 'id')"
+              title="Salin ID Apoteker"
+            >
+              <i [class]="copiedField() === 'id' ? 'ri-check-line text-emerald' : 'ri-file-copy-line'"></i>
+            </button>
+          </span>
+        </div>
+
+        <h1 class="hero-title">{{ formData.name || 'Nama Apoteker Belum Diisi' }}</h1>
+
+        <div class="hero-quick-meta">
+          <span class="quick-meta-item">
+            <i class="ri-mail-line" aria-hidden="true"></i>
+            <span>{{ formData.email || '-' }}</span>
+          </span>
+          <span class="quick-meta-item">
+            <i class="ri-phone-line" aria-hidden="true"></i>
+            <span class="font-mono">{{ formData.phone || '-' }}</span>
+          </span>
+          <span class="quick-meta-item">
+            <i class="ri-shield-check-line" aria-hidden="true"></i>
+            <span>SIPA: <strong class="font-mono">{{ formData.sipa || '-' }}</strong></span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Header Right: Profile Completeness Score Card -->
+    <div class="hero-right-completeness">
+      <div class="completeness-mini-card">
+        <div class="progress-ring-container">
+          <div class="radial-score-box">
+            <span class="radial-number">{{ profileCompleteness.percentage }}%</span>
+            <span class="radial-sub">Lengkap</span>
+          </div>
+        </div>
+
+        <div class="completeness-info-column">
+          <span class="completeness-title">Kelengkapan Profil</span>
+          <span class="completeness-subtitle">
+            {{ profileCompleteness.completedCount }} dari {{ profileCompleteness.totalCount }} bidang data terisi
+          </span>
+          <div class="progress-bar-track">
+            <div
+              class="progress-bar-fill"
+              [style.width.%]="profileCompleteness.percentage"
+            ></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Section Filter Tabs (Anchor Navigation) -->
+  <nav class="section-filter-nav-bar" aria-label="Navigasi Bagian Profil">
+    <div class="nav-tabs-wrapper">
+      <button
+        type="button"
+        class="filter-tab-btn"
+        [class.active]="activeCategory() === 'all'"
+        (click)="setCategory('all')"
+        title="Tampilkan seluruh bagian profil dalam satu halaman"
+      >
+        <i class="ri-apps-2-line" aria-hidden="true"></i>
+        <span>Semua Bagian</span>
+        <span class="tab-count-badge">7</span>
+      </button>
+
+      <button
+        type="button"
+        class="filter-tab-btn"
+        [class.active]="activeCategory() === 'pribadi'"
+        (click)="setCategory('pribadi')"
+        title="Fokus pada data diri, kontak, dan riwayat pendidikan"
+      >
+        <i class="ri-user-3-line" aria-hidden="true"></i>
+        <span>Data Pribadi & Pendidikan</span>
+        <span class="tab-count-badge">2</span>
+      </button>
+
+      <button
+        type="button"
+        class="filter-tab-btn"
+        [class.active]="activeCategory() === 'legalitas'"
+        (click)="setCategory('legalitas')"
+        title="Fokus pada nomor izin SIPA dan registrasi STRA"
+      >
+        <i class="ri-shield-check-line" aria-hidden="true"></i>
+        <span>Legalitas SIPA & STRA</span>
+        <span class="tab-count-badge">1</span>
+      </button>
+
+      <button
+        type="button"
+        class="filter-tab-btn"
+        [class.active]="activeCategory() === 'fasilitas_jadwal'"
+        (click)="setCategory('fasilitas_jadwal')"
+        title="Fokus pada faskes bertugas, jadwal operasional, dan diagram shift dinas"
+      >
+        <i class="ri-calendar-event-line" aria-hidden="true"></i>
+        <span>Fasilitas & Jadwal Pelayanan</span>
+        <span class="tab-count-badge">3</span>
+      </button>
+
+      <button
+        type="button"
+        class="filter-tab-btn"
+        [class.active]="activeCategory() === 'status'"
+        (click)="setCategory('status')"
+        title="Fokus pada status akun PSEF dan kepatuhan regulasi"
+      >
+        <i class="ri-settings-4-line" aria-hidden="true"></i>
+        <span>Status Akun & Regulasi</span>
+        <span class="tab-count-badge">1</span>
+      </button>
+    </div>
+
+    <div class="nav-actions-quick">
+      <button
+        type="button"
+        class="btn-reset-draft"
+        (click)="resetToInitial()"
+        [disabled]="!isDirty()"
+        title="Reset kembali ke data awal tersimpan"
+      >
+        <i class="ri-restart-line" aria-hidden="true"></i>
+        <span>Reset Formulir</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Alert Messages -->
+  @if (errorMessage()) {
+    <div class="alert alert-danger" role="alert">
+      <i class="ri-error-warning-fill alert-icon" aria-hidden="true"></i>
+      <div class="alert-content">
+        <strong class="alert-title">Periksa Kembali Data Anda</strong>
+        <p class="alert-msg">{{ errorMessage() }}</p>
+      </div>
+      <button type="button" class="btn-close-alert" (click)="errorMessage.set('')" aria-label="Tutup pesan">
+        <i class="ri-close-line" aria-hidden="true"></i>
+      </button>
+    </div>
+  }
+
+  @if (saveSuccess()) {
+    <div class="alert alert-success" role="alert">
+      <i class="ri-checkbox-circle-fill alert-icon" aria-hidden="true"></i>
+      <div class="alert-content">
+        <strong class="alert-title">Perubahan Berhasil Disimpan!</strong>
+        <p class="alert-msg">Data profil apoteker dan jadwal dinas telah diperbarui di sistem PSEF.</p>
+      </div>
+    </div>
+  }
+
+  <!-- Master 2-Column Responsive Layout -->
+  <form (ngSubmit)="save()" class="master-form-layout" novalidate>
+    <!-- LEFT MAIN COLUMN: Form Sections -->
+    <main class="form-main-stream">
+      <!-- Section 1: Data Pribadi & Identitas -->
+      @if (activeCategory() === 'all' || activeCategory() === 'pribadi') {
+        <section id="section-personal" class="form-card" aria-labelledby="heading-personal">
+          <div class="card-section-header">
+            <div class="icon-circle teal">
+              <i class="ri-user-3-line" aria-hidden="true"></i>
+            </div>
+            <div class="section-title-wrap">
+              <h2 id="heading-personal" class="section-title">Data Pribadi & Identitas Kependudukan</h2>
+              <p class="section-desc">Identitas resmi apoteker sesuai KTP terdaftar di Ditjen Dukcapil</p>
+            </div>
+            <span class="section-step-badge">Bagian 1/7</span>
+          </div>
+
+          <div class="grid-2-col">
+            <!-- Nama Lengkap -->
+            <div class="form-group">
+              <label for="pharmacist-name" class="form-label">
+                Nama Lengkap & Gelar Resmi <span class="required">*</span>
+              </label>
+              <div class="input-with-icon-wrapper">
+                <input
+                  id="pharmacist-name"
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="formData.name"
+                  (ngModelChange)="markDirty()"
+                  name="name"
+                  placeholder="Contoh: apt. Farhan Pratama, S.Farm"
+                  required
+                />
+                <i class="ri-user-follow-line input-right-icon" aria-hidden="true"></i>
+              </div>
+              <span class="field-hint">Sertakan gelar profesi apt. di depan dan gelar akademik di belakang.</span>
+            </div>
+
+            <!-- NIK with Character Counter -->
+            <div class="form-group">
+              <div class="label-with-badge">
+                <label for="pharmacist-nik" class="form-label">
+                  Nomor Induk Kependudukan (NIK) <span class="required">*</span>
+                </label>
+                <span
+                  class="char-counter-badge"
+                  [class.valid]="(formData.nik.length || 0) === 16"
+                  [class.invalid]="(formData.nik.length || 0) > 0 && (formData.nik.length || 0) !== 16"
+                >
+                  {{ formData.nik.length || 0 }} / 16 Digit
+                  @if ((formData.nik.length || 0) === 16) {
+                    <i class="ri-check-line text-emerald"></i>
+                  }
+                </span>
+              </div>
+              <div class="input-with-icon-wrapper">
+                <input
+                  id="pharmacist-nik"
+                  type="text"
+                  class="form-control font-mono"
+                  [(ngModel)]="formData.nik"
+                  (ngModelChange)="markDirty()"
+                  name="nik"
+                  maxlength="16"
+                  placeholder="16 digit NIK sesuai e-KTP"
+                  required
+                />
+                <i class="ri-id-card-line input-right-icon" aria-hidden="true"></i>
+              </div>
+              <span class="field-hint">Diperlukan untuk validasi satu data kesehatan (SatuSehat Kemenkes).</span>
+            </div>
+
+            <!-- Jenis Kelamin -->
+            <div class="form-group">
+              <label for="pharmacist-gender" class="form-label">Jenis Kelamin</label>
+              <select
+                id="pharmacist-gender"
+                class="form-select"
+                [(ngModel)]="formData.gender"
+                (ngModelChange)="markDirty()"
+                name="gender"
+              >
+                <option value="male">Laki-laki</option>
+                <option value="female">Perempuan</option>
+              </select>
+            </div>
+
+            <!-- Tempat & Tanggal Lahir -->
+            <div class="form-group">
+              <label for="pharmacist-birth" class="form-label">Tempat & Tanggal Lahir</label>
+              <div class="grid-2-inline">
+                <input
+                  id="pharmacist-birth"
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="formData.birthPlace"
+                  (ngModelChange)="markDirty()"
+                  name="birthPlace"
+                  placeholder="Kota Kelahiran"
+                />
+                <input
+                  type="date"
+                  class="form-control font-mono"
+                  [(ngModel)]="formData.birthDate"
+                  (ngModelChange)="markDirty()"
+                  name="birthDate"
+                />
+              </div>
+            </div>
+
+            <!-- Email Resmi -->
+            <div class="form-group">
+              <label for="pharmacist-email" class="form-label">
+                Email Resmi Pelayanan Telefarmasi <span class="required">*</span>
+              </label>
+              <div class="input-with-icon-wrapper">
+                <input
+                  id="pharmacist-email"
+                  type="email"
+                  class="form-control font-mono"
+                  [(ngModel)]="formData.email"
+                  (ngModelChange)="markDirty()"
+                  name="email"
+                  placeholder="apoteker@faskes.id"
+                  required
+                />
+                <i class="ri-mail-check-line input-right-icon" aria-hidden="true"></i>
+              </div>
+              <span class="field-hint">Digunakan untuk notifikasi resep elektronik dan pengawasan PSEF.</span>
+            </div>
+
+            <!-- Nomor Telepon -->
+            <div class="form-group">
+              <label for="pharmacist-phone" class="form-label">
+                Nomor Telepon / WhatsApp Konseling <span class="required">*</span>
+              </label>
+              <div class="input-with-icon-wrapper">
+                <input
+                  id="pharmacist-phone"
+                  type="tel"
+                  class="form-control font-mono"
+                  [(ngModel)]="formData.phone"
+                  (ngModelChange)="markDirty()"
+                  name="phone"
+                  placeholder="0812-XXXX-XXXX"
+                  required
+                />
+                <i class="ri-whatsapp-line input-right-icon text-emerald" aria-hidden="true"></i>
+              </div>
+              <span class="field-hint">Nomor aktif untuk verifikasi 2FA dan konsultasi telefarmasi dengan pasien.</span>
+            </div>
+
+            <!-- Alamat Lengkap Sesuai KTP -->
+            <div class="form-group full-width">
+              <label for="pharmacist-address" class="form-label">Alamat Domisili / Sesuai KTP</label>
+              <textarea
+                id="pharmacist-address"
+                rows="2"
+                class="form-control"
+                [(ngModel)]="formData.address"
+                (ngModelChange)="markDirty()"
+                name="address"
+                placeholder="Jalan, No Rumah, RT/RW, Kelurahan, Kecamatan, Kota/Kabupaten, Kode Pos..."
+              ></textarea>
+            </div>
+
+            <!-- Ringkasan Tentang Apoteker -->
+            <div class="form-group full-width">
+              <label for="pharmacist-about" class="form-label">Profil Profesional / Tentang Apoteker</label>
+              <textarea
+                id="pharmacist-about"
+                rows="3"
+                class="form-control"
+                [(ngModel)]="formData.about"
+                (ngModelChange)="markDirty()"
+                name="about"
+                placeholder="Tuliskan pengalaman klinis, kompetensi telaah resep, keahlian farmasi komunitas, serta dedikasi dalam pelayanan PSEF..."
+              ></textarea>
+            </div>
+          </div>
+        </section>
+      }
+
+      <!-- Section 2: Pendidikan & Bidang Kefarmasian -->
+      @if (activeCategory() === 'all' || activeCategory() === 'pribadi') {
+        <section id="section-education" class="form-card" aria-labelledby="heading-education">
+          <div class="card-section-header">
+            <div class="icon-circle blue">
+              <i class="ri-graduation-cap-line" aria-hidden="true"></i>
+            </div>
+            <div class="section-title-wrap">
+              <h2 id="heading-education" class="section-title">Pendidikan & Spesialisasi Farmasi</h2>
+              <p class="section-desc">Kualifikasi akademik kefarmasian dan ijazah profesi terverifikasi PDDikti</p>
+            </div>
+            <span class="section-step-badge">Bagian 2/7</span>
+          </div>
+
+          <div class="grid-2-col">
+            <div class="form-group">
+              <label for="pharmacist-specialty" class="form-label">
+                Bidang / Peminatan Kefarmasian <span class="required">*</span>
+              </label>
+              <select
+                id="pharmacist-specialty"
+                class="form-select"
+                [(ngModel)]="formData.specialty"
+                (ngModelChange)="markDirty()"
+                name="specialty"
+              >
+                @for (sp of specialties; track sp) {
+                  <option [value]="sp">{{ sp }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="pharmacist-lastEducation" class="form-label">Pendidikan Terakhir</label>
+              <input
+                id="pharmacist-lastEducation"
+                type="text"
+                class="form-control"
+                [(ngModel)]="formData.lastEducation"
+                (ngModelChange)="markDirty()"
+                name="lastEducation"
+                placeholder="Profesi Apoteker (Apt.)"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="pharmacist-univ" class="form-label">Perguruan Tinggi / Universitas</label>
+              <input
+                id="pharmacist-univ"
+                type="text"
+                class="form-control"
+                [(ngModel)]="formData.educationInstitution"
+                (ngModelChange)="markDirty()"
+                name="educationInstitution"
+                placeholder="Contoh: Institut Teknologi Bandung (ITB)"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="pharmacist-diploma" class="form-label">Nomor Ijazah Profesi Apoteker</label>
+              <div class="input-with-icon-wrapper">
+                <input
+                  id="pharmacist-diploma"
+                  type="text"
+                  class="form-control font-mono"
+                  [(ngModel)]="formData.diplomaNumber"
+                  (ngModelChange)="markDirty()"
+                  name="diplomaNumber"
+                  placeholder="Nomor PIN Ijazah Nasional PDDikti"
+                />
+                <i class="ri-award-line input-right-icon" aria-hidden="true"></i>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="pharmacist-gradYear" class="form-label">Tahun Kelulusan Profesi</label>
+              <input
+                id="pharmacist-gradYear"
+                type="text"
+                class="form-control font-mono"
+                [(ngModel)]="formData.graduationYear"
+                (ngModelChange)="markDirty()"
+                name="graduationYear"
+                placeholder="Contoh: 2020"
+              />
+            </div>
+          </div>
+        </section>
+      }
+
+      <!-- Section 3: Legalitas & Perizinan (SIPA & STRA) -->
+      @if (activeCategory() === 'all' || activeCategory() === 'legalitas') {
+        <section id="section-legal" class="form-card" aria-labelledby="heading-legal">
+          <div class="card-section-header">
+            <div class="icon-circle amber">
+              <i class="ri-shield-check-line" aria-hidden="true"></i>
+            </div>
+            <div class="section-title-wrap">
+              <h2 id="heading-legal" class="section-title">Legalitas & Perizinan (SIPA & STRA)</h2>
+              <p class="section-desc">Nomor Surat Izin Praktik Apoteker dan Registrasi resmi Kementerian Kesehatan RI</p>
+            </div>
+            <span class="section-step-badge">Bagian 3/7</span>
+          </div>
+
+          <!-- Kemenkes SIPA Verification Notice Banner -->
+          <div class="sipa-kemenkes-banner">
+            <div class="banner-icon-col">
+              <i class="ri-government-line" aria-hidden="true"></i>
+            </div>
+            <div class="banner-text-col">
+              <strong>Validasi Otomatis SISK Kemenkes RI</strong>
+              <p>Pastikan nomor SIPA dan STRA sesuai dengan berkas fisik yang telah diunggah. Izin praktik apoteker wajib aktif untuk menyelenggarakan telefarmasi PSEF.</p>
+            </div>
+          </div>
+
+          <div class="grid-2-col">
+            <!-- Nomor SIPA -->
+            <div class="form-group">
+              <div class="label-with-badge">
+                <label for="pharmacist-sipa" class="form-label">
+                  Nomor SIPA <span class="required">*</span>
+                </label>
+                @if (formData.sipa) {
+                  <button
+                    type="button"
+                    class="btn-copy-chip"
+                    (click)="copyToClipboard(formData.sipa, 'sipa')"
+                  >
+                    <i [class]="copiedField() === 'sipa' ? 'ri-check-line' : 'ri-file-copy-line'"></i>
+                    <span>{{ copiedField() === 'sipa' ? 'Tersalin' : 'Salin' }}</span>
+                  </button>
+                }
+              </div>
+              <div class="input-with-icon-wrapper">
+                <input
+                  id="pharmacist-sipa"
+                  type="text"
+                  class="form-control font-mono"
+                  [(ngModel)]="formData.sipa"
+                  (ngModelChange)="markDirty()"
+                  name="sipa"
+                  placeholder="Contoh: 35.79/25/1235"
+                  required
+                />
+                <i class="ri-file-shield-line input-right-icon" aria-hidden="true"></i>
+              </div>
+              <span class="field-hint">Format SIPA Dinas Kesehatan Kota/Kabupaten setempat.</span>
+            </div>
+
+            <!-- Masa Berlaku SIPA -->
+            <div class="form-group">
+              <label for="pharmacist-sipaExpiry" class="form-label">Masa Berlaku SIPA</label>
+              <div class="input-with-icon-wrapper">
+                <input
+                  id="pharmacist-sipaExpiry"
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="formData.sipaExpiry"
+                  (ngModelChange)="markDirty()"
+                  name="sipaExpiry"
+                  placeholder="Contoh: 14 Oktober 2028"
+                />
+                <i class="ri-calendar-line input-right-icon" aria-hidden="true"></i>
+              </div>
+              <span class="field-hint">Sesuai tanggal kedaluwarsa pada lembar izin SIPA.</span>
+            </div>
+
+            <!-- Instansi Penerbit SIPA -->
+            <div class="form-group">
+              <label for="pharmacist-sipaIssuer" class="form-label">Instansi Penerbit SIPA</label>
+              <input
+                id="pharmacist-sipaIssuer"
+                type="text"
+                class="form-control"
+                [(ngModel)]="formData.sipaIssuer"
+                (ngModelChange)="markDirty()"
+                name="sipaIssuer"
+                placeholder="Dinas Kesehatan Kota Bandung"
+              />
+            </div>
+
+            <!-- Nomor STRA -->
+            <div class="form-group">
+              <div class="label-with-badge">
+                <label for="pharmacist-stra" class="form-label">
+                  Nomor STRA Kemenkes <span class="required">*</span>
+                </label>
+                @if (formData.stra) {
+                  <button
+                    type="button"
+                    class="btn-copy-chip"
+                    (click)="copyToClipboard(formData.stra, 'stra')"
+                  >
+                    <i [class]="copiedField() === 'stra' ? 'ri-check-line' : 'ri-file-copy-line'"></i>
+                    <span>{{ copiedField() === 'stra' ? 'Tersalin' : 'Salin' }}</span>
+                  </button>
+                }
+              </div>
+              <div class="input-with-icon-wrapper">
+                <input
+                  id="pharmacist-stra"
+                  type="text"
+                  class="form-control font-mono"
+                  [(ngModel)]="formData.stra"
+                  (ngModelChange)="markDirty()"
+                  name="stra"
+                  placeholder="Contoh: 317129/25/1002"
+                  required
+                />
+                <i class="ri-government-line input-right-icon" aria-hidden="true"></i>
+              </div>
+              <span class="field-hint">Surat Tanda Registrasi Apoteker resmi dari Kemenkes RI.</span>
+            </div>
+
+            <!-- Masa Berlaku STRA -->
+            <div class="form-group">
+              <label for="pharmacist-straExpiry" class="form-label">Masa Berlaku STRA</label>
+              <input
+                id="pharmacist-straExpiry"
+                type="text"
+                class="form-control"
+                [(ngModel)]="formData.straExpiry"
+                (ngModelChange)="markDirty()"
+                name="straExpiry"
+                placeholder="Seumur Hidup / Tanggal Berlaku"
+              />
+            </div>
+          </div>
+        </section>
+      }
+
+      <!-- Section 4: Penugasan Fasilitas Kefarmasian (TERKUNCI) -->
+      @if (activeCategory() === 'all' || activeCategory() === 'fasilitas_jadwal') {
+        <section id="section-facility" class="form-card facility-card-highlight" aria-labelledby="heading-facility">
+          <div class="card-section-header">
+            <div class="icon-circle teal">
+              <i class="ri-store-2-line" aria-hidden="true"></i>
+            </div>
+            <div class="section-title-wrap">
+              <h2 id="heading-facility" class="section-title">Fasilitas Kefarmasian & Penugasan</h2>
+              <p class="section-desc">Afiliasi sarana berizin PSEF tempat berpraktik (kredensial terverifikasi)</p>
+            </div>
+            <span class="section-step-badge">Bagian 4/7</span>
+          </div>
+
+          <!-- Locked Info Notice -->
+          <div class="facility-locked-info-alert">
+            <div class="locked-alert-icon">
+              <i class="ri-lock-2-fill" aria-hidden="true"></i>
+            </div>
+            <div class="locked-alert-body">
+              <strong>Kredensial Fasilitas Terkunci</strong>
+              <p>Nama dan Jenis Fasilitas dikunci demi integritas kepatuhan PSEF Kemenkes. Perubahan penugasan faskes hanya dapat dilakukan melalui Administrator Fasilitas terkait.</p>
+            </div>
+            <button
+              type="button"
+              class="btn-help-faskes"
+              (click)="toggleFacilityHelpModal()"
+              title="Informasi alur mutasi faskes"
+            >
+              <i class="ri-question-line" aria-hidden="true"></i>
+              <span>Bantuan Faskes</span>
+            </button>
+          </div>
+
+          <div class="grid-2-col">
+            <!-- 1. Nama Fasilitas (TERKUNCI) -->
+            <div class="form-group">
+              <label for="pharmacist-facility" class="form-label">
+                Nama Fasilitas Kefarmasian
+                <span class="badge-lock" title="Bidang ini terkunci demi keamanan data">
+                  <i class="ri-lock-2-line" aria-hidden="true"></i> Terkunci
+                </span>
+              </label>
+              <div class="input-with-icon-wrapper">
+                <input
+                  id="pharmacist-facility"
+                  type="text"
+                  class="form-control readonly-locked"
+                  [value]="formData.facility"
+                  readonly
+                  disabled
+                  tabindex="-1"
+                  aria-readonly="true"
+                />
+                <i class="ri-lock-2-fill input-right-icon locked-icon" aria-hidden="true"></i>
+              </div>
+              <span class="field-hint">Apotek / Sarana berizin PSEF tempat apoteker bertugas.</span>
+            </div>
+
+            <!-- 2. Jenis Fasilitas (TERKUNCI) -->
+            <div class="form-group">
+              <label for="pharmacist-facilityType" class="form-label">
+                Jenis Fasilitas
+                <span class="badge-lock" title="Bidang ini terkunci demi keamanan data">
+                  <i class="ri-lock-2-line" aria-hidden="true"></i> Terkunci
+                </span>
+              </label>
+              <div class="input-with-icon-wrapper">
+                <input
+                  id="pharmacist-facilityType"
+                  type="text"
+                  class="form-control readonly-locked"
+                  [value]="formData.facilityType || 'Apotek Penyelenggara PSEF'"
+                  readonly
+                  disabled
+                  tabindex="-1"
+                  aria-readonly="true"
+                />
+                <i class="ri-lock-2-fill input-right-icon locked-icon" aria-hidden="true"></i>
+              </div>
+              <span class="field-hint">Klasifikasi sarana kefarmasian resmi Kemenkes.</span>
+            </div>
+
+            <!-- Jabatan Kefarmasian -->
+            <div class="form-group">
+              <label for="pharmacist-position" class="form-label">Jabatan Kefarmasian di Faskes</label>
+              <select
+                id="pharmacist-position"
+                class="form-select"
+                [(ngModel)]="formData.roleTag"
+                (ngModelChange)="markDirty()"
+                name="roleTag"
+              >
+                @for (pos of positions; track pos) {
+                  <option [value]="pos">{{ pos }}</option>
+                }
+              </select>
+            </div>
+
+            <!-- Ringkasan Jadwal Telefarmasi -->
+            <div class="form-group">
+              <label for="pharmacist-schedule" class="form-label">Ringkasan Jadwal Pelayanan Telefarmasi</label>
+              <input
+                id="pharmacist-schedule"
+                type="text"
+                class="form-control"
+                [(ngModel)]="formData.practiceSchedule"
+                (ngModelChange)="markDirty()"
+                name="practiceSchedule"
+                placeholder="Senin - Sabtu (08.00 - 17.00 WIB)"
+              />
+            </div>
+          </div>
+        </section>
+      }
+
+      <!-- Section 5: JADWAL OPERASIONAL FASILITAS -->
+      @if (activeCategory() === 'all' || activeCategory() === 'fasilitas_jadwal') {
+        <section id="section-op-schedule" class="form-card schedule-card op-faskes-card" aria-labelledby="heading-op-schedule">
+          <div class="schedule-card-header">
+            <div class="icon-circle rose">
+              <i class="ri-store-2-line" aria-hidden="true"></i>
+            </div>
+            <div class="section-title-wrap">
+              <div class="title-with-pill">
+                <h2 id="heading-op-schedule" class="schedule-main-title">Jadwal Operasional Fasilitas</h2>
+                <span class="badge-op-tag">Latar Merah di Diagram</span>
+              </div>
+              <p class="section-desc">Jam buka pelayanan sarana farmasi (menjadi batas jam pelayanan dan supervisi apoteker)</p>
+            </div>
+            <span class="section-step-badge">Bagian 5/7</span>
+          </div>
+
+          <!-- Quick Template Selector for Faskes -->
+          <div class="faskes-op-presets-bar">
+            <span class="faskes-preset-caption"><i class="ri-building-line"></i> Pilihan Template Faskes:</span>
+            <div class="faskes-preset-buttons">
+              <button
+                type="button"
+                class="btn-op-preset"
+                (click)="applyOpPreset('standard')"
+                title="Apotek buka Senin - Minggu jam 08:00 sampai 22:00 WIB"
+              >
+                <i class="ri-store-line"></i> Standar (08:00 - 22:00)
+              </button>
+              <button
+                type="button"
+                class="btn-op-preset"
+                (click)="applyOpPreset('24h')"
+                title="Apotek beroperasi 24 jam non-stop setiap hari"
+              >
+                <i class="ri-24-hours-line"></i> 24 Jam Non-Stop
+              </button>
+              <button
+                type="button"
+                class="btn-op-preset"
+                (click)="applyOpPreset('extended')"
+                title="Apotek buka Senin - Sabtu jam 07:00 sampai 23:00 WIB"
+              >
+                <i class="ri-time-line"></i> Ekstra (07:00 - 23:00)
+              </button>
+            </div>
+          </div>
+
+          <!-- Info Box 24 Jam -->
+          <div class="operational-info-banner">
+            <i class="ri-information-fill banner-info-icon" aria-hidden="true"></i>
+            <span>Untuk fasilitas yang beroperasional 24 jam silahkan ditulis 00:00:00 sampai dengan 23:45:00</span>
+          </div>
+
+          <!-- Pola Operasional List -->
+          <div class="patterns-container">
+            @for (pat of operationalPatterns; track pat.id; let idx = $index) {
+              <div class="schedule-pattern-item op-item-border">
+                <div class="pattern-time-row">
+                  <div class="time-field-box">
+                    <span class="time-field-label">
+                      <i class="ri-time-line text-rose"></i> Buka Sarana
+                    </span>
+                    <input
+                      type="text"
+                      class="form-control pattern-time-input font-mono"
+                      [(ngModel)]="pat.openTime"
+                      (ngModelChange)="markDirty()"
+                      [name]="'opOpen' + idx"
+                      placeholder="08:00:00"
+                    />
+                  </div>
+
+                  <div class="time-field-box">
+                    <span class="time-field-label">
+                      <i class="ri-time-line text-rose"></i> Tutup Sarana
+                    </span>
+                    <input
+                      type="text"
+                      class="form-control pattern-time-input font-mono"
+                      [(ngModel)]="pat.closeTime"
+                      (ngModelChange)="markDirty()"
+                      [name]="'opClose' + idx"
+                      placeholder="22:00:00"
+                    />
+                  </div>
+
+                  <button
+                    type="button"
+                    class="btn-delete-pattern op-del-btn"
+                    (click)="removeOperationalPattern(idx); markDirty()"
+                    title="Hapus pola operasional ini"
+                  >
+                    <i class="ri-delete-bin-line" aria-hidden="true"></i>
+                    <span>hapus pola</span>
+                  </button>
+                </div>
+
+                <!-- Day Pills: sen sel rab kam jum sab min -->
+                <div class="pattern-days-bar">
+                  @for (d of dayOptions; track d.key) {
+                    <button
+                      type="button"
+                      class="day-pill-btn op-day-pill"
+                      [class.active]="pat.days[d.key]"
+                      (click)="toggleOperationalDay(pat, d.key); markDirty()"
+                      title="Klik untuk buka/tutup fasilitas pada hari {{ d.label }}"
+                    >
+                      {{ d.label }}
+                    </button>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+
+          <div class="btn-add-pattern-row">
+            <button
+              type="button"
+              class="btn-add-pattern op-btn-add"
+              (click)="addOperationalPattern(); markDirty()"
+            >
+              <i class="ri-add-line" aria-hidden="true"></i>
+              <span>Tambah Pola Operasional</span>
+            </button>
+          </div>
+        </section>
+      }
+
+      <!-- Section 6: JADWAL PRAKTIK APOTEKER & DIAGRAM SHIFT DINAS -->
+      @if (activeCategory() === 'all' || activeCategory() === 'fasilitas_jadwal') {
+        <section id="section-pr-schedule" class="form-card schedule-card pr-pharmacist-card" aria-labelledby="heading-pr-schedule">
+          <div class="schedule-card-header">
+            <div class="icon-circle emerald">
+              <i class="ri-calendar-check-line" aria-hidden="true"></i>
+            </div>
+            <div class="section-title-wrap">
+              <div class="title-with-pill">
+                <h2 id="heading-pr-schedule" class="schedule-main-title">Jadwal Praktik Apoteker & Diagram Shift</h2>
+                <span class="badge-pr-tag">Balok Hijau di Atas Merah</span>
+              </div>
+              <p class="section-desc">Shift dinas aktif apoteker penanggung jawab (Warna Hijau berada di atas Latar Merah Operasional Fasilitas)</p>
+            </div>
+            <span class="section-step-badge">Bagian 6/7</span>
+          </div>
+
+          <!-- Pola Praktik Forms List -->
+          <div class="patterns-container">
+            @for (pat of practicePatterns; track pat.id; let idx = $index) {
+              <div class="schedule-pattern-item pr-item-border">
+                <div class="pattern-time-row">
+                  <div class="time-field-box">
+                    <span class="time-field-label">
+                      <i class="ri-time-line text-emerald"></i> Mulai Praktik
+                    </span>
+                    <input
+                      type="text"
+                      class="form-control pattern-time-input font-mono"
+                      [(ngModel)]="pat.openTime"
+                      [name]="'prOpen' + idx"
+                      (ngModelChange)="onPracticePatternChange(); markDirty()"
+                      placeholder="08:00:00"
+                    />
+                  </div>
+
+                  <div class="time-field-box">
+                    <span class="time-field-label">
+                      <i class="ri-time-line text-emerald"></i> Selesai Praktik
+                    </span>
+                    <input
+                      type="text"
+                      class="form-control pattern-time-input font-mono"
+                      [(ngModel)]="pat.closeTime"
+                      [name]="'prClose' + idx"
+                      (ngModelChange)="onPracticePatternChange(); markDirty()"
+                      placeholder="17:00:00"
+                    />
+                  </div>
+
+                  <button
+                    type="button"
+                    class="btn-delete-pattern pr-del-btn"
+                    (click)="removePracticePattern(idx); markDirty()"
+                    title="Hapus pola praktik dinas ini"
+                  >
+                    <i class="ri-delete-bin-line" aria-hidden="true"></i>
+                    <span>hapus pola</span>
+                  </button>
+                </div>
+
+                <!-- Day Pills (Green when active) -->
+                <div class="pattern-days-bar">
+                  @for (d of dayOptions; track d.key) {
+                    <button
+                      type="button"
+                      class="day-pill-btn practice-day-pill"
+                      [class.active]="pat.days[d.key]"
+                      (click)="togglePracticeDay(pat, d.key); markDirty()"
+                      title="Klik untuk aktif/nonaktif dinas apoteker pada hari {{ d.label }}"
+                    >
+                      {{ d.label }}
+                    </button>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+
+          <div class="btn-add-pattern-row">
+            <button
+              type="button"
+              class="btn-add-pattern practice-btn-add"
+              (click)="addPracticePattern(); markDirty()"
+            >
+              <i class="ri-add-line" aria-hidden="true"></i>
+              <span>Tambah Pola Praktik</span>
+            </button>
+          </div>
+
+          <!-- 4 HERO KPI METRIC CARDS -->
+          <div class="schedule-hero-kpi-grid">
+            <div class="kpi-metric-card emerald-theme">
+              <div class="kpi-icon-wrap emerald">
+                <i class="ri-time-line" aria-hidden="true"></i>
+              </div>
+              <div class="kpi-info-block">
+                <span class="kpi-title">Total Jam Praktik</span>
+                <div class="kpi-value-row font-mono">
+                  <strong>{{ getTotalPracticeHours() }} Jam</strong>
+                  <small>/minggu</small>
+                </div>
+                <span class="kpi-subtext">Sesuai SIPA Dinkes</span>
+              </div>
+            </div>
+
+            <div class="kpi-metric-card blue-theme">
+              <div class="kpi-icon-wrap blue">
+                <i class="ri-calendar-check-line" aria-hidden="true"></i>
+              </div>
+              <div class="kpi-info-block">
+                <span class="kpi-title">Hari Dinas Aktif</span>
+                <div class="kpi-value-row font-mono">
+                  <strong>{{ getActiveDaysCount() }} Hari</strong>
+                  <small>/7 hari</small>
+                </div>
+                <span class="kpi-subtext">Senin s/d Sabtu</span>
+              </div>
+            </div>
+
+            <div class="kpi-metric-card rose-theme">
+              <div class="kpi-icon-wrap rose">
+                <i class="ri-store-2-line" aria-hidden="true"></i>
+              </div>
+              <div class="kpi-info-block">
+                <span class="kpi-title">Buka Fasilitas</span>
+                <div class="kpi-value-row font-mono">
+                  <strong>{{ getTotalOperationalHoursWeekly() }} Jam</strong>
+                  <small>/minggu</small>
+                </div>
+                <span class="kpi-subtext">Sarana Apotek PSEF</span>
+              </div>
+            </div>
+
+            <div class="kpi-metric-card teal-theme">
+              <div class="kpi-icon-wrap teal">
+                <i class="ri-shield-check-line" aria-hidden="true"></i>
+              </div>
+              <div class="kpi-info-block">
+                <span class="kpi-title">Cakupan Supervisi</span>
+                <div class="kpi-value-row font-mono">
+                  <strong>{{ getSupervisionCoverageRatio() }}%</strong>
+                  <small>tercover APJ</small>
+                </div>
+                <span class="kpi-subtext">Kepatuhan Telefarmasi</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- DIAGRAM CONTROL & PRESETS BAR -->
+          <div class="diagram-studio-toolbar">
+            <div class="toolbar-left-presets">
+              <span class="toolbar-caption"><i class="ri-magic-line"></i> Pola Praktik Cepat:</span>
+              <div class="preset-pill-group">
+                <button
+                  type="button"
+                  class="btn-preset-pill"
+                  (click)="applyPreset('normal')"
+                  title="Senin - Jumat (08:00 - 17:00), Sabtu (08:00 - 13:00)"
+                >
+                  Standar (Sen-Sab)
+                </button>
+                <button
+                  type="button"
+                  class="btn-preset-pill"
+                  (click)="applyPreset('morning')"
+                  title="Shift Pagi: Senin - Sabtu (08:00 - 16:00)"
+                >
+                  Shift Pagi (08-16)
+                </button>
+                <button
+                  type="button"
+                  class="btn-preset-pill"
+                  (click)="applyPreset('evening')"
+                  title="Shift Sore: Senin - Sabtu (13:00 - 21:00)"
+                >
+                  Shift Sore (13-21)
+                </button>
+                <button
+                  type="button"
+                  class="btn-preset-pill"
+                  (click)="applyPreset('full')"
+                  title="Senin - Sabtu (08:00 - 17:00)"
+                >
+                  Penuh (08-17)
+                </button>
+                <button
+                  type="button"
+                  class="btn-preset-pill btn-clear-preset"
+                  (click)="applyPreset('clear')"
+                  title="Kosongkan jadwal praktik"
+                >
+                  Kosongkan
+                </button>
+              </div>
+            </div>
+
+            <!-- View Mode Switcher -->
+            <div class="toolbar-right-modes">
+              <span class="toolbar-caption">Tampilan:</span>
+              <div class="view-mode-switch-segmented">
+                <button
+                  type="button"
+                  class="btn-mode-seg"
+                  [class.active]="scheduleViewMode() === 'timeline'"
+                  (click)="setScheduleViewMode('timeline')"
+                  title="Tampilan diagram timeline visual kalender berbalok hijau di atas merah"
+                >
+                  <i class="ri-bar-chart-2-line"></i>
+                  <span>Diagram Timeline Visual</span>
+                </button>
+                <button
+                  type="button"
+                  class="btn-mode-seg"
+                  [class.active]="scheduleViewMode() === 'matrix'"
+                  (click)="setScheduleViewMode('matrix')"
+                  title="Tampilan tabel matriks slot interaktif per-jam (24 Jam)"
+                >
+                  <i class="ri-grid-fill"></i>
+                  <span>Matriks Grid 24 Jam</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- DIAGRAM LEGEND -->
+          <div class="studio-legend-bar">
+            <div class="legend-items-wrap">
+              <div class="legend-chip">
+                <span class="legend-color-box op-rose-box"></span>
+                <span><strong>Jadwal Operasional Fasilitas</strong> (Latar Merah)</span>
+              </div>
+              <div class="legend-chip">
+                <span class="legend-color-box pr-emerald-box"></span>
+                <span><strong>Jadwal Praktik Apoteker</strong> (Balok Hijau di Atas Latar Merah)</span>
+              </div>
+              <div class="legend-chip">
+                <span class="legend-color-box striped-rose-box"></span>
+                <span>Fasilitas Buka di Luar Shift APJ (Delegasi)</span>
+              </div>
+            </div>
+            <span class="legend-hint-text">
+              <i class="ri-information-line"></i>
+              Balok hijau menunjukkan jam apoteker siap melayani skrining e-resep & telefarmasi
+            </span>
+          </div>
+
+          <!-- ========================================================
+               MODE 1: THE VISUAL TIMELINE DIAGRAM (STAR FEATURE)
+               ======================================================== -->
+          @if (scheduleViewMode() === 'timeline') {
+            <div class="visual-timeline-canvas-card">
+              <!-- Days Header Row -->
+              <div class="timeline-days-header-row">
+                <div class="timeline-axis-corner">
+                  <span class="axis-corner-text">WAKTU (WIB)</span>
+                </div>
+                @for (col of calendarScheduleView; track col.key) {
+                  <div class="timeline-day-head-cell" [class.is-today]="col.key === 'rab'">
+                    <div class="day-head-name-group">
+                      <strong class="day-head-short">{{ col.label }}</strong>
+                      <span class="day-head-full">{{ col.subLabel }}</span>
+                    </div>
+                    <span
+                      class="day-shift-status-badge"
+                      [class.has-practice]="col.pr.hasPractice"
+                      [class.is-off]="!col.pr.hasPractice"
+                    >
+                      @if (col.pr.hasPractice) {
+                        {{ col.pr.duration }} Jam Dinas
+                      } @else {
+                        Libur
+                      }
+                    </span>
+                  </div>
+                }
+              </div>
+
+              <!-- Timeline Chart Body: Left Axis + 7 Columns -->
+              <div class="timeline-canvas-body">
+                <!-- Left Time Axis -->
+                <div class="timeline-time-axis">
+                  @for (th of timelineScaleHours; track th.hour) {
+                    <div class="time-axis-marker">
+                      <span class="axis-time-tag font-mono">{{ th.label }}</span>
+                      <span class="axis-tick-line"></span>
+                    </div>
+                  }
+                </div>
+
+                <!-- 7 Day Columns Canvas -->
+                <div class="timeline-columns-wrapper">
+                  <!-- Background Hour Lines for entire grid -->
+                  <div class="timeline-grid-guidelines" aria-hidden="true">
+                    @for (th of timelineScaleHours; track th.hour) {
+                      <div class="timeline-guideline-row"></div>
+                    }
+                  </div>
+
+                  <!-- 7 Day Render Columns -->
+                  @for (col of calendarScheduleView; track col.key) {
+                    <div
+                      class="timeline-day-track-column"
+                      [class.day-highlighted]="col.key === 'rab'"
+                      [class.day-has-shift]="col.pr.hasPractice"
+                    >
+                      <!-- 1. RED OPERATIONAL BACKGROUND ZONE (LATAR MERAH) -->
+                      @if (col.op.isOpen) {
+                        <div
+                          class="timeline-op-zone"
+                          [style.top.%]="col.op.topPct"
+                          [style.height.%]="col.op.heightPct"
+                          [title]="'Fasilitas ' + col.subLabel + ' Buka: ' + col.op.openTime + ' - ' + col.op.closeTime"
+                        >
+                          <div class="op-zone-top-tag">
+                            <i class="ri-store-2-line"></i>
+                            <span>Buka {{ col.op.openTime.slice(0, 5) }} - {{ col.op.closeTime.slice(0, 5) }}</span>
+                          </div>
+
+                          <!-- Notice if facility is open but no practice in this zone -->
+                          @if (!col.pr.hasPractice) {
+                            <div class="op-unstaffed-banner">
+                              <i class="ri-user-unfollow-line"></i>
+                              <span>Faskes Buka (Apoteker Libur)</span>
+                            </div>
+                          }
+                        </div>
+                      }
+
+                      <!-- 2. GREEN PRACTICE SHIFT BAR (BALOK HIJAU DI ATAS MERAH) -->
+                      @if (col.pr.hasPractice) {
+                        <div
+                          class="timeline-practice-card"
+                          [style.top.%]="col.pr.topPct"
+                          [style.height.%]="col.pr.heightPct"
+                          [title]="'Jadwal Praktik ' + col.subLabel + ': ' + col.pr.openTime + ' - ' + col.pr.closeTime + ' (' + col.pr.duration + ' Jam)'"
+                        >
+                          <div class="practice-card-glow-bar"></div>
+                          <div class="practice-card-inner">
+                            <div class="practice-header-line">
+                              <span class="pulse-beacon-dot"></span>
+                              <strong class="shift-title-text">Praktik Apoteker</strong>
+                              <i class="ri-check-double-line shift-check-icon"></i>
+                            </div>
+
+                            <div class="shift-time-bubble font-mono">
+                              <i class="ri-time-line"></i>
+                              <span>{{ col.pr.openTime.slice(0, 5) }} - {{ col.pr.closeTime.slice(0, 5) }} WIB</span>
+                            </div>
+
+                            <div class="shift-duration-badge">
+                              <span>{{ col.pr.duration }} Jam Pelayanan</span>
+                            </div>
+
+                            <div class="shift-services-indicator">
+                              <i class="ri-shield-check-fill text-emerald-light"></i>
+                              <span>APJ Aktif Telefarmasi</span>
+                            </div>
+                          </div>
+                        </div>
+                      }
+
+                      <!-- 3. If Day is entirely closed (Neither Op nor Practice) -->
+                      @if (!col.op.isOpen && !col.pr.hasPractice) {
+                        <div class="timeline-day-off-card">
+                          <i class="ri-hotel-bed-line"></i>
+                          <span>Libur Total</span>
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+
+          <!-- ========================================================
+               MODE 2: MATRIKS GRID 24 JAM (FINE-TUNING CELL BY CELL)
+               ======================================================== -->
+          @if (scheduleViewMode() === 'matrix') {
+            <div class="timetable-outer-wrapper">
+              <div class="matrix-helper-alert">
+                <i class="ri-information-line"></i>
+                <span>Mode Matriks Grid: Klik pada setiap kotak jam untuk menambah atau menghapus jam dinas secara presisi.</span>
+              </div>
+
+              <!-- Sticky Day Header with Badges -->
+              <div class="timetable-header-grid">
+                <div class="time-axis-head">
+                  <span class="axis-head-label">WAKTU</span>
+                </div>
+                @for (d of calendarDays; track d.key) {
+                  <div class="day-col-head" [class.highlighted-day]="d.key === 'rab'">
+                    <div class="day-head-content">
+                      <div class="day-titles-row">
+                        <span class="day-code">{{ d.label }}</span>
+                        <span class="day-full">{{ d.subLabel }}</span>
+                      </div>
+                      <span
+                        class="day-hours-badge"
+                        [class.has-shift]="getDayPracticeHours(d.key) > 0"
+                        [class.is-off]="getDayPracticeHours(d.key) === 0"
+                      >
+                        @if (getDayPracticeHours(d.key) > 0) {
+                          {{ getDayPracticeHours(d.key) }} Jam
+                        } @else {
+                          Libur
+                        }
+                      </span>
+                    </div>
+                  </div>
+                }
+              </div>
+
+              <!-- Scrollable Hours Rows -->
+              <div class="timetable-scrollable-body">
+                @for (h of timetableHours; track h.value) {
+                  <div class="timetable-grid-row">
+                    <div class="time-axis-cell">
+                      <span class="time-24h font-mono">{{ h.formattedTime }}</span>
+                      <span class="time-12h">{{ h.label }}</span>
+                    </div>
+                    @for (d of calendarDays; track d.key) {
+                      <div
+                        class="timetable-slot-cell"
+                        [class.operational-slot]="isOperationalSlot(d.key, h.value)"
+                        [class.standby-highlight]="isSlotHighlighted(d.key, h.value)"
+                        [class.has-practice]="isPracticeSlot(d.key, h.value)"
+                        (click)="toggleSlotCell(d.key, h.value); markDirty()"
+                        [title]="getSlotTooltip(d.key, h.value)"
+                      >
+                        <!-- Subtle watermark when operational is open but no practice -->
+                        @if (isOperationalSlot(d.key, h.value) && !isPracticeSlot(d.key, h.value)) {
+                          <span class="slot-op-watermark">Fasilitas Buka</span>
+                        }
+
+                        <!-- Green Practice Shift Layer -->
+                        @if (isPracticeSlot(d.key, h.value)) {
+                          <div class="practice-active-layer" aria-label="Praktik Aktif">
+                            <div class="chip-glow-pill">
+                              <span class="pulse-dot"></span>
+                              <span class="chip-label">Praktik</span>
+                            </div>
+                            <i class="ri-check-line chip-check" aria-hidden="true"></i>
+                          </div>
+                        }
+
+                        <!-- Standby Highlight Layer -->
+                        @if (isSlotHighlighted(d.key, h.value) && !isPracticeSlot(d.key, h.value)) {
+                          <div class="standby-active-layer" aria-label="Standby Shift">
+                            <i class="ri-time-line" aria-hidden="true"></i>
+                            <span>Standby</span>
+                          </div>
+                        }
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </section>
+      }
+
+      <!-- Section 7: Status Akun & Verifikasi -->
+      @if (activeCategory() === 'all' || activeCategory() === 'status') {
+        <section id="section-status" class="form-card" aria-labelledby="heading-status">
+          <div class="card-section-header">
+            <div class="icon-circle blue">
+              <i class="ri-settings-4-line" aria-hidden="true"></i>
+            </div>
+            <div class="section-title-wrap">
+              <h2 id="heading-status" class="section-title">Status Akun & Catatan Regulator</h2>
+              <p class="section-desc">Pengaturan keaktifan dan status moderasi PSEF Kementerian Kesehatan RI</p>
+            </div>
+            <span class="section-step-badge">Bagian 7/7</span>
+          </div>
+
+          <div class="grid-2-col">
+            <div class="form-group">
+              <label for="pharmacist-status" class="form-label">Status Keaktifan Pelayanan</label>
+              <select
+                id="pharmacist-status"
+                class="form-select"
+                [(ngModel)]="formData.status"
+                (ngModelChange)="markDirty()"
+                name="status"
+              >
+                <option value="Aktif">Aktif (Melayani Telefarmasi)</option>
+                <option value="Non-Aktif">Non-Aktif (Sementara)</option>
+                <option value="Cuti">Cuti Praktik</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="pharmacist-verification" class="form-label">Status Verifikasi Sistem PSEF</label>
+              <select
+                id="pharmacist-verification"
+                class="form-select"
+                [(ngModel)]="formData.verification"
+                (ngModelChange)="markDirty()"
+                name="verification"
+              >
+                <option value="Terverifikasi">Terverifikasi Resmi</option>
+                <option value="Menunggu Verifikasi">Menunggu Verifikasi</option>
+                <option value="Ditolak">Ditolak / Perlu Perbaikan</option>
+              </select>
+            </div>
+
+            <div class="form-group full-width">
+              <label for="pharmacist-notes" class="form-label">Catatan Verifikator & Regulator</label>
+              <textarea
+                id="pharmacist-notes"
+                rows="2"
+                class="form-control"
+                [(ngModel)]="formData.notes"
+                (ngModelChange)="markDirty()"
+                name="notes"
+                placeholder="Catatan validasi perizinan SIPA / STRA..."
+              ></textarea>
+            </div>
+          </div>
+        </section>
+      }
+    </main>
+
+    <!-- RIGHT STICKY SIDEBAR: Live Card Preview & Completeness Checklist -->
+    <aside class="form-sticky-sidebar">
+      <!-- Live Preview: Kartu Digital Apoteker (SIP / KTA Digital) -->
+      <div class="sidebar-card live-id-card-wrapper">
+        <div class="sidebar-card-header">
+          <div class="card-header-title">
+            <i class="ri-shield-user-fill text-emerald" aria-hidden="true"></i>
+            <span>Pratinjau KTA Digital PSEF</span>
+          </div>
+          <span class="live-pill-badge">Live Preview</span>
+        </div>
+
+        <div class="digital-pharmacist-badge">
+          <!-- Emblem & Header -->
+          <div class="badge-head">
+            <div class="emblem-group">
+              <i class="ri-heart-pulse-fill emblem-icon" aria-hidden="true"></i>
+              <div>
+                <span class="badge-republic-text">KEMENTERIAN KESEHATAN RI</span>
+                <span class="badge-title-text">KREDENSIAL APOTEKER PSEF</span>
+              </div>
+            </div>
+            <span class="badge-security-seal">
+              <i class="ri-qr-code-line" aria-hidden="true"></i>
+            </span>
+          </div>
+
+          <!-- Badge Body with Avatar & Live Text -->
+          <div class="badge-body">
+            <div class="badge-avatar-wrap">
+              <img
+                [src]="avatarPreview() || formData.avatar"
+                [alt]="formData.name"
+                class="badge-avatar-img"
+              />
+              <span class="badge-verified-seal" title="Terverifikasi Resmi">
+                <i class="ri-check-line" aria-hidden="true"></i>
+              </span>
+            </div>
+
+            <div class="badge-text-details">
+              <h3 class="badge-pharmacist-name">{{ formData.name || 'Nama Apoteker' }}</h3>
+              <span class="badge-role-title">{{ formData.roleTag || 'Apoteker Penanggung Jawab' }}</span>
+
+              <div class="badge-meta-grid">
+                <div class="meta-row">
+                  <span class="m-label">SIPA:</span>
+                  <span class="m-val font-mono">{{ formData.sipa || '-' }}</span>
+                </div>
+                <div class="meta-row">
+                  <span class="m-label">STRA:</span>
+                  <span class="m-val font-mono">{{ formData.stra || '-' }}</span>
+                </div>
+                <div class="meta-row full">
+                  <span class="m-label">Faskes:</span>
+                  <span class="m-val">{{ formData.facility }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Badge Footer -->
+          <div class="badge-footer">
+            <div class="badge-schedule-preview">
+              <i class="ri-time-line" aria-hidden="true"></i>
+              <span>{{ formData.practiceSchedule || 'Senin - Sabtu' }}</span>
+            </div>
+            <span class="badge-status-tag" [ngClass]="formData.status.toLowerCase()">
+              {{ formData.status }}
+            </span>
+          </div>
+        </div>
+
+        <p class="live-card-caption">
+          <i class="ri-information-line" aria-hidden="true"></i>
+          Data kartu digital otomatis tersinkronisasi saat Anda mengetik di formulir.
+        </p>
+      </div>
+
+      <!-- Completeness Checklist Widget -->
+      <div class="sidebar-card checklist-widget">
+        <div class="sidebar-card-header">
+          <div class="card-header-title">
+            <i class="ri-checkbox-multiple-line text-blue" aria-hidden="true"></i>
+            <span>Checklist Kelengkapan</span>
+          </div>
+          <span class="checklist-count font-mono">{{ profileCompleteness.completedCount }}/{{ profileCompleteness.totalCount }}</span>
+        </div>
+
+        <div class="checklist-items-stream">
+          @for (item of profileCompleteness.checklist; track item.key) {
+            <button
+              type="button"
+              class="checklist-item-row"
+              [class.done]="item.valid"
+              (click)="scrollToSection(item.sectionId)"
+              title="Klik untuk menuju bidang {{ item.label }}"
+            >
+              <div class="check-icon-circle">
+                @if (item.valid) {
+                  <i class="ri-check-line" aria-hidden="true"></i>
+                } @else {
+                  <i class="ri-circle-line" aria-hidden="true"></i>
+                }
+              </div>
+              <span class="check-label">{{ item.label }}</span>
+              <i class="ri-arrow-right-s-line arrow-nav" aria-hidden="true"></i>
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Quick Tips & Help Card -->
+      <div class="sidebar-card help-tips-card">
+        <div class="tips-header">
+          <i class="ri-lightbulb-line tips-icon" aria-hidden="true"></i>
+          <strong>Panduan Pengisian Profil</strong>
+        </div>
+        <ul class="tips-list">
+          <li>Pastikan nama dan NIK cocok dengan basis data <strong>Kemenkes SatuSehat</strong>.</li>
+          <li>SIPA wajib diterbitkan oleh Dinas Kesehatan di domisili faskes bertugas.</li>
+          <li>Jadwal Praktik apoteker harus berada di dalam rentang jam operasional fasilitas.</li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Floating Sticky Action Bar at Bottom -->
+    <div class="sticky-form-footer">
+      <div class="footer-inner-container">
+        <div class="footer-left-status">
+          @if (isDirty()) {
+            <span class="dirty-notice">
+              <i class="ri-edit-line text-amber" aria-hidden="true"></i>
+              <span>Terdapat perubahan yang belum disimpan</span>
+            </span>
+          } @else {
+            <span class="clean-notice">
+              <i class="ri-check-line text-emerald" aria-hidden="true"></i>
+              <span>Semua data tersinkronisasi</span>
+            </span>
+          }
+        </div>
+
+        <div class="footer-right-buttons">
+          <button
+            type="button"
+            class="btn-footer-cancel"
+            (click)="goBack()"
+          >
+            <i class="ri-close-line" aria-hidden="true"></i>
+            <span>Batal</span>
+          </button>
+
+          <button
+            type="submit"
+            class="btn-footer-save"
+            [disabled]="isSubmitting()"
+          >
+            @if (isSubmitting()) {
+              <i class="ri-loader-4-line ri-spin" aria-hidden="true"></i>
+              <span>Menyimpan Perubahan...</span>
+            } @else {
+              <i class="ri-save-3-line" aria-hidden="true"></i>
+              <span>Simpan Perubahan Profil</span>
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- Modal Bantuan Mutasi Faskes -->
+@if (showFacilityHelpModal()) {
+  <div class="modal-overlay" (click)="toggleFacilityHelpModal()" role="dialog" aria-modal="true">
+    <div class="modal-dialog-box" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <i class="ri-store-2-line text-teal" aria-hidden="true"></i>
+          <h3>Alur Pembaruan & Mutasi Fasilitas Kefarmasian</h3>
+        </div>
+        <button type="button" class="btn-close-modal" (click)="toggleFacilityHelpModal()" aria-label="Tutup">
+          <i class="ri-close-line" aria-hidden="true"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <p>Berdasarkan Peraturan Menteri Kesehatan RI tentang Penyelenggaraan Sistem Elektronik Farmasi (PSEF):</p>
+        <div class="help-step-item">
+          <span class="step-num">1</span>
+          <div>
+            <strong>Persetujuan Administrator Fasilitas</strong>
+            <p>Admin Apotek / Faskes pengusul harus mendaftarkan mutasi penugasan apoteker pada portal faskes.</p>
+          </div>
+        </div>
+        <div class="help-step-item">
+          <span class="step-num">2</span>
+          <div>
+            <strong>Penyesuaian SIPA Faskes</strong>
+            <p>SIPA harus mencantumkan alamat faskes tempat apoteker bertugas secara resmi dari Dinkes.</p>
+          </div>
+        </div>
+        <div class="help-step-item">
+          <span class="step-num">3</span>
+          <div>
+            <strong>Verifikasi Regulator Kemenkes</strong>
+            <p>Tim verifikator Ditjen Farmalkes Kemenkes akan menyetujui mutasi faskes dalam 1x24 jam kerja.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-primary" (click)="toggleFacilityHelpModal()">
+          Saya Mengerti
+        </button>
+      </div>
+    </div>
+  </div>
+}

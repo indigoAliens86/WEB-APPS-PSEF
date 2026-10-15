@@ -1,0 +1,209 @@
+:host {
+    display: block;
+    height: 100%;
+    min-height: 0;
+    background-color: #fff;
+}
+
+.sidebar {
+    height: 100%;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    scroll-behavior: smooth;
+    scrollbar-color: transparent transparent;
+    scrollbar-width: thin;
+    padding: 1.5rem 1rem;
+    background-color: #fff;
+    border-right: 1px solid #e9e9f0;
+}
+
+.sidebar:hover {
+    scrollbar-color: #cbd5d5 transparent;
+}
+
+.sidebar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background-color: transparent;
+    transition: background-color 180ms ease;
+}
+
+.sidebar:hover::-webkit-scrollbar-thumb {
+    background-color: #cbd5d5;
+}
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0 0 2rem;
+    padding: 0 0.75rem;
+    color: #163b3a;
+    font-size: 1.125rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.brand-mark {
+    display: grid;
+    width: 2.25rem;
+    height: 2.25rem;
+    place-items: center;
+    border-radius: 0.75rem;
+    background-color: #e6f4f1;
+    color: #148477;
+    font-size: 1.25rem;
+}
+
+.menu-group + .menu-group {
+    margin-top: 1.5rem;
+}
+
+.menu-heading {
+    margin: 0 0 0.5rem;
+    padding: 0 0.75rem;
+    color: #9292a6;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.menu-link {
+    display: flex;
+    min-height: 2.75rem;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0.125rem 0;
+    padding: 0.625rem 0.75rem;
+    border-radius: 0.625rem;
+    color: #626276;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: background-color 150ms ease, color 150ms ease;
+}
+
+.menu-link > i {
+    font-size: 1.125rem;
+}
+
+.menu-link:hover {
+    background-color: #eff8f6;
+    color: #14796f;
+}
+
+.menu-link.active {
+    background-color: #f0f8f6;
+    color: #0AB39C;
+    font-weight: 500;
+}
+
+.menu-link-child {
+    margin-left: 1.5rem;
+    min-height: 2.5rem;
+    font-size: 0.85rem;
+}
+
+:host(.sidebar-compact) .sidebar {
+    padding-right: 0.5rem;
+    padding-left: 0.5rem;
+}
+
+:host(.sidebar-compact) .sidebar-brand {
+    justify-content: center;
+    padding-right: 0;
+    padding-left: 0;
+}
+
+:host(.sidebar-compact) .brand-label,
+:host(.sidebar-compact) .menu-heading,
+:host(.sidebar-compact) .menu-link > span {
+    display: none;
+}
+
+:host(.sidebar-compact) .menu-link,
+:host(.sidebar-compact) .menu-link-child {
+    justify-content: center;
+    margin-right: 0;
+    margin-left: 0;
+    padding-right: 0;
+    padding-left: 0;
+}
+
+:host(.sidebar-compact) .menu-link > i {
+    font-size: 1.25rem;
+}
+
+:host-context(html.dark-theme) .sidebar,
+:host-context(html.dark-theme) {
+    border-right-color: #29383d;
+    background-color: #172327;
+}
+
+:host-context(html.dark-theme) .sidebar:hover {
+    scrollbar-color: #526568 transparent;
+}
+
+:host-context(html.dark-theme) .sidebar:hover::-webkit-scrollbar-thumb {
+    background-color: #526568;
+}
+
+:host-context(html.dark-theme) .sidebar-brand {
+    color: #e4ebed;
+}
+
+:host-context(html.dark-theme) .menu-heading {
+    color: #9aabad;
+}
+
+:host-context(html.dark-theme) .menu-link {
+    color: #c4cecf;
+}
+
+:host-context(html.dark-theme) .menu-link:hover,
+:host-context(html.dark-theme) .menu-link.active {
+    background-color: #263b3e;
+    color: #39c6ad;
+}
+
+@media (max-width: 768px) {
+    :host(.sidebar-compact) .sidebar {
+        padding: 1.5rem 1rem;
+    }
+
+    :host(.sidebar-compact) .sidebar-brand {
+        justify-content: flex-start;
+        padding-right: 0.75rem;
+        padding-left: 0.75rem;
+    }
+
+    :host(.sidebar-compact) .brand-label,
+    :host(.sidebar-compact) .menu-heading,
+    :host(.sidebar-compact) .menu-link > span {
+        display: initial;
+    }
+
+    :host(.sidebar-compact) .menu-heading {
+        display: block;
+    }
+
+    :host(.sidebar-compact) .menu-link {
+        justify-content: flex-start;
+        margin-right: 0;
+        margin-left: 0;
+        padding: 0.625rem 0.75rem;
+    }
+
+    :host(.sidebar-compact) .menu-link-child {
+        margin-left: 1.5rem;
+        padding: 0.625rem 0.75rem;
+    }
+}

@@ -1,0 +1,447 @@
+<div class="banner-detail-page" *ngIf="banner() as b">
+  <!-- Top Navigation & Actions Bar -->
+  <header class="detail-header">
+    <div class="header-breadcrumb-area">
+      <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+        <a (click)="goBack()" class="breadcrumb-link"><i class="ri-home-4-line"></i> Konten & Regulasi</a>
+        <i class="ri-arrow-right-s-line separator"></i>
+        <a (click)="goBack()" class="breadcrumb-link">Banner Promosi</a>
+        <i class="ri-arrow-right-s-line separator"></i>
+        <span class="breadcrumb-current">Detail Banner #{{ b.id }}</span>
+      </nav>
+
+      <div class="title-with-badge">
+        <div class="header-icon-box">
+          <i class="ri-slideshow-3-line"></i>
+        </div>
+        <div>
+          <div class="title-row">
+            <h1 class="page-title">{{ b.judul }}</h1>
+            <span
+              class="status-chip"
+              [class.active]="b.status === 'Aktif'"
+              [class.inactive]="b.status === 'Nonaktif'"
+            >
+              <span class="dot"></span>
+              <span>{{ b.status }}</span>
+            </span>
+          </div>
+          <p class="page-subtitle">{{ b.posisi }} • Slot Tayang Urutan #{{ b.urutan }} • Periode {{ b.tanggalMulai }} s/d {{ b.tanggalSelesai }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button type="button" class="btn btn-outline" (click)="goBack()">
+        <i class="ri-arrow-left-line"></i>
+        <span>Kembali</span>
+      </button>
+
+      <button
+        type="button"
+        class="btn btn-outline"
+        (click)="toggleStatus()"
+        [title]="b.status === 'Aktif' ? 'Nonaktifkan Banner' : 'Aktifkan Banner'"
+      >
+        <i [class]="b.status === 'Aktif' ? 'ri-pause-circle-line' : 'ri-play-circle-line'"></i>
+        <span>{{ b.status === 'Aktif' ? 'Arsipkan' : 'Aktifkan' }}</span>
+      </button>
+
+      <button type="button" class="btn btn-danger-soft" (click)="deleteBanner()">
+        <i class="ri-delete-bin-line"></i>
+        <span>Hapus</span>
+      </button>
+
+      <button type="button" class="btn btn-primary" (click)="goToEdit()">
+        <i class="ri-edit-line"></i>
+        <span>Edit Banner</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Copied Link Toast -->
+  <div *ngIf="copiedAlert()" class="toast-copied-alert">
+    <i class="ri-checkbox-circle-fill"></i>
+    <span>Target Deep Link ({{ b.targetUrl }}) berhasil disalin ke clipboard!</span>
+  </div>
+
+  <!-- Showcase Hero Banner Card -->
+  <section class="showcase-card">
+    <div class="showcase-header">
+      <div class="showcase-header-left">
+        <span class="section-tag"><i class="ri-eye-line"></i> Pratinjau Visual Banner Penuh</span>
+        <span class="text-muted">Simulasi tampilan nyata pada aplikasi pengguna</span>
+      </div>
+
+      <div class="device-switcher">
+        <button
+          type="button"
+          class="btn-device-switch"
+          [class.active]="previewDevice() === 'desktop'"
+          (click)="previewDevice.set('desktop')"
+          title="Tampilan Desktop / Tablet (Wide)"
+        >
+          <i class="ri-macbook-line"></i>
+          <span>Desktop</span>
+        </button>
+        <button
+          type="button"
+          class="btn-device-switch"
+          [class.active]="previewDevice() === 'mobile'"
+          (click)="previewDevice.set('mobile')"
+          title="Tampilan Mobile Phone (Smartphone)"
+        >
+          <i class="ri-smartphone-line"></i>
+          <span>Mobile Phone</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Simulator Viewport -->
+    <div class="showcase-viewport">
+      <div
+        class="hero-banner-display"
+        [class.mobile-screen]="previewDevice() === 'mobile'"
+        [style.background]="b.gradientBg"
+      >
+        <div class="hero-text-container">
+          <div class="hero-slot-badge">
+            <i class="ri-bookmark-3-fill"></i>
+            <span>{{ b.posisi }}</span>
+          </div>
+          <h2 class="hero-main-title">{{ b.judul }}</h2>
+          <p class="hero-sub-text">{{ b.subjudul }}</p>
+
+          <div class="hero-action-row">
+            <button type="button" class="btn-hero-cta">
+              <span>{{ b.ctaText || 'Lihat Penawaran' }}</span>
+              <i class="ri-arrow-right-line"></i>
+            </button>
+            <button type="button" class="btn-copy-target" (click)="copyLink()">
+              <i class="ri-file-copy-line"></i>
+              <span class="font-mono">{{ b.targetUrl }}</span>
+            </button>
+          </div>
+        </div>
+
+        <img [src]="b.imageUrl" [alt]="b.judul" class="hero-graphic-image" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Key Performance Analytics Cards -->
+  <section class="kpi-grid">
+    <div class="kpi-card kpi-blue">
+      <div class="kpi-icon-box"><i class="ri-cursor-line"></i></div>
+      <div class="kpi-info">
+        <span class="kpi-val">{{ b.totalKlik.toLocaleString('id-ID') }}</span>
+        <span class="kpi-lbl">Total Klik Pasien</span>
+      </div>
+      <span class="kpi-badge">+12.5% bln ini</span>
+    </div>
+
+    <div class="kpi-card kpi-indigo">
+      <div class="kpi-icon-box"><i class="ri-eye-line"></i></div>
+      <div class="kpi-info">
+        <span class="kpi-val">{{ b.totalImpresi.toLocaleString('id-ID') }}</span>
+        <span class="kpi-lbl">Total Impresi Tampil</span>
+      </div>
+      <span class="kpi-badge">Tayang di Home</span>
+    </div>
+
+    <div class="kpi-card kpi-emerald">
+      <div class="kpi-icon-box"><i class="ri-percent-line"></i></div>
+      <div class="kpi-info">
+        <span class="kpi-val">{{ calculatedCtr }}</span>
+        <span class="kpi-lbl">Click-Through Rate (CTR)</span>
+      </div>
+      <span class="kpi-badge emerald-badge">Sangat Baik</span>
+    </div>
+
+    <div class="kpi-card kpi-amber">
+      <div class="kpi-icon-box"><i class="ri-list-ordered"></i></div>
+      <div class="kpi-info">
+        <span class="kpi-val">Slot #{{ b.urutan }}</span>
+        <span class="kpi-lbl">Prioritas Urutan Tampil</span>
+      </div>
+      <span class="kpi-badge">Rotasi Otomatis</span>
+    </div>
+  </section>
+
+  <!-- Detailed Specifications Grid (2 Columns) -->
+  <div class="specs-grid">
+    <!-- Column 1: Konfigurasi Navigasi & Posisi -->
+    <section class="specs-card">
+      <div class="card-header">
+        <div class="card-header-icon blue"><i class="ri-settings-4-line"></i></div>
+        <div>
+          <h3 class="card-title">Konfigurasi Penayangan & Navigasi</h3>
+          <p class="card-desc">Parameter penempatan slot dan tujuan deep link pengguna</p>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div class="spec-item">
+          <span class="spec-label">Posisi Penayangan</span>
+          <span class="spec-value highlight-posisi"><i class="ri-layout-top-line"></i> {{ b.posisi }}</span>
+        </div>
+
+        <div class="spec-item">
+          <span class="spec-label">Urutan Tampil (Priority Slot)</span>
+          <span class="spec-value font-mono">Urutan Slot ke-{{ b.urutan }}</span>
+        </div>
+
+        <div class="spec-item">
+          <span class="spec-label">Target Deep Link Aplikasi</span>
+          <div class="spec-value-group">
+            <span class="spec-value font-mono deeplink-box">{{ b.targetUrl }}</span>
+            <button type="button" class="btn-mini-copy" (click)="copyLink()" title="Salin Link">
+              <i class="ri-file-copy-line"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="spec-item">
+          <span class="spec-label">Teks Tombol Aksi (CTA)</span>
+          <span class="spec-value font-semibold">{{ b.ctaText || 'Lihat Penawaran' }}</span>
+        </div>
+
+        <div class="spec-item">
+          <span class="spec-label">Status Visibilitas</span>
+          <span class="status-pill" [class.active]="b.status === 'Aktif'">
+            <span class="dot"></span>
+            {{ b.status === 'Aktif' ? 'Aktif (Sedang Tayang)' : 'Nonaktif (Arsip)' }}
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Column 2: Media Visual & Periode -->
+    <section class="specs-card">
+      <div class="card-header">
+        <div class="card-header-icon purple"><i class="ri-image-2-line"></i></div>
+        <div>
+          <h3 class="card-title">Spesifikasi Media Visual & Jadwal</h3>
+          <p class="card-desc">Informasi berkas visual banner dan tanggal masa aktif promo</p>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <!-- Visual Image Preview -->
+        <div class="spec-media-thumb">
+          <img [src]="b.imageUrl" [alt]="b.judul" class="media-thumb-img" />
+          <div class="media-thumb-overlay">
+            <a [href]="b.imageUrl" target="_blank" class="btn-view-full-img">
+              <i class="ri-external-link-line"></i> Buka Gambar Resolusi Penuh
+            </a>
+          </div>
+        </div>
+
+        <div class="spec-item mt-2">
+          <span class="spec-label">Gradien Warna Latar</span>
+          <div class="gradient-spec-row">
+            <span class="gradient-swatch" [style.background]="b.gradientBg"></span>
+            <span class="spec-value font-mono text-xs">{{ b.gradientBg }}</span>
+          </div>
+        </div>
+
+        <div class="spec-item">
+          <span class="spec-label">Periode Penayangan</span>
+          <span class="spec-value">
+            <i class="ri-calendar-event-line"></i> {{ b.tanggalMulai }} — {{ b.tanggalSelesai }}
+          </span>
+        </div>
+
+        <div class="spec-item">
+          <span class="spec-label">ID Banner & Audit Log</span>
+          <span class="spec-value font-mono">ID: #{{ b.id }} • Sistem PSEF Verified</span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Modal Konfirmasi Nonaktifkan / Hapus Banner (Anti-Analytics Disruption) -->
+  <div *ngIf="showDeleteModal() && banner() as targetBan" class="modal-backdrop" (click)="closeDeleteModal()">
+    <div class="modal-dialog modal-ban-delete" (click)="$event.stopPropagation()">
+      <!-- Modal Header -->
+      <div class="modal-header delete-modal-header">
+        <div class="delete-icon-pulse" [class.danger]="deleteMode() === 'permanent'">
+          <i [class]="deleteMode() === 'deactivate' ? 'ri-archive-line' : 'ri-delete-bin-7-line'"></i>
+        </div>
+        <div class="delete-header-titles">
+          <h4 class="modal-title" [class.text-amber]="deleteMode() === 'deactivate'" [class.text-danger]="deleteMode() === 'permanent'">
+            {{ deleteMode() === 'deactivate' ? 'Nonaktifkan Banner Promosi?' : 'Hapus Banner Permanen?' }}
+          </h4>
+          <p class="modal-subtitle">Kelola status penayangan banner dengan perlindungan data analitik kampanye PSEF</p>
+        </div>
+        <button type="button" class="btn-close" (click)="closeDeleteModal()" [disabled]="isProcessing()">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body delete-modal-body">
+        <!-- Target Banner Visual Preview Card -->
+        <div class="ban-preview-delete-card">
+          <div class="ban-preview-thumb-box" [style.background]="targetBan.gradientBg">
+            <img [src]="targetBan.imageUrl" [alt]="targetBan.judul" class="ban-preview-thumb-img" />
+            <span class="ban-preview-slot-tag">{{ targetBan.posisi }}</span>
+          </div>
+
+          <div class="ban-preview-info">
+            <div class="ban-preview-tags">
+              <span class="preview-slot-badge">{{ targetBan.posisi }}</span>
+              <span class="preview-status-pill" [class.status-aktif]="targetBan.status === 'Aktif'" [class.status-nonaktif]="targetBan.status === 'Nonaktif'">
+                {{ targetBan.status === 'Aktif' ? 'Aktif (Tayang)' : 'Nonaktif (Arsip)' }}
+              </span>
+            </div>
+            <h5 class="ban-preview-title">{{ targetBan.judul }}</h5>
+            <p class="ban-preview-sub">{{ targetBan.subjudul }}</p>
+            <div class="ban-preview-link font-mono">
+              <i class="ri-links-line"></i> {{ targetBan.targetUrl }}
+            </div>
+
+            <!-- Prominent Campaign Analytics Highlight -->
+            <div class="ban-analytics-pill-box">
+              <div class="analytics-stat">
+                <i class="ri-eye-fill stat-icon text-indigo"></i>
+                <span class="stat-num font-mono">{{ targetBan.totalImpresi.toLocaleString('id-ID') }}</span>
+                <span class="stat-lbl">Impresi Tampil</span>
+              </div>
+              <div class="stat-divider"></div>
+              <div class="analytics-stat">
+                <i class="ri-cursor-fill stat-icon text-emerald"></i>
+                <span class="stat-num font-mono">{{ targetBan.totalKlik.toLocaleString('id-ID') }}</span>
+                <span class="stat-lbl">Total Klik</span>
+              </div>
+              <div class="stat-divider"></div>
+              <div class="analytics-stat">
+                <i class="ri-percent-fill stat-icon text-amber"></i>
+                <span class="stat-num font-mono">{{ calculatedCtr }}</span>
+                <span class="stat-lbl">Rata-rata CTR</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Analytics Protection Callout Box -->
+        <div class="analytics-notice-box" [class.warning-border]="deleteMode() === 'permanent'">
+          <div class="notice-icon-box" [class.danger-bg]="deleteMode() === 'permanent'">
+            <i [class]="deleteMode() === 'deactivate' ? 'ri-shield-star-line' : 'ri-error-warning-fill'"></i>
+          </div>
+          <div class="notice-text-content">
+            <h6 class="notice-title">
+              {{ deleteMode() === 'deactivate' ? 'Perlindungan Metrik & Analitik Kampanye Promosi' : 'Peringatan Kehilangan Data Kampanye' }}
+            </h6>
+            <p class="notice-desc" *ngIf="deleteMode() === 'deactivate'">
+              Dengan <strong>menonaktifkan</strong>, banner langsung ditarik dari peredaran publik, namun 
+              <strong>{{ targetBan.totalImpresi.toLocaleString('id-ID') }} impresi</strong> dan 
+              <strong>{{ targetBan.totalKlik.toLocaleString('id-ID') }} klik (CTR {{ calculatedCtr }})</strong> 
+              <strong>tetap utuh tersimpan</strong> untuk pelaporan efektivitas promosi. Banner dapat diaktifkan kembali sewaktu-waktu.
+            </p>
+            <p class="notice-desc text-danger-text" *ngIf="deleteMode() === 'permanent'">
+              Menghapus permanen akan <strong>menghilangkan total {{ targetBan.totalImpresi.toLocaleString('id-ID') }} impresi dan {{ targetBan.totalKlik.toLocaleString('id-ID') }} klik</strong> 
+              serta riwayat CTR kampanye dari dashboard secara permanen. Tindakan ini tidak dapat dibatalkan!
+            </p>
+          </div>
+        </div>
+
+        <!-- Mode Selection Options -->
+        <div class="delete-options-group">
+          <div
+            class="action-choice-card"
+            role="button"
+            tabindex="0"
+            [class.selected]="deleteMode() === 'deactivate'"
+            (click)="setDeleteMode('deactivate')"
+            (keydown.enter)="setDeleteMode('deactivate')"
+            (keydown.space)="setDeleteMode('deactivate')"
+          >
+            <div class="choice-indicator radio-amber"></div>
+            <div class="choice-content">
+              <div class="choice-header-row">
+                <span class="choice-title">Nonaktifkan / Arsipkan Banner</span>
+                <span class="recommend-badge"><i class="ri-star-fill"></i> Disarankan</span>
+              </div>
+              <p class="choice-desc">
+                Tarik dari slider & halaman promosi aplikasi tanpa menghapus riwayat impresi, klik, dan performa kampanye PSEF.
+              </p>
+            </div>
+          </div>
+
+          <div
+            class="action-choice-card"
+            role="button"
+            tabindex="0"
+            [class.selected]="deleteMode() === 'permanent'"
+            (click)="setDeleteMode('permanent')"
+            (keydown.enter)="setDeleteMode('permanent')"
+            (keydown.space)="setDeleteMode('permanent')"
+          >
+            <div class="choice-indicator radio-danger"></div>
+            <div class="choice-content">
+              <div class="choice-header-row">
+                <span class="choice-title text-danger">Hapus Permanen dari Basis Data</span>
+                <span class="danger-badge">Merusak Analitik</span>
+              </div>
+              <p class="choice-desc">
+                Hanya gunakan jika banner adalah kesalahan pembuatan atau banner uji coba yang belum pernah ditayangkan ke pasien.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer delete-modal-footer">
+        <button
+          id="btn-cancel-ban-detail-action"
+          type="button"
+          class="btn btn-outline"
+          (click)="closeDeleteModal()"
+          [disabled]="isProcessing()"
+        >
+          Batal
+        </button>
+
+        <!-- Button changes based on selected mode -->
+        <button
+          *ngIf="deleteMode() === 'deactivate'"
+          id="btn-confirm-ban-detail-action"
+          type="button"
+          class="btn btn-warning-action"
+          (click)="confirmAction()"
+          [disabled]="isProcessing()"
+        >
+          <i [class]="isProcessing() ? 'ri-loader-4-line ri-spin' : 'ri-archive-line'"></i>
+          <span>{{ isProcessing() ? 'Memproses...' : 'Nonaktifkan Banner' }}</span>
+        </button>
+
+        <button
+          *ngIf="deleteMode() === 'permanent'"
+          id="btn-confirm-ban-detail-action"
+          type="button"
+          class="btn btn-danger-action"
+          (click)="confirmAction()"
+          [disabled]="isProcessing()"
+        >
+          <i [class]="isProcessing() ? 'ri-loader-4-line ri-spin' : 'ri-delete-bin-line'"></i>
+          <span>{{ isProcessing() ? 'Menghapus...' : 'Ya, Hapus Permanen' }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Feedback -->
+  <div *ngIf="toastMessage()" class="banner-toast" [class]="'toast-' + toastType()">
+    <div class="toast-icon">
+      <i [class]="toastType() === 'success' ? 'ri-checkbox-circle-fill' : toastType() === 'danger' ? 'ri-error-warning-fill' : 'ri-information-fill'"></i>
+    </div>
+    <div class="toast-content">
+      <p class="toast-text">{{ toastMessage() }}</p>
+    </div>
+    <button type="button" class="toast-close" (click)="toastMessage.set('')">
+      <i class="ri-close-line"></i>
+    </button>
+  </div>
+</div>

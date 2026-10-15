@@ -1,0 +1,12 @@
+body {
+    background-color: #f3f3f9;
+}
+
+.layout-width{
+    max-width: 1440px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;;
+    padding-left: 16px;
+    padding-right: 16px;
+}

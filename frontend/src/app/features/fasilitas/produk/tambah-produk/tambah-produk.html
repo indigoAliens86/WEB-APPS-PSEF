@@ -1,0 +1,632 @@
+<div class="tambah-produk-page">
+  <!-- Top Navigation & Header -->
+  <div class="top-nav-bar">
+    <button type="button" class="btn-back" (click)="goBack()" aria-label="Kembali ke Daftar Produk">
+      <i class="ri-arrow-left-line"></i>
+      <span>Kembali ke Daftar Produk</span>
+    </button>
+  </div>
+
+  <header class="page-header">
+    <div class="header-titles">
+      <h1 class="page-title">Tambah Produk ke Inventaris Apotek</h1>
+      <p class="page-subtitle">
+        Pilih metode penambahan produk: gunakan referensi resmi Master Katalog BPOM/KFA atau input manual produk apotek
+      </p>
+    </div>
+  </header>
+
+  <!-- METHOD SELECTION CARDS (2 PILIHAN METODE) -->
+  <section class="mode-selector-grid" aria-label="Pilihan Metode Penambahan Produk">
+    <!-- Option 1: Master Catalog -->
+    <div
+      class="mode-card"
+      [class.active]="activeMode() === 'katalog'"
+      (click)="setMode('katalog')"
+      role="button"
+      tabindex="0"
+    >
+      <div class="mode-badge-rec">Rekomendasi PSEF</div>
+      <div class="mode-icon-wrapper katalog-icon">
+        <i class="ri-database-2-line"></i>
+      </div>
+      <div class="mode-info">
+        <h3 class="mode-name">Ambil dari Master Katalog PSEF</h3>
+        <p class="mode-desc">
+          Gunakan data identitas obat, NIE BPOM, dan informasi klinis yang telah divalidasi oleh Admin Pusat. Apotek Anda hanya perlu menentukan harga jual dan stok fisik.
+        </p>
+      </div>
+      <div class="mode-radio">
+        <div class="radio-circle" [class.checked]="activeMode() === 'katalog'"></div>
+      </div>
+    </div>
+
+    <!-- Option 2: Manual -->
+    <div
+      class="mode-card"
+      [class.active]="activeMode() === 'manual'"
+      (click)="setMode('manual')"
+      role="button"
+      tabindex="0"
+    >
+      <div class="mode-icon-wrapper manual-icon">
+        <i class="ri-edit-box-line"></i>
+      </div>
+      <div class="mode-info">
+        <h3 class="mode-name">Tambah Produk Manual</h3>
+        <p class="mode-desc">
+          Input produk racikan internal, sediaan herbal lokal, atau suplemen yang belum tercatat pada Master Katalog PSEF.
+        </p>
+      </div>
+      <div class="mode-radio">
+        <div class="radio-circle" [class.checked]="activeMode() === 'manual'"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================== -->
+  <!-- MODE 1: AMBIL DARI MASTER KATALOG                               -->
+  <!-- ============================================================== -->
+  @if (activeMode() === 'katalog') {
+    <div class="katalog-flow-container">
+      @if (!selectedCatalogItem()) {
+        <!-- STEP 1: PILIH PRODUK DARI MASTER KATALOG -->
+        <section class="catalog-browser-card">
+          <div class="browser-header">
+            <div>
+              <h2 class="section-title">
+                <i class="ri-search-eye-line"></i>
+                Langkah 1: Pilih Produk dari Master Katalog BPOM/KFA
+              </h2>
+              <p class="section-subtitle">
+                Cari produk referensi resmi yang ingin didaftarkan ke apotek Anda
+              </p>
+            </div>
+
+            <!-- Toolbar Filter -->
+            <div class="catalog-filters">
+              <div class="search-wrap">
+                <i class="ri-search-line"></i>
+                <input
+                  type="text"
+                  placeholder="Cari nama produk, zat aktif, atau NIE BPOM..."
+                  [ngModel]="catalogSearch()"
+                  (ngModelChange)="catalogSearch.set($event)"
+                />
+              </div>
+
+              <div class="select-wrap">
+                <select
+                  [ngModel]="catalogCategory()"
+                  (ngModelChange)="catalogCategory.set($event)"
+                >
+                  @for (cat of categories; track cat) {
+                    <option [value]="cat">{{ cat }}</option>
+                  }
+                </select>
+                <i class="ri-arrow-down-s-line"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Catalog Grid -->
+          <div class="catalog-items-grid">
+            @for (item of filteredCatalog(); track item.code) {
+              <article class="catalog-card">
+                <div class="card-thumb-wrap">
+                  <img
+                    [src]="item.thumbnail"
+                    [alt]="item.name"
+                    class="catalog-thumb"
+                    onerror="this.src='assets/images/thumbnail/ibuprofen.svg'"
+                  />
+                  <span class="catalog-cat-tag">{{ item.category }}</span>
+                </div>
+
+                <div class="card-body">
+                  <h4 class="catalog-prod-name">{{ item.name }}</h4>
+                  <span class="catalog-bpom">
+                    <i class="ri-shield-check-line"></i> NIE: {{ item.bpomNumber }}
+                  </span>
+                  <p class="catalog-active-ing">
+                    <strong>Zat Aktif:</strong> {{ item.activeIngredients }}
+                  </p>
+                  <span class="catalog-mfr">{{ item.manufacturer }}</span>
+
+                  <div class="suggested-prices">
+                    <div class="price-hint">
+                      <span class="hint-label">HPP Acuan</span>
+                      <strong class="hint-val">Rp {{ item.suggestedHpp | number }}</strong>
+                    </div>
+                    <div class="price-hint">
+                      <span class="hint-label">HET Acuan</span>
+                      <strong class="hint-val text-teal">Rp {{ item.suggestedHET | number }}</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card-footer">
+                  <button
+                    type="button"
+                    class="btn-select-catalog"
+                    (click)="selectCatalogItem(item)"
+                  >
+                    <span>Pilih & Tentukan Harga</span>
+                    <i class="ri-arrow-right-line"></i>
+                  </button>
+                </div>
+              </article>
+            } @empty {
+              <div class="catalog-empty">
+                <i class="ri-search-line"></i>
+                <p>Tidak ada produk master katalog yang cocok dengan kata kunci.</p>
+                <button type="button" class="btn-switch-manual" (click)="setMode('manual')">
+                  Input Secara Manual Saja
+                </button>
+              </div>
+            }
+          </div>
+        </section>
+      } @else {
+        <!-- STEP 2: PENENTUAN HARGA & MANAJEMEN STOK -->
+        @if (selectedCatalogItem(); as sel) {
+          <section class="pricing-stock-card">
+            <!-- Selected Product Banner -->
+            <div class="selected-product-header">
+              <div class="selected-identity">
+                <img
+                  [src]="sel.thumbnail"
+                  [alt]="sel.name"
+                  class="sel-thumb"
+                  onerror="this.src='assets/images/thumbnail/ibuprofen.svg'"
+                />
+                <div class="sel-meta">
+                  <div class="sel-tags">
+                    <span class="verified-badge">
+                      <i class="ri-verified-badge-fill"></i> Terverifikasi Master Katalog
+                    </span>
+                    <span class="cat-badge">{{ sel.category }}</span>
+                  </div>
+                  <h2 class="sel-name">{{ sel.name }}</h2>
+                  <span class="sel-detail">
+                    NIE: <strong>{{ sel.bpomNumber }}</strong> • Bentuk: {{ sel.dosageForm }} • Satuan: {{ sel.unit }} • {{ sel.manufacturer }}
+                  </span>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                class="btn-change-catalog"
+                (click)="resetSelectedCatalog()"
+                title="Ganti Produk Master"
+              >
+                <i class="ri-exchange-line"></i>
+                <span>Ganti Produk</span>
+              </button>
+            </div>
+
+            <!-- Formulir Penentuan Harga & Stok -->
+            <form class="form-container" (ngSubmit)="saveKatalogProduct()">
+              <div class="form-sections-grid">
+                <!-- Section 1: Penentuan Harga -->
+                <div class="form-section-box">
+                  <h3 class="box-title">
+                    <i class="ri-money-dollar-circle-line"></i>
+                    1. Penentuan Harga Jual Apotek
+                  </h3>
+                  <div class="form-fields">
+                    <div class="form-group">
+                      <label class="field-label">
+                        Harga Pokok Beli / HPP (Rp) <span class="req">*</span>
+                      </label>
+                      <input
+                        type="number"
+                        class="field-input"
+                        placeholder="Masukkan harga beli apotek"
+                        [(ngModel)]="katalogForm.hargaBeli"
+                        name="katalogHargaBeli"
+                        required
+                        min="0"
+                      />
+                      <small class="field-hint">HPP acuan distributor: Rp {{ sel.suggestedHpp | number }}</small>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="field-label">
+                        Harga Jual Apotek (Rp) <span class="req">*</span>
+                      </label>
+                      <input
+                        type="number"
+                        class="field-input font-bold"
+                        placeholder="Tentukan harga jual ke pasien"
+                        [(ngModel)]="katalogForm.hargaJual"
+                        name="katalogHargaJual"
+                        required
+                        min="1"
+                      />
+                      <small class="field-hint">HET acuan resmi: Rp {{ sel.suggestedHET | number }}</small>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="field-label">Diskon Khusus Apotek (Rp / Opsional)</label>
+                      <input
+                        type="number"
+                        class="field-input"
+                        placeholder="Contoh: 2000"
+                        [(ngModel)]="katalogForm.diskon"
+                        name="katalogDiskon"
+                        min="0"
+                      />
+                      <small class="field-hint">Potongan harga langsung saat transaksi tebus atau checkout</small>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Section 2: Manajemen Stok & Inventaris -->
+                <div class="form-section-box">
+                  <h3 class="box-title">
+                    <i class="ri-stack-line"></i>
+                    2. Manajemen Stok & Inventaris
+                  </h3>
+                  <div class="form-fields">
+                    <div class="form-row-2">
+                      <div class="form-group">
+                        <label class="field-label">
+                          Stok Awal Fisik <span class="req">*</span>
+                        </label>
+                        <input
+                          type="number"
+                          class="field-input"
+                          [(ngModel)]="katalogForm.stokAwal"
+                          name="katalogStokAwal"
+                          required
+                          min="0"
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label class="field-label">
+                          Batas Minimum Reorder <span class="req">*</span>
+                        </label>
+                        <input
+                          type="number"
+                          class="field-input"
+                          [(ngModel)]="katalogForm.stokMin"
+                          name="katalogStokMin"
+                          required
+                          min="1"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="form-row-2">
+                      <div class="form-group">
+                        <label class="field-label">Nomor Batch / Lot</label>
+                        <input
+                          type="text"
+                          class="field-input"
+                          placeholder="BTC-2026-..."
+                          [(ngModel)]="katalogForm.batchNumber"
+                          name="katalogBatchNumber"
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label class="field-label">Tanggal Kedaluwarsa (ED)</label>
+                        <input
+                          type="date"
+                          class="field-input"
+                          [(ngModel)]="katalogForm.expiredDate"
+                          name="katalogExpiredDate"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="form-row-2">
+                      <div class="form-group">
+                        <label class="field-label">Lokasi Rak / Lemari Apotek</label>
+                        <input
+                          type="text"
+                          class="field-input"
+                          placeholder="Contoh: Rak A-02 / Kulkas 2-8°C"
+                          [(ngModel)]="katalogForm.rakLokasi"
+                          name="katalogRakLokasi"
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label class="field-label">Kode Barcode / EAN-13</label>
+                        <input
+                          type="text"
+                          class="field-input"
+                          placeholder="899..."
+                          [(ngModel)]="katalogForm.barcode"
+                          name="katalogBarcode"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Action Buttons -->
+              <footer class="form-footer-actions">
+                <button type="button" class="btn-cancel" (click)="resetSelectedCatalog()">
+                  Batal
+                </button>
+                <button type="submit" class="btn-save-primary">
+                  <i class="ri-check-line"></i>
+                  <span>Simpan & Tambahkan ke Inventaris Apotek</span>
+                </button>
+              </footer>
+            </form>
+          </section>
+        }
+      }
+    </div>
+  }
+
+  <!-- ============================================================== -->
+  <!-- MODE 2: TAMBAH PRODUK MANUAL                                   -->
+  <!-- ============================================================== -->
+  @if (activeMode() === 'manual') {
+    <section class="manual-form-card">
+      <div class="manual-header">
+        <h2 class="section-title">
+          <i class="ri-file-edit-line"></i>
+          Form Input Produk Manual
+        </h2>
+        <p class="section-subtitle">
+          Lengkapi informasi produk obat atau alkes yang belum terdaftar di Master Katalog PSEF
+        </p>
+      </div>
+
+      <form class="form-container" (ngSubmit)="saveManualProduct()">
+        <div class="manual-grid">
+          <!-- Kolom Kiri: Identitas & Informasi Produk -->
+          <div class="manual-col">
+            <h3 class="box-title">Identitas & Legalitas Produk</h3>
+
+            <div class="form-group">
+              <label class="field-label">Nama Produk Lengkap <span class="req">*</span></label>
+              <input
+                type="text"
+                class="field-input"
+                placeholder="Contoh: Salep Racikan Luka Bakar Apotek 15g"
+                [(ngModel)]="manualForm.name"
+                name="manualName"
+                required
+              />
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label class="field-label">Nama Generik / Zat Aktif</label>
+                <input
+                  type="text"
+                  class="field-input"
+                  placeholder="Contoh: Centella Asiatica & Madu"
+                  [(ngModel)]="manualForm.genericName"
+                  name="manualGenericName"
+                />
+              </div>
+              <div class="form-group">
+                <label class="field-label">Nomor Izin Edar BPOM / Registrasi <span class="req">*</span></label>
+                <input
+                  type="text"
+                  class="field-input"
+                  placeholder="Contoh: DKL1234567890A1 atau TR223..."
+                  [(ngModel)]="manualForm.bpomNumber"
+                  name="manualBpom"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label class="field-label">Kategori Produk <span class="req">*</span></label>
+                <select class="field-input" [(ngModel)]="manualForm.kategori" name="manualKategori">
+                  <option value="Obat Bebas">Obat Bebas</option>
+                  <option value="Obat Bebas Terbatas">Obat Bebas Terbatas</option>
+                  <option value="Obat Keras">Obat Keras</option>
+                  <option value="Suplemen & Vitamin">Suplemen & Vitamin</option>
+                  <option value="Herbal">Herbal</option>
+                  <option value="Alat Kesehatan">Alat Kesehatan</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="field-label">Golongan Obat <span class="req">*</span></label>
+                <select class="field-input" [(ngModel)]="manualForm.golongan" name="manualGolongan">
+                  <option value="Bebas">Bebas (Lingkaran Hijau)</option>
+                  <option value="Bebas Terbatas">Bebas Terbatas (Lingkaran Biru)</option>
+                  <option value="Keras">Keras (Lingkaran Merah K)</option>
+                  <option value="Herbal">Herbal / Jamu / Fitofarmaka</option>
+                  <option value="Alat Kesehatan">Alat Kesehatan</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label class="field-label">Bentuk Sediaan <span class="req">*</span></label>
+                <input
+                  type="text"
+                  class="field-input"
+                  placeholder="Contoh: Tablet / Kapsul / Salep / Sirup"
+                  [(ngModel)]="manualForm.bentukSediaan"
+                  name="manualBentukSediaan"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label class="field-label">Satuan Kemasan <span class="req">*</span></label>
+                <input
+                  type="text"
+                  class="field-input"
+                  placeholder="Contoh: Strip (10 Tablet) / Botol 60ml"
+                  [(ngModel)]="manualForm.satuan"
+                  name="manualSatuan"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="field-label">Produsen / Industri Farmasi</label>
+              <input
+                type="text"
+                class="field-input"
+                placeholder="Contoh: Laboratorium Galenika Apotek / PT Farmasi"
+                [(ngModel)]="manualForm.manufacturer"
+                name="manualManufacturer"
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="field-label">Komposisi & Kandungan</label>
+              <textarea
+                class="field-textarea"
+                rows="2"
+                placeholder="Rincian bahan aktif dan konsentrasi"
+                [(ngModel)]="manualForm.komposisi"
+                name="manualKomposisi"
+              ></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="field-label">Aturan Pakai & Dosis</label>
+              <textarea
+                class="field-textarea"
+                rows="2"
+                placeholder="Petunjuk pemakaian yang tertera pada kemasan"
+                [(ngModel)]="manualForm.aturanPakai"
+                name="manualAturanPakai"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- Kolom Kanan: Harga, Stok, & Manajemen Batch -->
+          <div class="manual-col">
+            <h3 class="box-title">Harga Jual & Manajemen Stok</h3>
+
+            <div class="form-group">
+              <label class="field-label">Harga Pokok Pembelian / HPP (Rp)</label>
+              <input
+                type="number"
+                class="field-input"
+                placeholder="0"
+                [(ngModel)]="manualForm.hargaBeli"
+                name="manualHargaBeli"
+                min="0"
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="field-label">Harga Jual Apotek (Rp) <span class="req">*</span></label>
+              <input
+                type="number"
+                class="field-input font-bold"
+                placeholder="0"
+                [(ngModel)]="manualForm.hargaJual"
+                name="manualHargaJual"
+                required
+                min="1"
+              />
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label class="field-label">Stok Awal Fisik <span class="req">*</span></label>
+                <input
+                  type="number"
+                  class="field-input"
+                  [(ngModel)]="manualForm.stokAwal"
+                  name="manualStokAwal"
+                  required
+                  min="0"
+                />
+              </div>
+              <div class="form-group">
+                <label class="field-label">Stok Minimum Peringatan <span class="req">*</span></label>
+                <input
+                  type="number"
+                  class="field-input"
+                  [(ngModel)]="manualForm.stokMin"
+                  name="manualStokMin"
+                  required
+                  min="1"
+                />
+              </div>
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label class="field-label">Nomor Batch / Lot</label>
+                <input
+                  type="text"
+                  class="field-input"
+                  placeholder="BTC-..."
+                  [(ngModel)]="manualForm.batchNumber"
+                  name="manualBatchNumber"
+                />
+              </div>
+              <div class="form-group">
+                <label class="field-label">Tanggal Kedaluwarsa</label>
+                <input
+                  type="date"
+                  class="field-input"
+                  [(ngModel)]="manualForm.expiredDate"
+                  name="manualExpiredDate"
+                />
+              </div>
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label class="field-label">Lokasi Rak / Penyimpanan</label>
+                <input
+                  type="text"
+                  class="field-input"
+                  placeholder="Contoh: Rak B-02"
+                  [(ngModel)]="manualForm.rakLokasi"
+                  name="manualRakLokasi"
+                />
+              </div>
+              <div class="form-group">
+                <label class="field-label">Kode Barcode / EAN-13</label>
+                <input
+                  type="text"
+                  class="field-input"
+                  placeholder="899..."
+                  [(ngModel)]="manualForm.barcode"
+                  name="manualBarcode"
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="field-label">Deskripsi & Catatan Obat</label>
+              <textarea
+                class="field-textarea"
+                rows="3"
+                placeholder="Catatan tambahan mengenai produk ini..."
+                [(ngModel)]="manualForm.deskripsi"
+                name="manualDeskripsi"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <footer class="form-footer-actions">
+          <button type="button" class="btn-cancel" (click)="goBack()">
+            Batal
+          </button>
+          <button type="submit" class="btn-save-primary">
+            <i class="ri-save-line"></i>
+            <span>Simpan Produk Manual ke Inventaris</span>
+          </button>
+        </footer>
+      </form>
+    </section>
+  }
+</div>

@@ -1,0 +1,740 @@
+<div class="detail-page-container">
+  <!-- Top Navigation: Back Button & Actions -->
+  <div class="top-nav-bar">
+    <button type="button" class="btn-back" (click)="goBack()" aria-label="Kembali ke Daftar Dokter">
+      <i class="ri-arrow-left-line" aria-hidden="true"></i>
+      <span>Kembali ke Daftar Dokter</span>
+    </button>
+    <button type="button" class="btn-edit-action" (click)="goToEdit()" aria-label="Edit Data Dokter">
+      <i class="ri-edit-line" aria-hidden="true"></i>
+      <span>Edit Data Dokter</span>
+    </button>
+  </div>
+
+  <!-- Header Card: Profile & Primary Info -->
+  <header class="profile-header-card">
+    <div class="profile-left">
+      <img
+        [src]="doctor.avatar"
+        [alt]="doctor.name"
+        class="profile-avatar"
+        (error)="onAvatarError($event)"
+      />
+      <div class="profile-info">
+        <div class="name-badge-row">
+          <h1 class="profile-name">{{ doctor.name }}</h1>
+          <span class="badge-role">{{ doctor.roleTag }}</span>
+          <span class="badge-sub-role">{{ doctor.statusTag }}</span>
+        </div>
+        <p class="profile-facility">{{ doctor.facility }}</p>
+        <span class="profile-specialty">{{ doctor.specialty }}</span>
+
+        <div class="profile-contacts-row">
+          <span class="contact-item">
+            <i class="ri-mail-line" aria-hidden="true"></i>
+            <span class="contact-label">Email</span>
+            <span class="contact-val">{{ doctor.email }}</span>
+          </span>
+          <span class="contact-item">
+            <i class="ri-phone-line" aria-hidden="true"></i>
+            <span class="contact-label">No. Telepon</span>
+            <span class="contact-val">{{ doctor.phone }}</span>
+          </span>
+          <span class="contact-item contact-address">
+            <i class="ri-map-pin-line" aria-hidden="true"></i>
+            <span class="contact-label">Alamat</span>
+            <span class="contact-val">{{ doctor.address }}</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-right">
+      <div class="status-badge-top">
+        <span class="badge-pending">{{ doctor.verificationStatus }}</span>
+      </div>
+
+      <div class="license-meta-row">
+        <div class="license-meta-item">
+          <span class="license-label">Nomor SIPA</span>
+          <strong class="license-val">{{ doctor.sipa }}</strong>
+          <span class="license-expiry">Masa Berlaku: {{ doctor.sipaExpiry }}</span>
+        </div>
+        <div class="license-meta-item">
+          <span class="license-label">Nomor STRA</span>
+          <strong class="license-val">{{ doctor.stra }}</strong>
+          <span class="license-expiry">Masa Berlaku: {{ doctor.straExpiry }}</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Layout (Left Column + Right Sidebar) -->
+  <div class="detail-body-layout">
+    <!-- Left Column -->
+    <main class="detail-main-column">
+      <!-- Tabs Bar -->
+      <nav class="detail-tabs-nav" aria-label="Tab Informasi Dokter">
+        <button
+          type="button"
+          class="tab-btn"
+          [class.active]="activeTab() === 'informasi'"
+          (click)="selectTab('informasi')"
+        >
+          Informasi Pribadi
+        </button>
+        <button
+          type="button"
+          class="tab-btn"
+          [class.active]="activeTab() === 'verifikasi'"
+          (click)="selectTab('verifikasi')"
+        >
+          Verifikasi & Perizinan
+        </button>
+        <button
+          type="button"
+          class="tab-btn"
+          [class.active]="activeTab() === 'praktik'"
+          (click)="selectTab('praktik')"
+        >
+          Praktik
+        </button>
+      </nav>
+
+      <!-- TAB 1: INFORMASI PRIBADI -->
+      @if (activeTab() === 'informasi') {
+        <div class="tab-pane">
+          <!-- Top Grid: Informasi Pribadi & (Tentang Dokter + Pendidikan) -->
+          <div class="info-top-grid">
+            <!-- Informasi Pribadi Card -->
+            <section class="section-card personal-info-card">
+              <h2 class="card-section-title">Informasi Pribadi</h2>
+              <div class="kv-list">
+                <div class="kv-row">
+                  <span class="kv-key">NIK</span>
+                  <span class="kv-val">{{ doctor.nik }}</span>
+                </div>
+                <div class="kv-row">
+                  <span class="kv-key">Nama Lengkap</span>
+                  <span class="kv-val">{{ doctor.name }}</span>
+                </div>
+                <div class="kv-row">
+                  <span class="kv-key">Tempat Tanggal Lahir</span>
+                  <span class="kv-val">{{ doctor.birthPlaceDate }}</span>
+                </div>
+                <div class="kv-row">
+                  <span class="kv-key">Kontak</span>
+                  <span class="kv-val">{{ doctor.phone }}</span>
+                </div>
+                <div class="kv-row">
+                  <span class="kv-key">Email</span>
+                  <span class="kv-val">{{ doctor.email }}</span>
+                </div>
+                <div class="kv-row address-row">
+                  <span class="kv-key">Alamat KTP</span>
+                  <span class="kv-val">{{ doctor.ktpAddress }}</span>
+                </div>
+                <div class="kv-row">
+                  <span class="kv-key">Pendidikan Terakhir</span>
+                  <span class="kv-val">{{ doctor.phone }}</span>
+                </div>
+                <div class="kv-row">
+                  <span class="kv-key">Nomor Ijazah</span>
+                  <span class="kv-val">{{ doctor.diplomaNumber }}</span>
+                </div>
+                <div class="kv-row">
+                  <span class="kv-key">Tahun Kelulusan</span>
+                  <span class="kv-val">103001</span>
+                </div>
+                <div class="kv-row">
+                  <span class="kv-key">NPSN</span>
+                  <span class="kv-val">{{ doctor.email }}</span>
+                </div>
+                <div class="kv-row">
+                  <span class="kv-key">Institusi Pendidikan</span>
+                  <span class="kv-val">{{ doctor.educationInstitution }}</span>
+                </div>
+              </div>
+            </section>
+
+            <!-- Stacked Right Side: Tentang Dokter & Informasi Pendidikan -->
+            <div class="info-right-stack">
+              <!-- Tentang Dokter Card -->
+              <section class="section-card">
+                <h2 class="card-section-title">Tentang Dokter</h2>
+                <p class="about-doctor-text">{{ doctor.about }}</p>
+              </section>
+
+              <!-- Informasi Pendidikan Card -->
+              <section class="section-card">
+                <h2 class="card-section-title">Informasi Pendidikan</h2>
+                <div class="table-scroll-wrap">
+                  <table class="simple-table">
+                    <thead>
+                      <tr>
+                        <th>Tingkat Pendidikan</th>
+                        <th>Institusi Pendidikan</th>
+                        <th>Lulus</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (edu of educationList; track $index) {
+                        <tr>
+                          <td>{{ edu.degree }}</td>
+                          <td>{{ edu.institution }}</td>
+                          <td>{{ edu.year }}</td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            </div>
+          </div>
+
+          <!-- Kompetensi Card -->
+          <section class="section-card">
+            <h2 class="card-section-title">Kompetensi</h2>
+            <div class="table-scroll-wrap">
+              <table class="simple-table skill-table">
+                <thead>
+                  <tr>
+                    <th style="width: 40%">Skill</th>
+                    <th style="width: 45%">Skill</th>
+                    <th style="width: 15%; text-align: right">Level</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (skill of skills; track skill.name) {
+                    <tr>
+                      <td class="skill-name">{{ skill.name }}</td>
+                      <td class="skill-bar-cell">
+                        <div class="skill-progress-track">
+                          <div
+                            class="skill-progress-fill"
+                            [style.width.%]="skill.percentage"
+                          ></div>
+                        </div>
+                      </td>
+                      <td class="skill-level">{{ skill.level }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- Riwayat Pekerjaan Card -->
+          <section class="section-card">
+            <h2 class="card-section-title">Riwayat Pekerjaan</h2>
+            <div class="table-scroll-wrap">
+              <table class="simple-table work-table">
+                <thead>
+                  <tr>
+                    <th style="width: 8%">No.</th>
+                    <th style="width: 32%">Posisi</th>
+                    <th style="width: 35%">Fasilitas</th>
+                    <th style="width: 25%">Masa Bekerja</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (job of jobExperiences; track job.position; let idx = $index) {
+                    <tr class="job-main-row">
+                      <td class="job-no">{{ idx + 1 }}</td>
+                      <td class="job-pos">{{ job.position }}</td>
+                      <td class="job-fac">{{ job.facility }}</td>
+                      <td class="job-per">{{ job.period }}</td>
+                    </tr>
+                    <tr class="job-desc-row">
+                      <td></td>
+                      <td colspan="3" class="job-desc-cell">
+                        <span class="desc-heading">Deskripsi</span>
+                        <p class="desc-text">{{ job.description }}</p>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- Riwayat Mengajar Card -->
+          <section class="section-card">
+            <h2 class="card-section-title">Riwayat Mengajar</h2>
+            <div class="table-scroll-wrap">
+              <table class="simple-table teaching-table">
+                <thead>
+                  <tr>
+                    <th style="width: 8%">No.</th>
+                    <th style="width: 32%">Peran</th>
+                    <th style="width: 35%">Bentuk Kegiatan</th>
+                    <th style="width: 25%">Penyelenggara</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (teach of teachingExperiences; track teach.role; let idx = $index) {
+                    <tr class="teach-main-row">
+                      <td>{{ idx + 1 }}</td>
+                      <td>{{ teach.role }}</td>
+                      <td>{{ teach.activityType }}</td>
+                      <td>{{ teach.organizer }}</td>
+                    </tr>
+                    <tr class="teach-desc-row">
+                      <td></td>
+                      <td colspan="3">
+                        <span class="desc-heading">Topik Materi yang disampaikan</span>
+                        <p class="desc-text">{{ teach.topic }}</p>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      }
+
+      <!-- TAB 2: VERIFIKASI & PERIZINAN -->
+      @if (activeTab() === 'verifikasi') {
+        <div class="tab-pane">
+          <!-- Verifikasi Dokumen Card -->
+          <section class="section-card">
+            <h2 class="card-section-title">Verifikasi Dokumen</h2>
+            <div class="doc-list">
+              @for (doc of verificationDocs; track doc.id) {
+                <div class="doc-card-item">
+                  <div class="doc-icon-box">
+                    <i [class]="doc.icon" aria-hidden="true"></i>
+                  </div>
+                  <div class="doc-info-block">
+                    <strong class="doc-title">{{ doc.title }}</strong>
+                    <span class="doc-filename">{{ doc.filename }}</span>
+                  </div>
+                  <div class="doc-upload-date">
+                    <span>Diunggah: {{ doc.uploadedAt }}</span>
+                  </div>
+                  <div class="doc-action-block">
+                    <button
+                      type="button"
+                      class="btn-view-doc"
+                      (click)="openDocPreview(doc)"
+                    >
+                      <i class="ri-eye-line" aria-hidden="true"></i>
+                      <span>Lihat Dokumen</span>
+                    </button>
+                  </div>
+                  <div class="doc-status-block">
+                    <div
+                      class="doc-status-tag"
+                      [ngClass]="{
+                        'status-valid': doc.status === 'Terverifikasi',
+                        'status-wait': doc.status === 'Menunggu Verifikasi',
+                        'status-invalid': doc.status === 'Tidak Sesuai'
+                      }"
+                    >
+                      @if (doc.status === 'Terverifikasi') {
+                        <i class="ri-checkbox-circle-line" aria-hidden="true"></i>
+                      } @else if (doc.status === 'Menunggu Verifikasi') {
+                        <i class="ri-information-line" aria-hidden="true"></i>
+                      } @else {
+                        <i class="ri-close-circle-line" aria-hidden="true"></i>
+                      }
+                      <span>{{ doc.status }}</span>
+                    </div>
+                    <span class="doc-note-text">{{ doc.note }}</span>
+                  </div>
+                </div>
+              }
+            </div>
+          </section>
+
+          <!-- Catatan Pendaftar Card -->
+          <section class="section-card">
+            <h2 class="card-section-title">Catatan Pendaftar</h2>
+            <p class="applicant-note-text">
+              Saya siap memberikan pelayanan farmasi terbaik dan mematuhi semua ketentuan yang berlaku
+            </p>
+          </section>
+
+          <!-- Catatan Moderasi Card (Internal) -->
+          <section class="section-card">
+            <h2 class="card-section-title">Catatan Moderasi</h2>
+            <textarea
+              class="moderation-textarea internal"
+              placeholder="Tuliskan Catatan Moderasi..."
+              rows="3"
+              [(ngModel)]="internalModerationNote"
+            ></textarea>
+          </section>
+        </div>
+      }
+
+      <!-- TAB 3: PRAKTIK -->
+      @if (activeTab() === 'praktik') {
+        <div class="tab-pane">
+          <!-- Praktik Info Card -->
+          <section class="section-card">
+            <h2 class="card-section-title">Praktik</h2>
+
+            <div class="practice-top-row">
+              <!-- Certificate Image Thumbnail -->
+              <div class="certificate-thumb-container" (click)="openCertificatePreview()">
+                <div class="certificate-frame">
+                  <div class="cert-border-inner">
+                    <div class="cert-header">
+                      <i class="ri-hospital-fill cert-emblem" aria-hidden="true"></i>
+                      <div class="cert-title-text">
+                        <small>SURAT IZIN PRAKTIK APOTEKER</small>
+                        <span>(SIPA)</span>
+                      </div>
+                    </div>
+                    <div class="cert-content-mock">
+                      <div class="cert-photo-box">
+                        <img [src]="doctor.avatar" alt="Foto Dokter" (error)="onAvatarError($event)" />
+                      </div>
+                      <div class="cert-lines">
+                        <div class="cert-line short"></div>
+                        <div class="cert-line medium"></div>
+                        <div class="cert-line long"></div>
+                      </div>
+                    </div>
+                    <div class="cert-stamp">
+                      <i class="ri-shield-check-fill" aria-hidden="true"></i>
+                    </div>
+                  </div>
+                </div>
+                <span class="cert-zoom-hint">
+                  <i class="ri-zoom-in-line" aria-hidden="true"></i> Klik untuk perbesar
+                </span>
+              </div>
+
+              <!-- 3-Column Metadata -->
+              <div class="practice-meta-grid">
+                <div class="meta-col">
+                  <div class="meta-field">
+                    <span class="meta-lbl">Nomor Surat Izin Praktik (SIP)</span>
+                    <strong class="meta-val">{{ practiceInfo.sipNumber }}</strong>
+                  </div>
+                  <div class="meta-field">
+                    <span class="meta-lbl">Nama Fasilitas</span>
+                    <strong class="meta-val">{{ practiceInfo.facilityName }}</strong>
+                  </div>
+                  <div class="meta-field">
+                    <span class="meta-lbl">Posisi</span>
+                    <strong class="meta-val">{{ practiceInfo.position }}</strong>
+                  </div>
+                </div>
+
+                <div class="meta-col">
+                  <div class="meta-field">
+                    <span class="meta-lbl">Penerbit Surat Izin Praktik</span>
+                    <strong class="meta-val">{{ practiceInfo.issuer }}</strong>
+                  </div>
+                  <div class="meta-field">
+                    <span class="meta-lbl">Tanggal Terbit SIPA</span>
+                    <strong class="meta-val">{{ practiceInfo.issueDate }}</strong>
+                  </div>
+                  <div class="meta-field">
+                    <span class="meta-lbl">Tanggal Berakhir SIPA</span>
+                    <strong class="meta-val">{{ practiceInfo.expiryDate }}</strong>
+                  </div>
+                </div>
+
+                <div class="meta-col">
+                  <div class="meta-field">
+                    <span class="meta-lbl">Bidang Pekerjaan</span>
+                    <strong class="meta-val">{{ practiceInfo.workField }}</strong>
+                  </div>
+                  <div class="meta-field">
+                    <span class="meta-lbl">Jenis Fasilitas</span>
+                    <strong class="meta-val">{{ practiceInfo.facilityType }}</strong>
+                  </div>
+                  <div class="meta-field">
+                    <span class="meta-lbl">Bagian</span>
+                    <strong class="meta-val">{{ practiceInfo.division }}</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <hr class="section-divider" />
+
+            <!-- Bottom Facility Details (4-Col Row) -->
+            <div class="facility-contact-grid">
+              <div class="fac-field">
+                <span class="fac-lbl">Kontak Fasilitas</span>
+                <strong class="fac-val">{{ practiceInfo.facilityPhone }}</strong>
+              </div>
+              <div class="fac-field">
+                <span class="fac-lbl">Email Fasilitas</span>
+                <strong class="fac-val">{{ practiceInfo.facilityEmail }}</strong>
+              </div>
+              <div class="fac-field">
+                <span class="fac-lbl">Web Fasilitas</span>
+                <strong class="fac-val">{{ practiceInfo.facilityWeb }}</strong>
+              </div>
+              <div class="fac-field">
+                <span class="fac-lbl">Kepemilikan</span>
+                <strong class="fac-val">{{ practiceInfo.ownership }}</strong>
+              </div>
+            </div>
+
+            <!-- Alamat Fasilitas -->
+            <div class="facility-address-box">
+              <span class="fac-lbl">Alamat Fasilitas</span>
+              <p class="fac-address-val">{{ practiceInfo.facilityAddress }}</p>
+            </div>
+          </section>
+
+          <!-- Jadwal Praktik Card -->
+          <section class="section-card">
+            <h2 class="card-section-title">Jadwal Praktik</h2>
+
+            <div class="schedule-chart-container">
+              <!-- Days Header Row -->
+              <div class="schedule-header-row">
+                <div class="time-header-cell"></div>
+                @for (item of scheduleDays; track item.day) {
+                  <div class="day-header-cell">{{ item.day }}</div>
+                }
+              </div>
+
+              <!-- Schedule Grid Rows -->
+              <div class="schedule-grid">
+                <!-- Time Scale Column on Left -->
+                <div class="time-column">
+                  @for (hour of scheduleHours; track hour) {
+                    <div class="time-marker-cell">
+                      <span>{{ hour }}</span>
+                    </div>
+                  }
+                </div>
+
+                <!-- 7 Day Columns -->
+                @for (item of scheduleDays; track item.day) {
+                  <div class="day-column" [class.has-shift]="item.hasShift">
+                    <!-- 11 Hour slot lines -->
+                    @for (hour of scheduleHours; track hour) {
+                      <div class="hour-line-slot"></div>
+                    }
+
+                    <!-- Shift Bar if scheduled (08.00 - 16.00) -->
+                    @if (item.hasShift) {
+                      <div class="shift-bar">
+                        <span class="shift-time-label">08.00 - 16.00</span>
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          </section>
+        </div>
+      }
+    </main>
+
+    <!-- Right Column: Status Verifikasi, Ringkasan, & Aksi Moderasi -->
+    <aside class="detail-sidebar-column">
+      <!-- Panel 1: Status Verifikasi Akun -->
+      <section class="sidebar-panel">
+        <h2 class="sidebar-panel-title">Status Verifikasi Akun</h2>
+        <div class="verification-stepper">
+          @for (item of timelineSteps; track item.step) {
+            <div class="stepper-item" [class.active]="item.active">
+              <div class="stepper-indicator">
+                <div class="step-circle" [class.active]="item.active">
+                  <span>{{ item.step }}</span>
+                </div>
+                @if (item.step > 1) {
+                  <div class="step-line" [class.active]="item.active"></div>
+                }
+              </div>
+              <div class="stepper-content">
+                <strong class="step-title">{{ item.title }}</strong>
+                <span class="step-time">{{ item.time }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+
+      <!-- Panel 2: Ringkasan Verifikasi -->
+      <section class="sidebar-panel">
+        <h2 class="sidebar-panel-title">Ringkasan Verifikasi</h2>
+        <div class="summary-list">
+          <div class="summary-item">
+            <div class="summary-left">
+              <i class="ri-file-text-line icon-teal" aria-hidden="true"></i>
+              <span>Dokumen Terverifikasi</span>
+            </div>
+            <strong class="summary-val">2 dari 4</strong>
+          </div>
+
+          <div class="summary-item">
+            <div class="summary-left">
+              <i class="ri-file-shield-line icon-amber" aria-hidden="true"></i>
+              <span>Dokumen Menunggu Verifikasi</span>
+            </div>
+            <strong class="summary-val">2 dari 4</strong>
+          </div>
+
+          <div class="summary-item">
+            <div class="summary-left">
+              <i class="ri-file-warning-line icon-red" aria-hidden="true"></i>
+              <span>Dokumen Ditolak</span>
+            </div>
+            <strong class="summary-val">0</strong>
+          </div>
+
+          <div class="summary-item progress-item">
+            <div class="summary-progress-header">
+              <div class="summary-left">
+                <i class="ri-folder-shield-2-line icon-blue" aria-hidden="true"></i>
+                <span>Kelengkapan Data</span>
+              </div>
+              <strong class="summary-val">85%</strong>
+            </div>
+            <div class="summary-progress-track">
+              <div class="summary-progress-bar" style="width: 85%"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Panel 3: Aksi Moderasi -->
+      <section class="sidebar-panel moderation-panel">
+        <h2 class="sidebar-panel-title">Aksi Moderasi</h2>
+
+        <!-- Choice 1: Setujui -->
+        <label
+          class="moderation-choice-card"
+          [class.selected]="selectedModeration() === 'setujui'"
+          (click)="setModeration('setujui')"
+        >
+          <div class="choice-icon-box choice-approve">
+            <i class="ri-check-line" aria-hidden="true"></i>
+          </div>
+          <div class="choice-text">
+            <strong class="choice-title approve">Setujui dan aktifkan Akun</strong>
+            <span class="choice-desc">Semua data valid, dan akun diaktifkan</span>
+          </div>
+        </label>
+
+        <!-- Choice 2: Tolak -->
+        <label
+          class="moderation-choice-card"
+          [class.selected]="selectedModeration() === 'tolak'"
+          (click)="setModeration('tolak')"
+        >
+          <div class="choice-icon-box choice-reject">
+            <i class="ri-close-line" aria-hidden="true"></i>
+          </div>
+          <div class="choice-text">
+            <strong class="choice-title reject">Tolak Pendaftaran</strong>
+            <span class="choice-desc">Pendaftaran ditolak dan Akun tidak diaktifkan</span>
+          </div>
+        </label>
+
+        <!-- Choice 3: Perbaikan -->
+        <label
+          class="moderation-choice-card"
+          [class.selected]="selectedModeration() === 'perbaikan'"
+          (click)="setModeration('perbaikan')"
+        >
+          <div class="choice-icon-box choice-fix">
+            <i class="ri-information-line" aria-hidden="true"></i>
+          </div>
+          <div class="choice-text">
+            <strong class="choice-title fix">Perbaikan</strong>
+            <span class="choice-desc">Minta Pendaftar melengkapi atau memperbaiki data</span>
+          </div>
+        </label>
+
+        <!-- Catatan Moderasi -->
+        <div class="moderation-note-group">
+          <label class="moderation-note-label" for="mod-notes">Catatan Moderasi</label>
+          <textarea
+            id="mod-notes"
+            class="moderation-textarea"
+            placeholder="Tulis catatan untuk pendaftar..."
+            rows="3"
+            [(ngModel)]="moderationNote"
+          ></textarea>
+        </div>
+
+        <button type="button" class="btn-save-moderation" (click)="saveModeration()">
+          Simpan Moderasi
+        </button>
+      </section>
+    </aside>
+  </div>
+</div>
+
+<!-- Modal Preview Dokumen -->
+@if (selectedPreviewDoc(); as doc) {
+  <div class="preview-backdrop" (click)="closeDocPreview()">
+    <div class="preview-dialog" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <div class="preview-header">
+        <div class="preview-header-text">
+          <h2 class="preview-title">{{ doc.title }}</h2>
+          <span class="preview-subtitle">{{ doc.filename }} · Diunggah: {{ doc.uploadedAt }}</span>
+        </div>
+        <button type="button" class="btn-close-preview" (click)="closeDocPreview()" aria-label="Tutup preview">
+          <i class="ri-close-line" aria-hidden="true"></i>
+        </button>
+      </div>
+
+      <div class="preview-body">
+        <div class="doc-mock-preview">
+          <i [class]="doc.icon + ' mock-big-icon'" aria-hidden="true"></i>
+          <span class="mock-doc-name">{{ doc.filename }}</span>
+          <span class="mock-doc-status">{{ doc.status }} - {{ doc.note }}</span>
+        </div>
+      </div>
+
+      <div class="preview-footer">
+        <button type="button" class="btn-secondary" (click)="closeDocPreview()">Tutup</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Modal Preview Sertifikat / SIP -->
+@if (previewCertificateModal()) {
+  <div class="preview-backdrop" (click)="closeCertificatePreview()">
+    <div class="preview-dialog preview-dialog-lg" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <div class="preview-header">
+        <div class="preview-header-text">
+          <h2 class="preview-title">Surat Izin Praktik (SIP)</h2>
+          <span class="preview-subtitle">{{ practiceInfo.sipNumber }} · {{ practiceInfo.facilityName }}</span>
+        </div>
+        <button type="button" class="btn-close-preview" (click)="closeCertificatePreview()" aria-label="Tutup preview">
+          <i class="ri-close-line" aria-hidden="true"></i>
+        </button>
+      </div>
+
+      <div class="preview-body">
+        <div class="certificate-modal-display">
+          <div class="modal-cert-inner">
+            <div class="cert-modal-head">
+              <h3>PEMERINTAH KOTA BANDUNG</h3>
+              <h4>DINAS KESEHATAN KOTA BANDUNG</h4>
+              <p>SURAT IZIN PRAKTIK APOTEKER / DOKTER SPESIALIS</p>
+              <small>Nomor: {{ practiceInfo.sipNumber }}</small>
+            </div>
+            <div class="cert-modal-data">
+              <p><strong>Nama:</strong> {{ doctor.name }}</p>
+              <p><strong>Fasilitas:</strong> {{ practiceInfo.facilityName }}</p>
+              <p><strong>Alamat:</strong> {{ practiceInfo.facilityAddress }}</p>
+              <p><strong>Berlaku s/d:</strong> {{ practiceInfo.expiryDate }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="preview-footer">
+        <button type="button" class="btn-secondary" (click)="closeCertificatePreview()">Tutup</button>
+      </div>
+    </div>
+  </div>
+}

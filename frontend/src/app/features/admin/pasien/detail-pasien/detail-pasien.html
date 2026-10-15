@@ -1,0 +1,2157 @@
+<div class="detail-page-container">
+  <!-- Top Navigation: Back Button & Actions -->
+  <div class="top-nav-bar">
+    <button type="button" class="btn-back" (click)="goBack()" aria-label="Kembali ke Daftar Pasien">
+      <i class="ri-arrow-left-line" aria-hidden="true"></i>
+      <span>Kembali ke Daftar Pasien</span>
+    </button>
+    <div class="header-action-group">
+      <button type="button" class="btn-outline-action" (click)="printCard()" aria-label="Cetak Kartu Pasien">
+        <i class="ri-printer-line" aria-hidden="true"></i>
+        <span>Cetak Kartu</span>
+      </button>
+      <button type="button" class="btn-edit-action" (click)="goToEdit()" aria-label="Edit Data Pasien">
+        <i class="ri-edit-line" aria-hidden="true"></i>
+        <span>Edit Data Pasien</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Header Card: Profile & Quick Info -->
+  <header class="profile-header-card">
+    <div class="profile-main-layout">
+      <!-- Col 1: Patient Profile Identity Group (Avatar + Details) -->
+      <div class="patient-profile-combo">
+        <div class="patient-avatar-col">
+          <div class="patient-avatar-wrapper">
+            <img src="assets/images/avatar/male.png" alt="Avatar Andi Putra" class="patient-avatar-img" />
+          </div>
+          <span class="status-indicator-badge">Aktif</span>
+        </div>
+
+        <div class="patient-identity-col">
+          <div class="name-badge-row">
+            <h1 class="profile-name">{{ patient.name }}</h1>
+            <span class="gender-pill">{{ patient.gender }}</span>
+            <span class="age-pill">{{ patient.age }}</span>
+          </div>
+          <div class="nik-line">
+            <span>{{ patient.nik }}</span>
+          </div>
+          <div class="tipe-line">
+            <span class="tipe-tag">{{ patient.tipe }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Col 3: Health Points Card -->
+      <div class="health-points-col">
+        <div class="points-icon-box">
+          <i class="ri-copper-coin-line" aria-hidden="true"></i>
+        </div>
+        <div class="points-content">
+          <span class="points-label">Point Health yang ditarik</span>
+          <div class="points-num-row">
+            <span class="points-value">{{ patient.healthPoints }}</span>
+          </div>
+          <span class="points-growth">
+            <i class="ri-arrow-up-line" aria-hidden="true"></i>
+            12.5% <span class="growth-sub">dari minggu lalu</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- Col 4: Contacts Info Column -->
+      <div class="patient-contacts-col">
+        <div class="contact-line">
+          <i class="ri-phone-line" aria-hidden="true"></i>
+          <span>{{ patient.phone }}</span>
+        </div>
+        <div class="contact-line">
+          <i class="ri-mail-line" aria-hidden="true"></i>
+          <span>{{ patient.email }}</span>
+        </div>
+        <div class="contact-line">
+          <i class="ri-calendar-line" aria-hidden="true"></i>
+          <span>{{ patient.birthDate }}</span>
+        </div>
+        <div class="contact-line contact-address">
+          <i class="ri-map-pin-line" aria-hidden="true"></i>
+          <span>{{ patient.address }}</span>
+        </div>
+      </div>
+
+      <!-- Col 5: Right 3 Metric Stat Cards -->
+      <div class="profile-stats-col">
+        <div class="stat-metric-row">
+          <div class="stat-icon-wrapper stat-teal">
+            <i class="ri-shopping-cart-2-line" aria-hidden="true"></i>
+          </div>
+          <div class="stat-text-wrapper">
+            <span class="stat-label">Total Pesanan</span>
+            <span class="stat-number">{{ patient.stats.totalPesanan }}</span>
+          </div>
+        </div>
+
+        <div class="stat-metric-row">
+          <div class="stat-icon-wrapper stat-blue">
+            <i class="ri-file-list-3-line" aria-hidden="true"></i>
+          </div>
+          <div class="stat-text-wrapper">
+            <span class="stat-label">Total Resep</span>
+            <span class="stat-number">{{ patient.stats.totalResep }}</span>
+          </div>
+        </div>
+
+        <div class="stat-metric-row">
+          <div class="stat-icon-wrapper stat-amber">
+            <i class="ri-wallet-3-line" aria-hidden="true"></i>
+          </div>
+          <div class="stat-text-wrapper">
+            <span class="stat-label">Total Pembayaran</span>
+            <span class="stat-number">{{ patient.stats.totalPembayaran }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 7 Primary Navigation Tabs -->
+  <nav class="primary-tabs-bar" aria-label="Tab Informasi Utama Pasien">
+    <button
+      type="button"
+      class="nav-tab-btn"
+      [class.active]="activeTab() === 'riwayat-kesehatan'"
+      (click)="selectTab('riwayat-kesehatan')"
+    >
+      <i class="ri-heart-pulse-line" aria-hidden="true"></i>
+      <span>Riwayat Kesehatan</span>
+    </button>
+
+    <button
+      type="button"
+      class="nav-tab-btn"
+      [class.active]="activeTab() === 'pesanan'"
+      (click)="selectTab('pesanan')"
+    >
+      <i class="ri-shopping-bag-3-line" aria-hidden="true"></i>
+      <span>Pesanan</span>
+    </button>
+
+    <button
+      type="button"
+      class="nav-tab-btn"
+      [class.active]="activeTab() === 'resep'"
+      (click)="selectTab('resep')"
+    >
+      <i class="ri-file-list-3-line" aria-hidden="true"></i>
+      <span>Resep</span>
+    </button>
+
+    <button
+      type="button"
+      class="nav-tab-btn"
+      [class.active]="activeTab() === 'pembayaran'"
+      (click)="selectTab('pembayaran')"
+    >
+      <i class="ri-wallet-3-line" aria-hidden="true"></i>
+      <span>Pembayaran</span>
+    </button>
+
+    <button
+      type="button"
+      class="nav-tab-btn"
+      [class.active]="activeTab() === 'telemedicine'"
+      (click)="selectTab('telemedicine')"
+    >
+      <i class="ri-video-chat-line" aria-hidden="true"></i>
+      <span>Telemedicine</span>
+    </button>
+
+    <button
+      type="button"
+      class="nav-tab-btn"
+      [class.active]="activeTab() === 'telefarmasi'"
+      (click)="selectTab('telefarmasi')"
+    >
+      <i class="ri-capsule-line" aria-hidden="true"></i>
+      <span>Telefarmasi</span>
+    </button>
+
+    <button
+      type="button"
+      class="nav-tab-btn"
+      [class.active]="activeTab() === 'rekam-medis'"
+      (click)="selectTab('rekam-medis')"
+    >
+      <i class="ri-folder-user-line" aria-hidden="true"></i>
+      <span>Rekam Medis</span>
+    </button>
+  </nav>
+
+  <!-- ========================================== -->
+  <!-- TAB 1: RIWAYAT KESEHATAN                    -->
+  <!-- ========================================== -->
+  @if (activeTab() === 'riwayat-kesehatan') {
+    <div class="tab-pane-content">
+      @if (riwayatKesehatanViewMode() === 'list') {
+        <!-- TIMELINE LIST VIEW (Matching UI: Detail Pasien - Riwayat Kesehatan.png) -->
+        <!-- Top Filter Bar Card -->
+        <section class="timeline-filter-card">
+          <div class="filter-controls-grid">
+            <!-- Filter 1: Tanggal Periksa -->
+            <div class="filter-item-col">
+              <label class="filter-field-label">Tanggal Periksa</label>
+              <div class="filter-input-wrap">
+                <input
+                  type="text"
+                  class="filter-control-input"
+                  placeholder="Pilih rentang tanggal"
+                  [ngModel]="filterRiwayatTanggal()"
+                  (ngModelChange)="filterRiwayatTanggal.set($event)"
+                />
+                <i class="ri-calendar-line filter-icon-end" aria-hidden="true"></i>
+              </div>
+            </div>
+
+            <!-- Filter 2: Dokter -->
+            <div class="filter-item-col">
+              <label class="filter-field-label">Dokter</label>
+              <div class="filter-input-wrap">
+                <select
+                  class="filter-control-select"
+                  [ngModel]="filterRiwayatDokter()"
+                  (ngModelChange)="filterRiwayatDokter.set($event)"
+                >
+                  <option value="Semua Dokter">Semua Dokter</option>
+                  <option value="dr. Andi Wijaya">dr. Andi Wijaya</option>
+                  <option value="dr. rina Meilani">dr. rina Meilani</option>
+                  <option value="dr. Budi Santoso">dr. Budi Santoso</option>
+                  <option value="dr. Siti Aminah">dr. Siti Aminah</option>
+                </select>
+                <i class="ri-arrow-down-s-line filter-icon-end" aria-hidden="true"></i>
+              </div>
+            </div>
+
+            <!-- Filter 3: Fasilitas Kesehatan -->
+            <div class="filter-item-col">
+              <label class="filter-field-label">Fasilitas Kesehatan</label>
+              <div class="filter-input-wrap">
+                <select
+                  class="filter-control-select"
+                  [ngModel]="filterRiwayatFaskes()"
+                  (ngModelChange)="filterRiwayatFaskes.set($event)"
+                >
+                  <option value="Semua Fasilitas">Semua Fasilitas</option>
+                  <option value="Klinik Sehat">Klinik Sehat</option>
+                </select>
+                <i class="ri-arrow-down-s-line filter-icon-end" aria-hidden="true"></i>
+              </div>
+            </div>
+
+            <!-- Filter 4: Keluhan / Diagnosa Search -->
+            <div class="filter-item-col filter-col-search">
+              <label class="filter-field-label">Keluhan/Diagnosa</label>
+              <div class="filter-input-wrap">
+                <input
+                  type="text"
+                  class="filter-control-input"
+                  placeholder="Cari keluhan atau diagnosa..."
+                  [ngModel]="filterRiwayatQuery()"
+                  (ngModelChange)="filterRiwayatQuery.set($event)"
+                />
+                <i class="ri-search-line filter-icon-end" aria-hidden="true"></i>
+              </div>
+            </div>
+
+            <!-- Filter 5: Action Buttons -->
+            <div class="filter-item-col filter-actions-col">
+              <button type="button" class="btn-dark-filter-apply">
+                <i class="ri-equalizer-line" aria-hidden="true"></i>
+                <span>Filters</span>
+              </button>
+              <button type="button" class="btn-export-outline-teal" title="Export Excel / Data">
+                <i class="ri-file-excel-2-line" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Vertical Timeline List -->
+        <div class="health-timeline-container">
+          <div class="timeline-items-track">
+            @for (item of riwayatKesehatanList; track item.id; let i = $index) {
+              <div class="timeline-row-entry">
+                <!-- Timeline Marker Node on the Left -->
+                <div class="timeline-node-axis">
+                  <div class="timeline-line-track"></div>
+                  <div
+                    class="timeline-marker-dot"
+                    [class.marker-active]="i === 0"
+                    [class.marker-normal]="i > 0"
+                  ></div>
+                </div>
+
+                <!-- Timeline Record Card -->
+                <article class="timeline-record-card">
+                  <!-- Col 1: Date & Time -->
+                  <div class="card-col-date">
+                    <span class="day-large-num">{{ item.day }}</span>
+                    <span class="month-year-text">{{ item.monthYear }}</span>
+                    <span class="time-text">{{ item.time }}</span>
+                  </div>
+
+                  <!-- Col 2: Clinic & Location -->
+                  <div class="card-col-facility">
+                    <strong class="facility-title">{{ item.faskes }}</strong>
+                    <span class="facility-city">{{ item.faskesKota }}</span>
+                  </div>
+
+                  <!-- Col 3: Doctor Details -->
+                  <div class="card-col-doctor">
+                    <span class="micro-section-label">Dokter</span>
+                    <div class="doctor-thumb-row">
+                      <img [src]="item.dokterAvatar" [alt]="item.dokter" class="doctor-avatar-circle" />
+                      <div class="doctor-thumb-meta">
+                        <strong class="doctor-name-strong">{{ item.dokter }}</strong>
+                        <span class="doctor-spec-span">{{ item.dokterSpesialis }}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Col 4: Complaints & Diagnosis -->
+                  <div class="card-col-complaints">
+                    <div class="complaint-subgroup">
+                      <span class="micro-section-label">Keluhan</span>
+                      <p class="complaint-body-text">{{ item.keluhan }}</p>
+                    </div>
+                    <div class="diagnosis-subgroup">
+                      <span class="micro-section-label">Diagnosa</span>
+                      <p class="diagnosis-body-text">{{ item.diagnosa }}</p>
+                    </div>
+                  </div>
+
+                  <!-- Col 5: Actions & Prescriptions -->
+                  <div class="card-col-actions-presc">
+                    <span class="micro-section-label">Tindakan dan Resep</span>
+                    <ul class="actions-bullet-list">
+                      @for (act of item.tindakan; track act) {
+                        <li>{{ act }}</li>
+                      }
+                    </ul>
+                  </div>
+
+                  <!-- Col 6: Action Button -->
+                  <div class="card-col-button">
+                    <button
+                      type="button"
+                      class="btn-lihat-detail-outline"
+                      (click)="viewRiwayatDetail(item)"
+                    >
+                      Lihat Detail
+                    </button>
+                  </div>
+                </article>
+              </div>
+            }
+          </div>
+        </div>
+      } @else {
+        <!-- DETAIL VIEW (Matching UI: Detail Pasien - Riwayat Kesehatan - Detail Riwayat Kesehatan.png) -->
+        <div class="grid-two-columns">
+          <!-- Left Column: Unified Card with Ringkasan Riwayat Kesehatan + Back Button + dual columns inside -->
+          <div class="col-main-content">
+            <section class="content-panel-card">
+              <div class="panel-header detail-header-between">
+                <h2 class="panel-title">
+                  <span>Ringkasan Riwayat Kesehatan</span>
+                </h2>
+                <button
+                  type="button"
+                  class="btn-back-to-list"
+                  (click)="backToRiwayatList()"
+                  aria-label="Kembali ke Daftar Riwayat"
+                >
+                  <i class="ri-arrow-left-line" aria-hidden="true"></i>
+                  <span>Kembali</span>
+                </button>
+              </div>
+
+              <div class="panel-body detail-dual-columns-body">
+                <!-- Left Subcolumn: Keluhan, Diagnosa, Resep Table, Catatan -->
+                <div class="detail-subcol-clinical">
+                  <div class="info-block-item">
+                    <span class="block-label">Keluhan Utama</span>
+                    <p class="block-value-highlight">{{ riwayatKesehatan.keluhanUtama }}</p>
+                  </div>
+
+                  <div class="info-block-item">
+                    <span class="block-label">Riwayat Keluhan</span>
+                    <p class="block-value-text">{{ riwayatKesehatan.riwayatKeluhan }}</p>
+                  </div>
+
+                  <div class="info-block-item">
+                    <span class="block-label">Diagnosa</span>
+                    <p class="block-value-highlight text-teal">{{ riwayatKesehatan.diagnosa }}</p>
+                  </div>
+
+                  <div class="info-block-item">
+                    <span class="block-label">Tindakan</span>
+                    <ul class="tindakan-simple-bullets">
+                      @for (t of riwayatKesehatan.tindakan; track t) {
+                        <li>{{ t }}</li>
+                      }
+                    </ul>
+                  </div>
+
+                  <!-- Resep Table matching mockup: Resep | Aturan Pakai | Harga -->
+                  <div class="info-block-item">
+                    <span class="block-label">Resep</span>
+                    <div class="detail-resep-table-wrap">
+                      <table class="detail-resep-mini-table">
+                        <thead>
+                          <tr>
+                            <th>Resep</th>
+                            <th>Aturan Pakai</th>
+                            <th class="th-right">Harga</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @for (r of riwayatKesehatan.resep; track r.nama) {
+                            <tr>
+                              <td class="font-medium">{{ r.nama }}</td>
+                              <td class="text-muted-sub">{{ r.aturanPakai }}</td>
+                              <td class="td-right">{{ r.harga }}</td>
+                            </tr>
+                          }
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  <div class="info-block-item mb-0">
+                    <span class="block-label">Catatan Tambahan</span>
+                    <p class="block-value-text text-italic">{{ riwayatKesehatan.catatanTambahan }}</p>
+                  </div>
+                </div>
+
+                <!-- Right Subcolumn: Pemeriksaan Fisik with Badge Saat Kunjungan -->
+                <div class="detail-subcol-vitals">
+                  <div class="vitals-header-row">
+                    <h3 class="vitals-section-heading">Pemeriksaan Fisik</h3>
+                    <span class="badge-saat-kunjungan">Saat Kunjungan</span>
+                  </div>
+
+                  <div class="vitals-vertical-list">
+                    <div class="vital-list-item">
+                      <div class="vital-list-icon icon-teal-soft">
+                        <i class="ri-temp-hot-line" aria-hidden="true"></i>
+                      </div>
+                      <span class="vital-list-label">Suhu Tubuh</span>
+                      <strong class="vital-list-val">{{ riwayatKesehatan.pemeriksaanFisik.suhu }}</strong>
+                    </div>
+
+                    <div class="vital-list-item">
+                      <div class="vital-list-icon icon-rose-soft">
+                        <i class="ri-heart-pulse-line" aria-hidden="true"></i>
+                      </div>
+                      <span class="vital-list-label">Tekanan Darah</span>
+                      <strong class="vital-list-val">{{ riwayatKesehatan.pemeriksaanFisik.tensi }}</strong>
+                    </div>
+
+                    <div class="vital-list-item">
+                      <div class="vital-list-icon icon-blue-soft">
+                        <i class="ri-pulse-line" aria-hidden="true"></i>
+                      </div>
+                      <span class="vital-list-label">Denyut Nadi</span>
+                      <strong class="vital-list-val">{{ riwayatKesehatan.pemeriksaanFisik.nadi }}</strong>
+                    </div>
+
+                    <div class="vital-list-item">
+                      <div class="vital-list-icon icon-cyan-soft">
+                        <i class="ri-windy-line" aria-hidden="true"></i>
+                      </div>
+                      <span class="vital-list-label">Respirasi</span>
+                      <strong class="vital-list-val">{{ riwayatKesehatan.pemeriksaanFisik.respirasi }}</strong>
+                    </div>
+
+                    <div class="vital-list-item">
+                      <div class="vital-list-icon icon-amber-soft">
+                        <i class="ri-scales-line" aria-hidden="true"></i>
+                      </div>
+                      <span class="vital-list-label">Berat Badan</span>
+                      <strong class="vital-list-val">{{ riwayatKesehatan.pemeriksaanFisik.beratBadan }}</strong>
+                    </div>
+
+                    <div class="vital-list-item">
+                      <div class="vital-list-icon icon-indigo-soft">
+                        <i class="ri-ruler-line" aria-hidden="true"></i>
+                      </div>
+                      <span class="vital-list-label">Tinggi Badan</span>
+                      <strong class="vital-list-val">{{ riwayatKesehatan.pemeriksaanFisik.tinggiBadan }}</strong>
+                    </div>
+
+                    <div class="vital-list-item">
+                      <div class="vital-list-icon icon-red-soft">
+                        <i class="ri-first-aid-kit-line" aria-hidden="true"></i>
+                      </div>
+                      <span class="vital-list-label">IMT (BMI)</span>
+                      <strong class="vital-list-val">{{ riwayatKesehatan.pemeriksaanFisik.imt }}</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- Right Column: Sidebar (Informasi Kunjungan & Riwayat Sebelumnya) -->
+          <div class="col-sidebar-content">
+            <!-- Card 1: Informasi Kunjungan -->
+            <section class="content-panel-card">
+              <div class="panel-header">
+                <h2 class="panel-title">
+                  <span>Informasi Kunjungan</span>
+                </h2>
+              </div>
+              <div class="panel-body">
+                <div class="visit-meta-list">
+                  <div class="visit-meta-row">
+                    <span class="meta-label">Nomor Kunjungan</span>
+                    <strong class="meta-val text-teal">{{ riwayatKesehatan.informasiKunjungan.nomorKunjungan }}</strong>
+                  </div>
+                  <div class="visit-meta-row">
+                    <span class="meta-label">Tanggal dan Waktu</span>
+                    <span class="meta-val">{{ riwayatKesehatan.informasiKunjungan.tanggal }}</span>
+                  </div>
+                  <div class="visit-meta-row">
+                    <span class="meta-label">Durasi Konsultasi</span>
+                    <span class="meta-val">{{ riwayatKesehatan.informasiKunjungan.durasi }}</span>
+                  </div>
+                  <div class="visit-meta-row">
+                    <span class="meta-label">Metode</span>
+                    <span class="meta-val">{{ riwayatKesehatan.informasiKunjungan.metode }}</span>
+                  </div>
+                  <div class="visit-meta-row">
+                    <span class="meta-label">Dibuat Oleh</span>
+                    <div class="doctor-creator-row">
+                      <img src="assets/images/avatar/male.png" alt="Doctor" class="doc-creator-avatar" />
+                      <div class="doc-creator-meta">
+                        <strong class="doc-creator-name">{{ riwayatKesehatan.informasiKunjungan.dokter }}</strong>
+                        <span class="doc-creator-spec">{{ riwayatKesehatan.informasiKunjungan.spesialisasi }}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="visit-meta-row">
+                    <span class="meta-label">Terakhir diperbarui</span>
+                    <span class="meta-val text-muted">{{ riwayatKesehatan.informasiKunjungan.terakhirDiperbarui }}</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Card 2: Riwayat Sebelumnya -->
+            <section class="content-panel-card">
+              <div class="panel-header">
+                <h2 class="panel-title">
+                  <span>Riwayat Sebelumnya</span>
+                </h2>
+              </div>
+              <div class="panel-body">
+                <div class="past-visits-table-list">
+                  @for (prev of riwayatKesehatan.riwayatSebelumnya; track prev.tanggal + prev.dokter) {
+                    <div class="past-visit-row-item">
+                      <div class="pvi-date">{{ prev.tanggal }}</div>
+                      <div class="pvi-complaint">{{ prev.keluhan }}</div>
+                      <div class="pvi-doctor">{{ prev.dokter }}</div>
+                      <div class="pvi-status">
+                        <span class="status-badge-green">{{ prev.status }}</span>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- ========================================== -->
+  <!-- TAB 2: PESANAN                             -->
+  <!-- ========================================== -->
+  @if (activeTab() === 'pesanan') {
+    <div class="tab-pane-content">
+      @if (pesananViewMode() === 'list') {
+        <!-- Pesanan List View -->
+        <section class="content-panel-card">
+          <div class="panel-header table-panel-header">
+            <div class="panel-header-left">
+              <h2 class="panel-title">
+                <i class="ri-shopping-cart-2-line" aria-hidden="true"></i>
+                <span>Data Pesanan Pasien</span>
+              </h2>
+            </div>
+            <!-- Filter Bar -->
+            <div class="table-filter-bar">
+              <div class="search-input-box">
+                <i class="ri-search-line" aria-hidden="true"></i>
+                <input
+                  type="text"
+                  placeholder="Cari nomor transaksi..."
+                  [value]="searchQuery()"
+                  (input)="searchQuery.set($any($event.target).value)"
+                />
+              </div>
+
+              <select
+                class="filter-select"
+                [value]="filterTipe()"
+                (change)="filterTipe.set($any($event.target).value)"
+              >
+                <option value="Semua Tipe">Semua Tipe</option>
+                <option value="Obat Resep">Obat Resep</option>
+                <option value="Obat Non-Resep">Obat Non-Resep</option>
+              </select>
+
+              <select
+                class="filter-select"
+                [value]="filterStatus()"
+                (change)="filterStatus.set($any($event.target).value)"
+              >
+                <option value="Semua Status">Semua Status</option>
+                <option value="Selesai">Selesai</option>
+                <option value="Diproses">Diproses</option>
+                <option value="Dibatalkan">Dibatalkan</option>
+              </select>
+
+              <button type="button" class="btn-export-outline" aria-label="Export Data Pesanan">
+                <i class="ri-download-2-line" aria-hidden="true"></i>
+                <span>Export</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Table Container -->
+          <div class="table-responsive-wrapper">
+            <table class="custom-data-table">
+              <thead>
+                <tr>
+                  <th>NO. TRANSAKSI</th>
+                  <th>TANGGAL</th>
+                  <th>TIPE</th>
+                  <th>RESEP</th>
+                  <th>STATUS</th>
+                  <th>TOTAL ITEM</th>
+                  <th>TOTAL PEMBAYARAN</th>
+                  <th class="text-center">AKSI</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of pesananList; track item.id + $index) {
+                  <tr>
+                    <td>
+                      <div class="trans-id-cell">
+                        <strong class="id-primary">{{ item.id }}</strong>
+                        <span class="id-sub">{{ item.trxId }}</span>
+                      </div>
+                    </td>
+                    <td>{{ item.tanggal }}</td>
+                    <td>
+                      <span
+                        class="pill-tipe"
+                        [class.tipe-resep]="item.tipe === 'Obat Resep'"
+                        [class.tipe-non]="item.tipe === 'Obat Non-Resep'"
+                      >
+                        {{ item.tipe }}
+                      </span>
+                    </td>
+                    <td>
+                      @if (item.resepInfo) {
+                        <div class="resep-cell-info">
+                          <span class="resep-num">{{ item.resepInfo.nomor }}</span>
+                          <span class="resep-doc">{{ item.resepInfo.dokter }}</span>
+                          <span class="resep-date">{{ item.resepInfo.tanggal }}</span>
+                        </div>
+                      } @else {
+                        <span class="text-muted">-</span>
+                      }
+                    </td>
+                    <td>
+                      <div class="status-cell">
+                        <span class="badge-status-pill success">
+                          <span class="dot-indicator"></span>
+                          {{ item.status }}
+                        </span>
+                        <span class="status-time">{{ item.statusWaktu }}</span>
+                      </div>
+                    </td>
+                    <td>{{ item.totalItem }}</td>
+                    <td>
+                      <div class="payment-cell">
+                        <strong class="pay-amount">{{ item.totalPembayaran }}</strong>
+                        <span class="pay-method">{{ item.metodePembayaran }}</span>
+                      </div>
+                    </td>
+                    <td class="text-center">
+                      <button
+                        type="button"
+                        class="btn-icon-action"
+                        (click)="setPesananViewMode('detail')"
+                        title="Lihat Detail Pesanan"
+                        aria-label="Lihat Detail Pesanan"
+                      >
+                        <i class="ri-eye-line" aria-hidden="true"></i>
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          <div class="table-pagination-footer">
+            <span class="pagination-info">Menampilkan 1 - 5 dari 18 pesanan</span>
+            <div class="pagination-controls">
+              <button type="button" class="page-nav-btn" disabled>
+                <i class="ri-arrow-left-s-line" aria-hidden="true"></i>
+              </button>
+              <button type="button" class="page-num-btn active">1</button>
+              <button type="button" class="page-num-btn">2</button>
+              <button type="button" class="page-num-btn">3</button>
+              <button type="button" class="page-nav-btn">
+                <i class="ri-arrow-right-s-line" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+        </section>
+      } @else {
+        <!-- Detail Pesanan View -->
+        <div class="detail-pesanan-view-wrap">
+          <div class="sub-nav-bar">
+            <button type="button" class="btn-back-sub" (click)="setPesananViewMode('list')">
+              <i class="ri-arrow-left-line" aria-hidden="true"></i>
+              <span>Kembali ke Daftar Pesanan</span>
+            </button>
+            <div class="detail-title-badge-wrap">
+              <h2 class="sub-title">Detail Pesanan {{ selectedPesananDetail.nomor }}</h2>
+              <span class="badge-status-pill info">
+                <i class="ri-truck-line" aria-hidden="true"></i>
+                {{ selectedPesananDetail.statusPengiriman }}
+              </span>
+            </div>
+            <div class="sub-actions-wrap">
+              <button type="button" class="btn-outline-action">
+                <i class="ri-printer-line" aria-hidden="true"></i>
+                <span>Cetak Invoice</span>
+              </button>
+              <button type="button" class="btn-outline-action">
+                <i class="ri-map-pin-user-line" aria-hidden="true"></i>
+                <span>Lacak Pengiriman</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="grid-two-columns">
+            <!-- Left: Ordered Products & Totals -->
+            <div class="col-main-content">
+              <section class="content-panel-card">
+                <div class="panel-header">
+                  <h3 class="panel-title">
+                    <i class="ri-medicine-bottle-line" aria-hidden="true"></i>
+                    <span>Daftar Produk yang Dipesan</span>
+                  </h3>
+                </div>
+                <div class="panel-body">
+                  <div class="table-responsive-wrapper">
+                    <table class="custom-data-table">
+                      <thead>
+                        <tr>
+                          <th>NO</th>
+                          <th>PRODUK</th>
+                          <th>HARGA</th>
+                          <th>QTY</th>
+                          <th>JUMLAH</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @for (p of selectedPesananDetail.produk; track p.no) {
+                          <tr>
+                            <td>{{ p.no }}</td>
+                            <td>
+                              <div class="product-item-cell">
+                                <strong class="prod-name">{{ p.nama }}</strong>
+                                <span class="prod-cat">{{ p.kategori }}</span>
+                                <div class="prod-rx-tag">
+                                  <i class="ri-file-text-line" aria-hidden="true"></i>
+                                  <span>{{ p.nomorResep }} • {{ p.dokter }}</span>
+                                </div>
+                              </div>
+                            </td>
+                            <td>Rp. {{ p.harga | number }}</td>
+                            <td>{{ p.qty }}</td>
+                            <td><strong>Rp. {{ p.jumlah | number }}</strong></td>
+                          </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <!-- Order Financial Summary -->
+                  <div class="order-summary-box">
+                    <div class="sum-row">
+                      <span>Subtotal Produk</span>
+                      <span>Rp. 185.000</span>
+                    </div>
+                    <div class="sum-row text-success">
+                      <span>Diskon Resep</span>
+                      <span>- Rp. 15.000</span>
+                    </div>
+                    <div class="sum-row">
+                      <span>Biaya Pengiriman (JNE Reguler)</span>
+                      <span>Rp. 15.000</span>
+                    </div>
+                    <div class="sum-row grand-total">
+                      <strong>Total Akhir</strong>
+                      <strong class="total-highlight">Rp. 185.000</strong>
+                    </div>
+                  </div>
+
+                  <!-- Pharmacist Verification Banner -->
+                  <div class="pharmacist-verify-banner">
+                    <div class="verify-icon">
+                      <i class="ri-shield-check-line" aria-hidden="true"></i>
+                    </div>
+                    <div class="verify-text">
+                      <strong>Verifikasi Apoteker Terkonfirmasi</strong>
+                      <p>
+                        Resep telah diverifikasi oleh Apoteker
+                        <span class="text-bold">apt. Dian Ayu S.Farm</span> (SIP: 19827364/SIP/2021) pada 24 Mei 2026 11:15
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <!-- Right: Shipping Info & Timeline -->
+            <div class="col-sidebar-content">
+              <!-- Shipping Details -->
+              <section class="content-panel-card">
+                <div class="panel-header">
+                  <h3 class="panel-title">
+                    <i class="ri-truck-line" aria-hidden="true"></i>
+                    <span>Informasi Pengiriman</span>
+                  </h3>
+                </div>
+                <div class="panel-body">
+                  <div class="shipping-info-list">
+                    <div class="ship-row">
+                      <span class="ship-label">Kurir</span>
+                      <span class="ship-val"><strong>JNE Express</strong> (Reguler)</span>
+                    </div>
+                    <div class="ship-row">
+                      <span class="ship-label">No. Resi</span>
+                      <span class="ship-val badge-resi">
+                        <span>JNE9876543210</span>
+                        <i class="ri-file-copy-line" title="Salin Resi" aria-hidden="true"></i>
+                      </span>
+                    </div>
+                    <div class="ship-row">
+                      <span class="ship-label">Penerima</span>
+                      <span class="ship-val">Andi Putra (0812-3456-7890)</span>
+                    </div>
+                    <div class="ship-row">
+                      <span class="ship-label">Alamat Pengiriman</span>
+                      <span class="ship-val">Jalan Merdeka No.1 , Jakarta Pusat, DKI Jakarta 10110</span>
+                    </div>
+                    <div class="ship-row">
+                      <span class="ship-label">Catatan Pengiriman</span>
+                      <span class="ship-val text-muted">Titip di pos satpam jika tidak ada orang di rumah</span>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <!-- Order Timeline / Tracking Stepper -->
+              <section class="content-panel-card">
+                <div class="panel-header">
+                  <h3 class="panel-title">
+                    <i class="ri-time-line" aria-hidden="true"></i>
+                    <span>Status & Timeline Pesanan</span>
+                  </h3>
+                </div>
+                <div class="panel-body">
+                  <div class="vertical-stepper">
+                    <div class="step-item completed">
+                      <div class="step-bullet">
+                        <i class="ri-check-line" aria-hidden="true"></i>
+                      </div>
+                      <div class="step-content">
+                        <strong>Pesanan Dibuat</strong>
+                        <span class="step-time">24 Mei 2026, 10:30</span>
+                        <p class="step-desc">Pembayaran telah berhasil diverifikasi via BCA Transfer.</p>
+                      </div>
+                    </div>
+
+                    <div class="step-item completed">
+                      <div class="step-bullet">
+                        <i class="ri-check-line" aria-hidden="true"></i>
+                      </div>
+                      <div class="step-content">
+                        <strong>Diverifikasi Apoteker</strong>
+                        <span class="step-time">24 Mei 2026, 11:15</span>
+                        <p class="step-desc">Resep telah divalidasi dan lolos skrining klinis.</p>
+                      </div>
+                    </div>
+
+                    <div class="step-item completed">
+                      <div class="step-bullet">
+                        <i class="ri-check-line" aria-hidden="true"></i>
+                      </div>
+                      <div class="step-content">
+                        <strong>Dikemas di Farmasi</strong>
+                        <span class="step-time">24 Mei 2026, 12:45</span>
+                        <p class="step-desc">Obat telah disiapkan dan dikemas secara aman.</p>
+                      </div>
+                    </div>
+
+                    <div class="step-item active">
+                      <div class="step-bullet">
+                        <i class="ri-truck-line" aria-hidden="true"></i>
+                      </div>
+                      <div class="step-content">
+                        <strong>Sedang Dikirim</strong>
+                        <span class="step-time">24 Mei 2026, 14:00</span>
+                        <p class="step-desc">Kurir JNE sedang dalam perjalanan menuju lokasi Anda.</p>
+                      </div>
+                    </div>
+
+                    <div class="step-item pending">
+                      <div class="step-bullet">
+                        <i class="ri-home-smile-line" aria-hidden="true"></i>
+                      </div>
+                      <div class="step-content">
+                        <strong>Pesanan Diterima</strong>
+                        <span class="step-time">Estimasi: 24 Mei 2026, 16:30</span>
+                        <p class="step-desc">Menunggu konfirmasi penerimaan oleh pasien.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- ========================================== -->
+  <!-- TAB 3: RESEP                               -->
+  <!-- ========================================== -->
+  @if (activeTab() === 'resep') {
+    <div class="tab-pane-content grid-two-columns">
+      <!-- Left Column: Table Data Resep -->
+      <div class="col-main-content">
+        <section class="content-panel-card">
+          <div class="panel-header table-panel-header">
+            <div class="panel-header-left">
+              <h2 class="panel-title">
+                <i class="ri-file-list-3-line" aria-hidden="true"></i>
+                <span>Data Resep Elektronik Pasien</span>
+              </h2>
+            </div>
+            <div class="table-filter-bar">
+              <div class="search-input-box">
+                <i class="ri-search-line" aria-hidden="true"></i>
+                <input type="text" placeholder="Cari nomor resep, dokter..." />
+              </div>
+              <select class="filter-select">
+                <option>Semua Status</option>
+                <option>Diproses</option>
+                <option>Selesai</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-responsive-wrapper">
+            <table class="custom-data-table">
+              <thead>
+                <tr>
+                  <th>NOMOR RESEP</th>
+                  <th>TANGGAL RESEP</th>
+                  <th>FASILITAS KESEHATAN</th>
+                  <th>DOKTER</th>
+                  <th>STATUS</th>
+                  <th>TOTAL OBAT</th>
+                  <th class="text-center">AKSI</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of resepList; track item.nomorResep + $index) {
+                  <tr>
+                    <td>
+                      <strong class="id-primary">{{ item.nomorResep }}</strong>
+                    </td>
+                    <td>{{ item.tanggalResep }}</td>
+                    <td>
+                      <div class="faskes-info-cell">
+                        <strong class="faskes-name">{{ item.faskes }}</strong>
+                        <span class="faskes-loc">{{ item.lokasiFaskes }}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="doctor-cell-info">
+                        <strong class="doc-name">{{ item.dokter }}</strong>
+                        <span class="doc-spec">{{ item.spesialisasi }}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span
+                        class="badge-status-pill"
+                        [class.success]="item.status === 'Selesai'"
+                        [class.warning]="item.status === 'Diproses'"
+                      >
+                        <span class="dot-indicator"></span>
+                        {{ item.status }}
+                      </span>
+                    </td>
+                    <td>{{ item.totalObat }}</td>
+                    <td class="text-center">
+                      <button
+                        type="button"
+                        class="btn-icon-action"
+                        (click)="selectResep(item)"
+                        title="Lihat Detail Resep"
+                        aria-label="Lihat Detail Resep"
+                      >
+                        <i class="ri-eye-line" aria-hidden="true"></i>
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          <div class="table-pagination-footer">
+            <span class="pagination-info">Menampilkan 1 - 5 dari 7 resep</span>
+            <div class="pagination-controls">
+              <button type="button" class="page-nav-btn" disabled>
+                <i class="ri-arrow-left-s-line" aria-hidden="true"></i>
+              </button>
+              <button type="button" class="page-num-btn active">1</button>
+              <button type="button" class="page-num-btn">2</button>
+              <button type="button" class="page-nav-btn">
+                <i class="ri-arrow-right-s-line" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Right Column: Detail Resep Card -->
+      <div class="col-sidebar-content">
+        <section class="content-panel-card">
+          <div class="panel-header">
+            <div class="detail-header-side">
+              <div>
+                <h3 class="panel-title">{{ selectedResep().faskes }}</h3>
+                <span class="panel-subtitle">{{ selectedResep().lokasi }}</span>
+              </div>
+              <span class="badge-status-pill success">{{ selectedResep().status }}</span>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="resep-card-top-info">
+              <div class="info-duo">
+                <span class="meta-label">Nomor Resep</span>
+                <strong class="text-teal">{{ selectedResep().nomor }}</strong>
+              </div>
+              <div class="info-duo">
+                <span class="meta-label">Tanggal Resep</span>
+                <span>{{ selectedResep().tanggal }}</span>
+              </div>
+              <div class="info-duo">
+                <span class="meta-label">Dokter</span>
+                <span>{{ selectedResep().dokter }} ({{ selectedResep().spesialisasi }})</span>
+              </div>
+              <div class="info-duo">
+                <span class="meta-label">Diagnosa</span>
+                <span class="text-bold">{{ selectedResep().diagnosa }}</span>
+              </div>
+            </div>
+
+            <div class="medicines-prescription-table-wrap">
+              <span class="block-label">Daftar Obat yang Diresepkan:</span>
+              <table class="table-mini-clean">
+                <thead>
+                  <tr>
+                    <th>NO</th>
+                    <th>NAMA OBAT</th>
+                    <th>DOSIS</th>
+                    <th>ATURAN PAKAI</th>
+                    <th>JUMLAH</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (m of selectedResep().daftarObat; track m.nama; let idx = $index) {
+                    <tr>
+                      <td>{{ idx + 1 }}</td>
+                      <td><strong>{{ m.nama }}</strong></td>
+                      <td>{{ m.dosis }}</td>
+                      <td>{{ m.aturanPakai }}</td>
+                      <td>{{ m.jumlah }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+
+            <div class="doctor-note-box mt-3">
+              <div class="note-icon">
+                <i class="ri-message-2-line" aria-hidden="true"></i>
+              </div>
+              <div class="note-text">
+                <strong>Catatan Dokter:</strong>
+                <p>{{ selectedResep().catatan }}</p>
+              </div>
+            </div>
+
+            <div class="action-buttons-stack mt-3">
+              <button type="button" class="btn-outline-action w-100">
+                <i class="ri-printer-line" aria-hidden="true"></i>
+                <span>Cetak Lembar Resep</span>
+              </button>
+              <button type="button" class="btn-full-outline w-100" (click)="selectTab('pesanan')">
+                <i class="ri-history-line" aria-hidden="true"></i>
+                <span>Lihat Riwayat Pesanan Obat Ini</span>
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  }
+
+  <!-- ========================================== -->
+  <!-- TAB 4: PEMBAYARAN                          -->
+  <!-- ========================================== -->
+  @if (activeTab() === 'pembayaran') {
+    <div class="tab-pane-content grid-two-columns">
+      <!-- Left Column: Table Data Pembayaran -->
+      <div class="col-main-content">
+        <section class="content-panel-card">
+          <div class="panel-header table-panel-header">
+            <div class="panel-header-left">
+              <h2 class="panel-title">
+                <i class="ri-wallet-3-line" aria-hidden="true"></i>
+                <span>Riwayat Transaksi & Pembayaran</span>
+              </h2>
+            </div>
+            <div class="table-filter-bar">
+              <div class="search-input-box">
+                <i class="ri-search-line" aria-hidden="true"></i>
+                <input type="text" placeholder="Cari transaksi..." />
+              </div>
+              <select class="filter-select">
+                <option>Semua Metode</option>
+                <option>BCA</option>
+                <option>OVO</option>
+                <option>GoPay</option>
+                <option>DANA</option>
+                <option>BRI</option>
+                <option>BNI</option>
+                <option>QRIS</option>
+              </select>
+              <select class="filter-select">
+                <option>Semua Status</option>
+                <option>Selesai</option>
+                <option>Gagal</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-responsive-wrapper">
+            <table class="custom-data-table">
+              <thead>
+                <tr>
+                  <th>NO. TRANSAKSI</th>
+                  <th>SUMBER</th>
+                  <th>METODE</th>
+                  <th>DOKTER</th>
+                  <th>STATUS</th>
+                  <th>TOTAL PEMBAYARAN</th>
+                  <th class="text-center">AKSI</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of pembayaranList; track item.noTransaksi + $index) {
+                  <tr>
+                    <td>
+                      <div class="trans-id-cell">
+                        <strong class="id-primary">{{ item.noTransaksi }}</strong>
+                        <span class="id-sub">{{ item.tanggal }}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="source-cell">
+                        <span class="badge-source-pill">{{ item.sumberTipe }}</span>
+                        <span class="source-no">{{ item.sumberNomor }}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="method-brand-cell">
+                        <span class="method-badge-pill" [class]="'badge-' + item.metodeKode">
+                          {{ item.metodeNama }}
+                        </span>
+                        <span class="method-detail-text">{{ item.metodeDetail }}</span>
+                      </div>
+                    </td>
+                    <td>{{ item.dokter }}</td>
+                    <td>
+                      <span class="badge-status-pill success">
+                        <span class="dot-indicator"></span>
+                        {{ item.status }}
+                      </span>
+                    </td>
+                    <td>
+                      <strong class="pay-amount">{{ item.totalPembayaran }}</strong>
+                    </td>
+                    <td class="text-center">
+                      <button
+                        type="button"
+                        class="btn-icon-action"
+                        title="Lihat Bukti Bayar"
+                        aria-label="Lihat Bukti Bayar"
+                      >
+                        <i class="ri-receipt-line" aria-hidden="true"></i>
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          <div class="table-pagination-footer">
+            <span class="pagination-info">Menampilkan 1 - 7 dari 18 transaksi</span>
+            <div class="pagination-controls">
+              <button type="button" class="page-nav-btn" disabled>
+                <i class="ri-arrow-left-s-line" aria-hidden="true"></i>
+              </button>
+              <button type="button" class="page-num-btn active">1</button>
+              <button type="button" class="page-num-btn">2</button>
+              <button type="button" class="page-nav-btn">
+                <i class="ri-arrow-right-s-line" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Right Column: Financial Summary & SVG Donut Chart -->
+      <div class="col-sidebar-content">
+        <!-- 4 Metric Cards Grid -->
+        <div class="metrics-quad-grid">
+          <div class="quad-stat-card border-teal">
+            <span class="quad-label">Total Pembayaran</span>
+            <strong class="quad-value text-teal">{{ pembayaranSummary.total }}</strong>
+          </div>
+          <div class="quad-stat-card border-blue">
+            <span class="quad-label">Total Transaksi</span>
+            <strong class="quad-value text-blue">{{ pembayaranSummary.transaksiCount }} Transaksi</strong>
+          </div>
+          <div class="quad-stat-card border-amber">
+            <span class="quad-label">Rata-rata Transaksi</span>
+            <strong class="quad-value text-amber">{{ pembayaranSummary.rataRata }}</strong>
+          </div>
+          <div class="quad-stat-card border-green">
+            <span class="quad-label">Transaksi Tertinggi</span>
+            <strong class="quad-value text-green">{{ pembayaranSummary.tertinggi }}</strong>
+          </div>
+        </div>
+
+        <!-- Donut Chart Card -->
+        <section class="content-panel-card mt-3">
+          <div class="panel-header">
+            <h3 class="panel-title">
+              <i class="ri-pie-chart-2-line" aria-hidden="true"></i>
+              <span>Metode Pembayaran Terbanyak</span>
+            </h3>
+          </div>
+          <div class="panel-body">
+            <div class="donut-chart-container">
+              <div class="donut-svg-wrapper">
+                <svg viewBox="0 0 160 160" class="donut-svg">
+                  <!-- Donut Base Background -->
+                  <circle cx="80" cy="80" r="60" class="donut-base" />
+                  <!-- Transfer Bank: 45% -> 0.45 * 376.99 = 169.64, offset 0 -->
+                  <circle
+                    cx="80"
+                    cy="80"
+                    r="60"
+                    class="donut-segment segment-1"
+                    stroke-dasharray="169.65 207.34"
+                    stroke-dashoffset="0"
+                  />
+                  <!-- E-Wallet: 30% -> 0.30 * 376.99 = 113.1, offset -169.65 -->
+                  <circle
+                    cx="80"
+                    cy="80"
+                    r="60"
+                    class="donut-segment segment-2"
+                    stroke-dasharray="113.1 263.89"
+                    stroke-dashoffset="-169.65"
+                  />
+                  <!-- COD: 15% -> 0.15 * 376.99 = 56.55, offset -282.75 -->
+                  <circle
+                    cx="80"
+                    cy="80"
+                    r="60"
+                    class="donut-segment segment-3"
+                    stroke-dasharray="56.55 320.44"
+                    stroke-dashoffset="-282.75"
+                  />
+                  <!-- Kartu Kredit: 10% -> 0.10 * 376.99 = 37.7, offset -339.3 -->
+                  <circle
+                    cx="80"
+                    cy="80"
+                    r="60"
+                    class="donut-segment segment-4"
+                    stroke-dasharray="37.7 339.29"
+                    stroke-dashoffset="-339.3"
+                  />
+                </svg>
+                <div class="donut-center-label">
+                  <span class="donut-center-title">Total</span>
+                  <strong class="donut-center-val">100%</strong>
+                </div>
+              </div>
+
+              <!-- Legend List -->
+              <div class="donut-legend-list">
+                @for (item of pembayaranSummary.breakdown; track item.nama) {
+                  <div class="legend-row-item">
+                    <div class="legend-left">
+                      <span class="legend-color-dot" [style.backgroundColor]="item.warna"></span>
+                      <span class="legend-name">{{ item.nama }}</span>
+                    </div>
+                    <div class="legend-right">
+                      <span class="legend-amount">{{ item.nominal }}</span>
+                      <span class="legend-pct">({{ item.persen }}%)</span>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  }
+
+  <!-- ========================================== -->
+  <!-- TAB 5: TELEMEDICINE                        -->
+  <!-- ========================================== -->
+  @if (activeTab() === 'telemedicine') {
+    <div class="tab-pane-content grid-two-columns">
+      <!-- Left Column: Table Telemedicine -->
+      <div class="col-main-content">
+        <section class="content-panel-card">
+          <div class="panel-header table-panel-header">
+            <div class="panel-header-left">
+              <h2 class="panel-title">
+                <i class="ri-video-chat-line" aria-hidden="true"></i>
+                <span>Data Sesi Telemedicine</span>
+              </h2>
+            </div>
+            <div class="table-filter-bar">
+              <div class="search-input-box">
+                <i class="ri-search-line" aria-hidden="true"></i>
+                <input type="text" placeholder="Cari sesi atau dokter..." />
+              </div>
+              <select class="filter-select">
+                <option>Semua Status</option>
+                <option>Berlangsung</option>
+                <option>Selesai</option>
+                <option>Dibatalkan</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-responsive-wrapper">
+            <table class="custom-data-table">
+              <thead>
+                <tr>
+                  <th>NO. KONSULTASI</th>
+                  <th>TANGGAL</th>
+                  <th>DOKTER</th>
+                  <th>KELUHAN</th>
+                  <th>STATUS</th>
+                  <th>DURASI</th>
+                  <th class="text-center">AKSI</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of telemedicineList; track item.id + $index) {
+                  <tr>
+                    <td>
+                      <div class="trans-id-cell">
+                        <strong class="id-primary">{{ item.id }}</strong>
+                        <span class="id-sub">{{ item.invId }}</span>
+                      </div>
+                    </td>
+                    <td>{{ item.tanggal }}</td>
+                    <td>
+                      <div class="doctor-cell-info">
+                        <strong class="doc-name">{{ item.dokter }}</strong>
+                        <span class="doc-spec">{{ item.spesialisasi }}</span>
+                      </div>
+                    </td>
+                    <td>{{ item.keluhan }}</td>
+                    <td>
+                      <span
+                        class="badge-status-pill"
+                        [class.success]="item.status === 'Selesai'"
+                        [class.warning]="item.status === 'Berlangsung'"
+                        [class.danger]="item.status === 'Dibatalkan'"
+                      >
+                        <span class="dot-indicator"></span>
+                        {{ item.status }}
+                      </span>
+                    </td>
+                    <td>{{ item.durasi }}</td>
+                    <td class="text-center">
+                      <button
+                        type="button"
+                        class="btn-icon-action"
+                        (click)="selectTelemedicine(item)"
+                        title="Lihat Detail Konsultasi"
+                        aria-label="Lihat Detail Konsultasi"
+                      >
+                        <i class="ri-eye-line" aria-hidden="true"></i>
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          <div class="table-pagination-footer">
+            <span class="pagination-info">Menampilkan 1 - 7 dari 12 sesi</span>
+            <div class="pagination-controls">
+              <button type="button" class="page-nav-btn" disabled>
+                <i class="ri-arrow-left-s-line" aria-hidden="true"></i>
+              </button>
+              <button type="button" class="page-num-btn active">1</button>
+              <button type="button" class="page-num-btn">2</button>
+              <button type="button" class="page-nav-btn">
+                <i class="ri-arrow-right-s-line" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Right Column: Detail Konsultasi Card -->
+      <div class="col-sidebar-content">
+        <section class="content-panel-card">
+          <div class="panel-header">
+            <div class="detail-header-side">
+              <div>
+                <h3 class="panel-title">Detail Konsultasi Telemedicine</h3>
+                <span class="panel-subtitle">{{ selectedTelemedicine().nomor }} • {{ selectedTelemedicine().tanggal }}</span>
+              </div>
+              <span class="badge-status-pill success">Selesai</span>
+            </div>
+          </div>
+          <div class="panel-body">
+            <!-- Doctor Identity Card -->
+            <div class="doctor-highlight-box">
+              <div class="doctor-avatar-circle">
+                <i class="ri-user-star-line" aria-hidden="true"></i>
+              </div>
+              <div class="doctor-details">
+                <strong class="doctor-title">{{ selectedTelemedicine().dokter }}</strong>
+                <span class="doctor-specialty">{{ selectedTelemedicine().spesialisasi }}</span>
+                <span class="doctor-sip">SIP: 19827364/SIP/2021</span>
+              </div>
+            </div>
+
+            <!-- Complaint & Notes -->
+            <div class="info-block-item mt-3">
+              <span class="block-label">Keluhan Pasien</span>
+              <p class="block-value-text">{{ selectedTelemedicine().keluhan }}</p>
+            </div>
+
+            <div class="info-block-item">
+              <span class="block-label">Catatan & Saran Dokter</span>
+              <p class="block-value-text note-style">{{ selectedTelemedicine().catatan }}</p>
+            </div>
+
+            <!-- Metadata Key-Value Grid -->
+            <div class="visit-meta-list mt-3">
+              <div class="visit-meta-row">
+                <span class="meta-label">Durasi Konsultasi</span>
+                <span class="meta-val">{{ selectedTelemedicine().durasi }}</span>
+              </div>
+              <div class="visit-meta-row">
+                <span class="meta-label">Metode Konsultasi</span>
+                <span class="meta-val badge-method-pill">
+                  <i class="ri-video-chat-line" aria-hidden="true"></i>
+                  {{ selectedTelemedicine().metode }}
+                </span>
+              </div>
+              <div class="visit-meta-row">
+                <span class="meta-label">Status Pembayaran</span>
+                <span class="badge-status-pill success">{{ selectedTelemedicine().statusPembayaran }}</span>
+              </div>
+              <div class="visit-meta-row">
+                <span class="meta-label">Dibuat Oleh</span>
+                <span class="meta-val">{{ selectedTelemedicine().dibuatOleh }}</span>
+              </div>
+            </div>
+
+            <div class="action-buttons-stack mt-4">
+              <button type="button" class="btn-outline-action w-100">
+                <i class="ri-play-circle-line" aria-hidden="true"></i>
+                <span>Putar Rekaman Konsultasi</span>
+              </button>
+              <button type="button" class="btn-full-outline w-100" (click)="selectTab('resep')">
+                <i class="ri-file-list-3-line" aria-hidden="true"></i>
+                <span>Lihat Resep Obat Diterbitkan</span>
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  }
+
+  <!-- ========================================== -->
+  <!-- TAB 6: TELEFARMASI                         -->
+  <!-- ========================================== -->
+  @if (activeTab() === 'telefarmasi') {
+    <div class="tab-pane-content grid-two-columns">
+      <!-- Left Column: Table Telefarmasi -->
+      <div class="col-main-content">
+        <section class="content-panel-card">
+          <div class="panel-header table-panel-header">
+            <div class="panel-header-left">
+              <h2 class="panel-title">
+                <i class="ri-capsule-line" aria-hidden="true"></i>
+                <span>Data Konseling Telefarmasi</span>
+              </h2>
+            </div>
+            <div class="table-filter-bar">
+              <div class="search-input-box">
+                <i class="ri-search-line" aria-hidden="true"></i>
+                <input type="text" placeholder="Cari konseling atau apoteker..." />
+              </div>
+              <select class="filter-select">
+                <option>Semua Status</option>
+                <option>Berlangsung</option>
+                <option>Selesai</option>
+                <option>Dibatalkan</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-responsive-wrapper">
+            <table class="custom-data-table">
+              <thead>
+                <tr>
+                  <th>NOMOR RESEP</th>
+                  <th>TANGGAL RESEP</th>
+                  <th>APOTEKER</th>
+                  <th>KELUHAN</th>
+                  <th>STATUS</th>
+                  <th>DURASI</th>
+                  <th class="text-center">AKSI</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of telefarmasiList; track item.nomorResep + $index) {
+                  <tr>
+                    <td>
+                      <div class="trans-id-cell">
+                        <strong class="id-primary">{{ item.nomorResep }}</strong>
+                        <span class="id-sub">{{ item.invId }}</span>
+                      </div>
+                    </td>
+                    <td>{{ item.tanggalResep }}</td>
+                    <td>
+                      <div class="doctor-cell-info">
+                        <strong class="doc-name">{{ item.apoteker }}</strong>
+                        <span class="doc-spec">SIP: {{ item.sip }}</span>
+                      </div>
+                    </td>
+                    <td>{{ item.keluhan }}</td>
+                    <td>
+                      <span
+                        class="badge-status-pill"
+                        [class.success]="item.status === 'Selesai'"
+                        [class.warning]="item.status === 'Berlangsung'"
+                        [class.danger]="item.status === 'Dibatalkan'"
+                      >
+                        <span class="dot-indicator"></span>
+                        {{ item.status }}
+                      </span>
+                    </td>
+                    <td>{{ item.durasi }}</td>
+                    <td class="text-center">
+                      <button
+                        type="button"
+                        class="btn-icon-action"
+                        (click)="selectTelefarmasi(item)"
+                        title="Lihat Detail Konseling"
+                        aria-label="Lihat Detail Konseling"
+                      >
+                        <i class="ri-eye-line" aria-hidden="true"></i>
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          <div class="table-pagination-footer">
+            <span class="pagination-info">Menampilkan 1 - 7 dari 11 sesi konseling</span>
+            <div class="pagination-controls">
+              <button type="button" class="page-nav-btn" disabled>
+                <i class="ri-arrow-left-s-line" aria-hidden="true"></i>
+              </button>
+              <button type="button" class="page-num-btn active">1</button>
+              <button type="button" class="page-num-btn">2</button>
+              <button type="button" class="page-nav-btn">
+                <i class="ri-arrow-right-s-line" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Right Column: Detail Konseling Card -->
+      <div class="col-sidebar-content">
+        <section class="content-panel-card">
+          <div class="panel-header">
+            <div class="detail-header-side">
+              <div>
+                <h3 class="panel-title">Detail Konseling Telefarmasi</h3>
+                <span class="panel-subtitle">{{ selectedTelefarmasi().nomor }} • {{ selectedTelefarmasi().tanggal }}</span>
+              </div>
+              <span class="badge-status-pill success">Selesai</span>
+            </div>
+          </div>
+          <div class="panel-body">
+            <!-- Pharmacist Highlight Card -->
+            <div class="doctor-highlight-box border-teal">
+              <div class="doctor-avatar-circle apoteker-circle">
+                <i class="ri-capsule-line" aria-hidden="true"></i>
+              </div>
+              <div class="doctor-details">
+                <strong class="doctor-title">{{ selectedTelefarmasi().apoteker }}</strong>
+                <span class="doctor-specialty">Apoteker Pengelola Farmasi</span>
+                <span class="doctor-sip">SIP: {{ selectedTelefarmasi().sip }}</span>
+              </div>
+            </div>
+
+            <!-- Complaint & Notes -->
+            <div class="info-block-item mt-3">
+              <span class="block-label">Keluhan / Konsultasi Obat</span>
+              <p class="block-value-text">{{ selectedTelefarmasi().keluhan }}</p>
+            </div>
+
+            <div class="info-block-item">
+              <span class="block-label">Catatan Edukasi & Penggunaan Obat</span>
+              <p class="block-value-text note-style">{{ selectedTelefarmasi().catatan }}</p>
+            </div>
+
+            <!-- Metadata Key-Value Grid -->
+            <div class="visit-meta-list mt-3">
+              <div class="visit-meta-row">
+                <span class="meta-label">Durasi Konseling</span>
+                <span class="meta-val">{{ selectedTelefarmasi().durasi }}</span>
+              </div>
+              <div class="visit-meta-row">
+                <span class="meta-label">Metode Sesi</span>
+                <span class="meta-val badge-method-pill">
+                  <i class="ri-video-chat-line" aria-hidden="true"></i>
+                  {{ selectedTelefarmasi().metode }}
+                </span>
+              </div>
+              <div class="visit-meta-row">
+                <span class="meta-label">Status Pembayaran</span>
+                <span class="badge-status-pill success">{{ selectedTelefarmasi().statusPembayaran }}</span>
+              </div>
+              <div class="visit-meta-row">
+                <span class="meta-label">Dibuat Pada</span>
+                <span class="meta-val">{{ selectedTelefarmasi().dibuatPada }}</span>
+              </div>
+            </div>
+
+            <div class="action-buttons-stack mt-4">
+              <button type="button" class="btn-outline-action w-100">
+                <i class="ri-play-circle-line" aria-hidden="true"></i>
+                <span>Putar Rekaman Konseling</span>
+              </button>
+              <button type="button" class="btn-full-outline w-100">
+                <i class="ri-download-2-line" aria-hidden="true"></i>
+                <span>Unduh Catatan Farmasi</span>
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  }
+
+  <!-- ========================================== -->
+  <!-- TAB 7: REKAM MEDIS                         -->
+  <!-- ========================================== -->
+  @if (activeTab() === 'rekam-medis') {
+    <div class="tab-pane-content">
+      <!-- Sub-tabs Navigation Bar for Rekam Medis -->
+      <nav class="sub-tabs-pills-bar" aria-label="Sub Kategori Rekam Medis">
+        <button
+          type="button"
+          class="sub-pill-btn"
+          [class.active]="rekamMedisSubTab() === 'timeline'"
+          (click)="setRekamMedisSubTab('timeline')"
+        >
+          <i class="ri-time-line" aria-hidden="true"></i>
+          <span>Timeline</span>
+        </button>
+
+        <button
+          type="button"
+          class="sub-pill-btn"
+          [class.active]="rekamMedisSubTab() === 'ringkasan'"
+          (click)="setRekamMedisSubTab('ringkasan')"
+        >
+          <i class="ri-file-chart-line" aria-hidden="true"></i>
+          <span>Ringkasan</span>
+        </button>
+
+        <button
+          type="button"
+          class="sub-pill-btn"
+          [class.active]="rekamMedisSubTab() === 'resep'"
+          (click)="setRekamMedisSubTab('resep')"
+        >
+          <i class="ri-file-list-3-line" aria-hidden="true"></i>
+          <span>Resep</span>
+        </button>
+
+        <button
+          type="button"
+          class="sub-pill-btn"
+          [class.active]="rekamMedisSubTab() === 'hasil-lab'"
+          (click)="setRekamMedisSubTab('hasil-lab')"
+        >
+          <i class="ri-test-tube-line" aria-hidden="true"></i>
+          <span>Hasil Lab</span>
+        </button>
+
+        <button
+          type="button"
+          class="sub-pill-btn"
+          [class.active]="rekamMedisSubTab() === 'perubahan'"
+          (click)="setRekamMedisSubTab('perubahan')"
+        >
+          <i class="ri-history-line" aria-hidden="true"></i>
+          <span>Riwayat Perubahan</span>
+        </button>
+      </nav>
+
+      <!-- 1. Timeline Sub-tab View -->
+      @if (rekamMedisSubTab() === 'timeline') {
+        <div class="timeline-records-container">
+          <div class="medical-records-timeline">
+            @for (rec of rekamMedisTimeline; track rec.id) {
+              <div class="med-timeline-card">
+                <div class="med-timeline-badge" [class]="'badge-' + rec.tipe">
+                  @if (rec.tipe === 'konsultasi') {
+                    <i class="ri-user-heart-line" aria-hidden="true"></i>
+                  } @else if (rec.tipe === 'lab') {
+                    <i class="ri-test-tube-line" aria-hidden="true"></i>
+                  } @else {
+                    <i class="ri-medicine-bottle-line" aria-hidden="true"></i>
+                  }
+                </div>
+
+                <div class="med-timeline-body">
+                  <div class="med-card-header">
+                    <div class="header-left">
+                      <h3 class="med-title">{{ rec.judul }}</h3>
+                      <span class="med-time">{{ rec.tanggal }}</span>
+                    </div>
+                    <div class="header-right">
+                      <span class="med-doctor">
+                        <i class="ri-stethoscope-line" aria-hidden="true"></i>
+                        {{ rec.dokter }}
+                      </span>
+                      <span class="badge-status-pill success">{{ rec.status }}</span>
+                    </div>
+                  </div>
+
+                  <div class="med-card-content">
+                    @if (rec.keluhan) {
+                      <div class="med-row">
+                        <span class="med-row-label">Keluhan:</span>
+                        <span class="med-row-val">{{ rec.keluhan }}</span>
+                      </div>
+                    }
+
+                    @if (rec.diagnosa) {
+                      <div class="med-row">
+                        <span class="med-row-label">Diagnosa:</span>
+                        <span class="med-row-val text-bold text-teal">{{ rec.diagnosa }}</span>
+                      </div>
+                    }
+
+                    @if (rec.tindakan) {
+                      <div class="med-row">
+                        <span class="med-row-label">Tindakan:</span>
+                        <span class="med-row-val">{{ rec.tindakan }}</span>
+                      </div>
+                    }
+
+                    @if (rec.jenisPemeriksaan) {
+                      <div class="med-row">
+                        <span class="med-row-label">Pemeriksaan:</span>
+                        <span class="med-row-val">{{ rec.jenisPemeriksaan }}</span>
+                      </div>
+                    }
+
+                    @if (rec.catatan) {
+                      <div class="med-row">
+                        <span class="med-row-label">Catatan:</span>
+                        <span class="med-row-val">{{ rec.catatan }}</span>
+                      </div>
+                    }
+
+                    @if (rec.obatList) {
+                      <div class="med-row">
+                        <span class="med-row-label">Obat Diberikan:</span>
+                        <div class="med-drugs-wrap">
+                          @for (ob of rec.obatList; track ob) {
+                            <span class="drug-pill">{{ ob }}</span>
+                          }
+                        </div>
+                      </div>
+                    }
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- 2. Ringkasan Sub-tab View -->
+      @if (rekamMedisSubTab() === 'ringkasan') {
+        <div class="grid-two-columns">
+          <!-- Left: Alur Konsultasi Stepper -->
+          <div class="col-main-content">
+            <section class="content-panel-card">
+              <div class="panel-header">
+                <h3 class="panel-title">
+                  <i class="ri-time-line" aria-hidden="true"></i>
+                  <span>Alur Konsultasi Pasien (24 Mei 2026)</span>
+                </h3>
+              </div>
+              <div class="panel-body">
+                <div class="consultation-stepper-flow">
+                  @for (step of konsultasiProgress; track step.jam; let idx = $index) {
+                    <div class="flow-step-item">
+                      <div class="step-clock-col">
+                        <span class="clock-label">{{ step.jam }}</span>
+                      </div>
+                      <div class="step-icon-col">
+                        <div class="step-icon-circle">
+                          <i [class]="step.icon" aria-hidden="true"></i>
+                        </div>
+                        @if (idx < konsultasiProgress.length - 1) {
+                          <div class="step-line"></div>
+                        }
+                      </div>
+                      <div class="step-text-col">
+                        <strong class="flow-step-title">{{ step.judul }}</strong>
+                        <p class="flow-step-sub">{{ step.sub }}</p>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- Right: Summary Card -->
+          <div class="col-sidebar-content">
+            <section class="content-panel-card">
+              <div class="panel-header">
+                <h3 class="panel-title">
+                  <i class="ri-file-shield-line" aria-hidden="true"></i>
+                  <span>Ringkasan Medis Terkini</span>
+                </h3>
+              </div>
+              <div class="panel-body">
+                <div class="medical-summary-box">
+                  <div class="sum-block">
+                    <span class="meta-label">Diagnosa Utama</span>
+                    <strong class="text-teal">ISPA (Infeksi Saluran Pernapasan Akut) J06.9</strong>
+                  </div>
+
+                  <div class="sum-block">
+                    <span class="meta-label">Keluhan Utama</span>
+                    <p>Demam tinggi, batuk berdahak, hidung tersumbat, dan sakit kepala sejak 2 hari.</p>
+                  </div>
+
+                  <div class="sum-block">
+                    <span class="meta-label">Rekomendasi Terapi</span>
+                    <p>Istirahat total, cukupi cairan tubuh, kompres air hangat, dan kontrol bila keluhan berlanjut.</p>
+                  </div>
+
+                  <div class="sum-block">
+                    <span class="meta-label">Dokter Penanggung Jawab</span>
+                    <p><strong>dr. Andi Wijaya</strong> (Dokter Umum - SIP: 19827364/SIP/2021)</p>
+                  </div>
+                </div>
+
+                <div class="action-buttons-stack mt-4">
+                  <button type="button" class="btn-outline-action w-100">
+                    <i class="ri-download-2-line" aria-hidden="true"></i>
+                    <span>Unduh Resume Medis PDF</span>
+                  </button>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      }
+
+      <!-- 3. Resep Sub-tab View -->
+      @if (rekamMedisSubTab() === 'resep') {
+        <section class="content-panel-card">
+          <div class="panel-header table-panel-header">
+            <div class="panel-header-left">
+              <h3 class="panel-title">
+                <i class="ri-medicine-bottle-line" aria-hidden="true"></i>
+                <span>Daftar Riwayat Resep Medis Pasien</span>
+              </h3>
+            </div>
+            <div class="table-filter-bar">
+              <div class="search-input-box">
+                <i class="ri-search-line" aria-hidden="true"></i>
+                <input type="text" placeholder="Cari obat atau resep..." />
+              </div>
+              <select class="filter-select">
+                <option>Semua Tahun</option>
+                <option>2026</option>
+                <option>2025</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-responsive-wrapper">
+            <table class="custom-data-table">
+              <thead>
+                <tr>
+                  <th>NOMOR RESEP</th>
+                  <th>TANGGAL</th>
+                  <th>DOKTER</th>
+                  <th>DIAGNOSA</th>
+                  <th>DAFTAR OBAT</th>
+                  <th>STATUS</th>
+                  <th class="text-center">AKSI</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of resepList; track item.nomorResep + $index) {
+                  <tr>
+                    <td>
+                      <strong class="id-primary">{{ item.nomorResep }}</strong>
+                    </td>
+                    <td>{{ item.tanggalResep }}</td>
+                    <td>
+                      <div class="doctor-cell-info">
+                        <strong class="doc-name">{{ item.dokter }}</strong>
+                        <span class="doc-spec">{{ item.spesialisasi }}</span>
+                      </div>
+                    </td>
+                    <td>ISPA Ringan</td>
+                    <td>
+                      <div class="med-drugs-wrap">
+                        <span class="drug-pill">Paracetamol 500mg</span>
+                        <span class="drug-pill">Vitamin C 500mg</span>
+                        <span class="drug-pill">Ambroxol 30mg</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="badge-status-pill success">{{ item.status }}</span>
+                    </td>
+                    <td class="text-center">
+                      <button
+                        type="button"
+                        class="btn-icon-action"
+                        title="Cetak Salinan Resep"
+                        aria-label="Cetak Salinan Resep"
+                      >
+                        <i class="ri-printer-line" aria-hidden="true"></i>
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </section>
+      }
+
+      <!-- 4. Hasil Lab Sub-tab View -->
+      @if (rekamMedisSubTab() === 'hasil-lab') {
+        <div class="lab-results-grid">
+          @for (grp of rekamMedisLabResults; track grp.judul) {
+            <section class="content-panel-card">
+              <div class="panel-header">
+                <div class="detail-header-side">
+                  <div>
+                    <h3 class="panel-title">
+                      <i class="ri-test-tube-line" aria-hidden="true"></i>
+                      <span>{{ grp.judul }}</span>
+                    </h3>
+                    <span class="panel-subtitle">{{ grp.tanggal }}</span>
+                  </div>
+                  <span class="badge-status-pill success">{{ grp.status }}</span>
+                </div>
+              </div>
+              <div class="panel-body">
+                <div class="table-responsive-wrapper">
+                  <table class="table-mini-clean">
+                    <thead>
+                      <tr>
+                        <th>PEMERIKSAAN</th>
+                        <th>HASIL</th>
+                        <th>SATUAN</th>
+                        <th>NILAI RUJUKAN</th>
+                        <th>STATUS</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (it of grp.items; track it.pemeriksaan) {
+                        <tr>
+                          <td><strong>{{ it.pemeriksaan }}</strong></td>
+                          <td><span class="text-bold text-teal">{{ it.hasil }}</span></td>
+                          <td>{{ it.satuan }}</td>
+                          <td>{{ it.nilaiRujukan }}</td>
+                          <td>
+                            <span class="badge-status-pill success">{{ it.status }}</span>
+                          </td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+          }
+        </div>
+      }
+
+      <!-- 5. Riwayat Perubahan Sub-tab View -->
+      @if (rekamMedisSubTab() === 'perubahan') {
+        <section class="content-panel-card">
+          <div class="panel-header table-panel-header">
+            <div class="panel-header-left">
+              <h3 class="panel-title">
+                <i class="ri-history-line" aria-hidden="true"></i>
+                <span>Audit Trail Riwayat Perubahan Rekam Medis</span>
+              </h3>
+            </div>
+            <div class="table-filter-bar">
+              <div class="search-input-box">
+                <i class="ri-search-line" aria-hidden="true"></i>
+                <input type="text" placeholder="Cari modul atau petugas..." />
+              </div>
+              <select class="filter-select">
+                <option>Semua Modul</option>
+                <option>Catatan medis</option>
+                <option>Resep</option>
+                <option>Hasil Lab</option>
+                <option>Imunisasi</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-responsive-wrapper">
+            <table class="custom-data-table">
+              <thead>
+                <tr>
+                  <th>TANGGAL</th>
+                  <th>PETUGAS & PERAN</th>
+                  <th>MODUL</th>
+                  <th>PERUBAHAN</th>
+                  <th>STATUS</th>
+                  <th>KETERANGAN</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (log of rekamMedisAuditLogs; track log.tanggal + $index) {
+                  <tr>
+                    <td>{{ log.tanggal }}</td>
+                    <td>
+                      <div class="doctor-cell-info">
+                        <strong class="doc-name">{{ log.petugas }}</strong>
+                        <span class="doc-spec">{{ log.peran }}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="module-tag">{{ log.modul }}</span>
+                    </td>
+                    <td><strong>{{ log.perubahan }}</strong></td>
+                    <td>
+                      <span
+                        class="badge-status-pill"
+                        [class.info]="log.status === 'Diperbarui'"
+                        [class.success]="log.status === 'Ditambahkan'"
+                        [class.danger]="log.status === 'Dihapus'"
+                      >
+                        {{ log.status }}
+                      </span>
+                    </td>
+                    <td>{{ log.keterangan }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          <div class="table-pagination-footer">
+            <span class="pagination-info">Menampilkan 1 - 10 dari 15 riwayat perubahan</span>
+            <div class="pagination-controls">
+              <button type="button" class="page-nav-btn" disabled>
+                <i class="ri-arrow-left-s-line" aria-hidden="true"></i>
+              </button>
+              <button type="button" class="page-num-btn active">1</button>
+              <button type="button" class="page-num-btn">2</button>
+              <button type="button" class="page-nav-btn">
+                <i class="ri-arrow-right-s-line" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+        </section>
+      }
+    </div>
+  }
+</div>

@@ -1,0 +1,292 @@
+<div class="detail-telefarmasi-container">
+  <!-- TOP HEADER WITH BACK BUTTON -->
+  <div class="detail-top-header">
+    <div class="header-titles">
+      <h2 class="page-title">Detail Konsultasi</h2>
+      <p class="page-subtitle">Informasi Lengkap mengenai konsultasi telefarmasi</p>
+    </div>
+    <button type="button" class="btn-back" (click)="goBack()">
+      <i class="ri-arrow-left-line"></i>
+      Kembali
+    </button>
+  </div>
+
+  <!-- SUMMARY 3-COLUMN CARD -->
+  <div class="summary-card">
+    <!-- Col 1: ID Konsultasi -->
+    <div class="summary-col col-id">
+      <div class="consult-icon-box">
+        <i class="ri-video-chat-line"></i>
+      </div>
+      <div class="col-content">
+        <span class="col-caption">ID Konsultasi</span>
+        <h3 class="consult-code">{{ detail().id }}</h3>
+        <span class="sub-detail-item">
+          <i class="ri-video-line"></i>
+          {{ detail().metode }}
+        </span>
+        <span class="sub-detail-item">
+          <i class="ri-calendar-line"></i>
+          {{ detail().tanggal }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Col 2: Pasien -->
+    <div class="summary-col col-pasien">
+      <span class="col-caption">Pasien</span>
+      <div class="person-profile">
+        <img
+          [src]="detail().pasien.avatar"
+          [alt]="detail().pasien.nama"
+          class="person-avatar"
+          onerror="this.src='assets/images/avatar/female.png'"
+        />
+        <div class="person-meta">
+          <h4 class="person-name">{{ detail().pasien.nama }}</h4>
+          <span class="person-detail">{{ detail().pasien.genderDanUsia }}</span>
+          <span class="person-location">{{ detail().pasien.alamat }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Col 3: Apoteker -->
+    <div class="summary-col col-apoteker">
+      <span class="col-caption">Apoteker</span>
+      <div class="person-profile">
+        <img
+          [src]="detail().apoteker.avatar"
+          [alt]="detail().apoteker.nama"
+          class="person-avatar"
+          onerror="this.src='assets/images/avatar/female.png'"
+        />
+        <div class="person-meta">
+          <h4 class="person-name">{{ detail().apoteker.nama }}</h4>
+          <span class="person-detail">{{ detail().apoteker.spesialisasi }}</span>
+          <span class="person-location">{{ detail().apoteker.sip }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TWO-COLUMN MAIN CONTENT GRID -->
+  <div class="detail-main-grid">
+    <!-- LEFT PANEL: CLINICAL & CONSULTATION DETAILS -->
+    <div class="clinical-panel">
+      <!-- Keluhan Utama -->
+      <section class="clinical-section">
+        <h4 class="section-title">Keluhan Utama</h4>
+        <p class="section-text">{{ detail().keluhanUtama }}</p>
+      </section>
+
+      <!-- Ringkasan Konsultasi -->
+      <section class="clinical-section">
+        <h4 class="section-title">Ringkasan Konsultasi</h4>
+        <p class="section-text">{{ detail().ringkasanKonsultasi }}</p>
+      </section>
+
+      <!-- Hasil Anamnesis -->
+      <section class="clinical-section">
+        <h4 class="section-title">Hasil Anamnesis</h4>
+        <ul class="bullet-list">
+          @for (item of detail().anamnesisList; track item) {
+            <li>{{ item }}</li>
+          }
+        </ul>
+      </section>
+
+      <!-- Kesimpulan -->
+      <section class="clinical-section">
+        <h4 class="section-title">Kesimpulan</h4>
+        <p class="section-text">{{ detail().kesimpulan }}</p>
+      </section>
+
+      <!-- Saran Apoteker -->
+      <section class="clinical-section">
+        <h4 class="section-title">Saran Apoteker</h4>
+        <ul class="bullet-list">
+          @for (item of detail().saranApoteker; track item) {
+            <li>{{ item }}</li>
+          }
+        </ul>
+      </section>
+
+      <!-- Lampiran -->
+      <section class="clinical-section">
+        <h4 class="section-title">Lampiran</h4>
+        <div class="attachment-card">
+          <div class="attachment-left">
+            <div class="pdf-icon-badge">
+              <i class="ri-file-pdf-2-line"></i>
+            </div>
+            <div class="attachment-meta">
+              <span class="file-name">{{ detail().lampiran.nama }}</span>
+              <span class="file-size">{{ detail().lampiran.ukuran }}</span>
+            </div>
+          </div>
+          <div class="attachment-actions">
+            <button type="button" class="btn-action-outline" (click)="lihatDokumen()">
+              <i class="ri-eye-line"></i>
+              Lihat Dokumen
+            </button>
+            <button type="button" class="btn-action-outline" (click)="downloadPdf()">
+              <i class="ri-download-2-line"></i>
+              Download PDF
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Bottom Split: Informasi Tambahan & Rekaman Konsultasi -->
+      <div class="bottom-split-row">
+        <!-- Informasi Tambahan -->
+        <div class="sub-info-col">
+          <h4 class="section-title">Informasi Tambahan</h4>
+          <div class="info-meta-list">
+            <div class="meta-row">
+              <span class="meta-label">Metode Konsultasi</span>
+              <span class="meta-val">{{ detail().metode }}</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">Durasi Konsultasi</span>
+              <span class="meta-val">{{ detail().durasi }}</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">Status Konsultasi</span>
+              <span class="meta-val">
+                <span class="badge-status-selesai">{{ detail().status }}</span>
+              </span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">Dibuat pada</span>
+              <span class="meta-val">{{ detail().dibuatPada }}</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">Selesai Pada</span>
+              <span class="meta-val">{{ detail().selesaiPada }}</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">Dibuat Oleh</span>
+              <span class="meta-val">{{ detail().dibuatOleh }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rekaman Konsultasi -->
+        <div class="sub-info-col">
+          <h4 class="section-title">Rekaman Konsultasi</h4>
+          <p class="recording-desc">Rekaman video konsultasi tersedia selama 7 hari sejak konsultasi selesai</p>
+          <button type="button" class="btn-recording" (click)="lihatRekaman()">
+            <i class="ri-play-circle-fill"></i>
+            Lihat Rekaman (Jika Tersedia)
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL: RESEP, TRANSAKSI & TIMELINE -->
+    <div class="sidebar-panel">
+      <!-- 1. Resep / Rekomendasi (Mini Table with Thumbnails) -->
+      <div class="sidebar-card">
+        <h4 class="sidebar-card-title">Resep / Rekomendasi</h4>
+        <div class="resep-table-wrapper">
+          <table class="resep-table">
+            <thead>
+              <tr>
+                <th class="th-res-no">No</th>
+                <th class="th-res-nama">Nama Obat / Rekomendasi</th>
+                <th class="th-res-aturan">Aturan Pakai</th>
+                <th class="th-res-jumlah">Jumlah</th>
+                <th class="th-res-harga">Harga</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of detail().resepObat; track item.no) {
+                <tr>
+                  <td class="td-res-no">{{ item.no }}</td>
+                  <td class="td-res-nama">
+                    <div class="medicine-item">
+                      <img
+                        [src]="item.thumbnail"
+                        [alt]="item.nama"
+                        class="medicine-thumb"
+                        onerror="this.src='assets/images/thumbnail/ibuprofen.svg'"
+                      />
+                      <div class="medicine-info">
+                        <span class="medicine-name">{{ item.nama }}</span>
+                        <span class="medicine-form">{{ item.bentuk }}</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="td-res-aturan">{{ item.aturanPakai }}</td>
+                  <td class="td-res-jumlah">{{ item.jumlah }}</td>
+                  <td class="td-res-harga">{{ item.harga }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 2. Ringkasan Pembayaran Konsultasi -->
+      <div class="sidebar-card">
+        <div class="payment-card-header">
+          <h4 class="sidebar-card-title">Ringkasan Pembayaran Konsultasi</h4>
+          <span class="badge-lunas">{{ detail().pembayaran.status }}</span>
+        </div>
+
+        <div class="payment-breakdown">
+          <div class="pay-row">
+            <span class="pay-label">Subtotal</span>
+            <span class="pay-value">{{ detail().pembayaran.subtotal }}</span>
+          </div>
+          <div class="pay-row">
+            <span class="pay-label">Diskon Produk</span>
+            <span class="pay-value text-red">{{ detail().pembayaran.diskonProduk }}</span>
+          </div>
+          <div class="pay-row">
+            <span class="pay-label">Voucher</span>
+            <span class="pay-value text-red">{{ detail().pembayaran.voucher }}</span>
+          </div>
+
+          <div class="pay-divider"></div>
+
+          <div class="pay-row total-row">
+            <span class="pay-label font-bold">Total Pembayaran</span>
+            <span class="pay-value total-highlight">{{ detail().pembayaran.totalPembayaran }}</span>
+          </div>
+
+          <div class="pay-row meta-bottom">
+            <span class="pay-label">Metode Pembayaran</span>
+            <span class="pay-value text-dark">{{ detail().pembayaran.metodePembayaran }}</span>
+          </div>
+          <div class="pay-row meta-bottom">
+            <span class="pay-label">Waktu Pembayaran</span>
+            <span class="pay-value text-dark">{{ detail().pembayaran.waktuPembayaran }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Timeline Pesanan -->
+      <div class="sidebar-card">
+        <h4 class="sidebar-card-title">Timeline Pesanan</h4>
+        <div class="timeline-stepper">
+          @for (step of detail().timeline; track step.label; let last = $last) {
+            <div class="stepper-item" [class.is-last]="last">
+              <div class="stepper-icon-col">
+                <i class="ri-checkbox-circle-fill icon-checked"></i>
+                @if (!last) {
+                  <div class="stepper-track-line"></div>
+                }
+              </div>
+              <div class="stepper-text-col">
+                <span class="stepper-label">{{ step.label }}</span>
+                <span class="stepper-time">{{ step.waktu }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

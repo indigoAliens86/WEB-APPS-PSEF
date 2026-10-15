@@ -1,0 +1,174 @@
+<div class="cs-wrapper">
+  <!-- Sub Header -->
+  <div class="sub-header">
+    <div class="sub-header-info">
+      <h3 class="sub-title">Customer Service & Saluran Bantuan Pasien</h3>
+      <p class="sub-desc">
+        Kelola kanal komunikasi resmi, hotline darurat kesehatan 24 jam, jam kerja operasional apoteker, serta antrean eskalasi kendala pesanan obat pasien.
+      </p>
+    </div>
+  </div>
+
+  <!-- Cards Grid: Saluran Bantuan Aktif -->
+  <div class="channels-grid">
+    <div *ngFor="let s of saluranList()" class="channel-card" [class.inactive]="s.status === 'Nonaktif'">
+      <div class="channel-top">
+        <div class="channel-icon-box" [ngClass]="s.tipe.toLowerCase().replace(' ', '-')">
+          <i [class]="s.icon"></i>
+        </div>
+        <div class="channel-meta">
+          <span class="channel-type-tag">{{ s.tipe }}</span>
+          <button
+            type="button"
+            class="channel-toggle"
+            [class.active]="s.status === 'Aktif'"
+            (click)="toggleSaluran(s)"
+            [title]="s.status === 'Aktif' ? 'Nonaktifkan' : 'Aktifkan'"
+          >
+            <span class="dot"></span>
+            <span>{{ s.status }}</span>
+          </button>
+        </div>
+      </div>
+      <h4 class="channel-name">{{ s.nama }}</h4>
+      <p class="channel-contact font-mono">{{ s.kontak }}</p>
+      <div class="channel-hours">
+        <i class="ri-time-line"></i>
+        <span>{{ s.jamOperasional }}</span>
+      </div>
+      <p class="channel-desc">{{ s.deskripsi }}</p>
+    </div>
+  </div>
+
+  <!-- Escalation Tickets Section -->
+  <div class="tickets-section">
+    <div class="section-title-row">
+      <div>
+        <h4 class="section-heading">Antrean Tiket Bantuan & Konsultasi Tertunda</h4>
+        <p class="section-subheading">Pasien yang memerlukan asistensi verifikasi resep, telaah etiket, atau komplain pengiriman</p>
+      </div>
+
+      <div class="toolbar-right">
+        <div class="search-box">
+          <i class="ri-search-line search-icon"></i>
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Cari ID tiket, nama pasien, atau keluhan..."
+            [ngModel]="searchQuery()"
+            (ngModelChange)="searchQuery.set($event)"
+          />
+        </div>
+
+        <select
+          class="filter-select"
+          [ngModel]="filterStatus()"
+          (ngModelChange)="filterStatus.set($event)"
+        >
+          <option value="Semua">Semua Status</option>
+          <option value="Menunggu">Menunggu</option>
+          <option value="Diproses">Diproses</option>
+          <option value="Selesai">Selesai</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Tickets Table -->
+    <div class="table-card">
+      <div class="table-responsive">
+        <table class="cms-table">
+          <thead>
+            <tr>
+              <th class="th-ticket-id">ID Tiket</th>
+              <th class="th-pasien">Pasien & Kontak</th>
+              <th class="th-topik">Kategori & Masalah</th>
+              <th class="th-prioritas">Prioritas</th>
+              <th class="th-pic">Apoteker / PIC</th>
+              <th class="th-status">Status</th>
+              <th class="th-aksi">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let t of filteredTiketList()" class="table-row">
+              <td class="td-ticket-id font-mono">
+                <span class="ticket-badge">{{ t.id }}</span>
+                <span class="ticket-date">{{ t.tanggal }}</span>
+              </td>
+              <td class="td-pasien">
+                <div class="patient-cell">
+                  <span class="patient-name">{{ t.namaPasien }}</span>
+                  <span class="patient-phone font-mono">{{ t.telepon }}</span>
+                </div>
+              </td>
+              <td class="td-topik">
+                <div class="topic-cell">
+                  <span class="topic-tag">{{ t.kategori }}</span>
+                  <p class="topic-message">{{ t.pesan }}</p>
+                </div>
+              </td>
+              <td class="td-prioritas">
+                <span
+                  class="prio-badge"
+                  [ngClass]="'prio-' + t.prioritas.toLowerCase()"
+                >
+                  <i class="ri-alarm-warning-line" *ngIf="t.prioritas === 'Tinggi'"></i>
+                  {{ t.prioritas }}
+                </span>
+              </td>
+              <td class="td-pic">
+                <span class="pic-badge">
+                  <i class="ri-user-follow-line"></i>
+                  {{ t.picApoteker }}
+                </span>
+              </td>
+              <td class="td-status">
+                <span
+                  class="status-chip"
+                  [ngClass]="'status-' + t.status.toLowerCase()"
+                >
+                  {{ t.status }}
+                </span>
+              </td>
+              <td class="td-aksi">
+                <div class="action-btn-group">
+                  <button
+                    *ngIf="t.status !== 'Diproses'"
+                    type="button"
+                    class="btn-icon"
+                    (click)="updateTicketStatus(t, 'Diproses')"
+                    title="Mulai Proses Tiket"
+                  >
+                    <i class="ri-play-line"></i>
+                  </button>
+                  <button
+                    *ngIf="t.status !== 'Selesai'"
+                    type="button"
+                    class="btn-icon btn-success-hover"
+                    (click)="updateTicketStatus(t, 'Selesai')"
+                    title="Tandai Selesai"
+                  >
+                    <i class="ri-check-line"></i>
+                  </button>
+                  <a
+                    [href]="'https://wa.me/62' + t.telepon.replace('-', '').substring(1)"
+                    target="_blank"
+                    class="btn-icon btn-wa"
+                    title="Hubungi Pasien via WhatsApp"
+                  >
+                    <i class="ri-whatsapp-line"></i>
+                  </a>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="filteredTiketList().length === 0">
+              <td colspan="7" class="empty-cell">
+                <i class="ri-customer-service-2-line"></i>
+                <p>Tidak ada tiket bantuan yang sesuai dengan filter.</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

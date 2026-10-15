@@ -1,0 +1,109 @@
+<aside class="sidebar">
+    <a class="sidebar-brand" routerLink="/fasilitas/dashboard">
+        <span class="brand-mark" aria-hidden="true">
+            <i class="ri-store-2-fill"></i>
+        </span>
+        <div class="brand-info">
+            <span class="brand-label">Apotek PSEF</span>
+            <span class="brand-sub">Portal Fasilitas Farmasi</span>
+        </div>
+    </a>
+
+    <div class="facility-badge-card">
+        <div class="badge-status-dot"></div>
+        <div class="badge-text">
+            <span class="facility-name">Apotek Rekanan PSEF</span>
+            <span class="facility-sia">SIA Terdaftar Kemenkes RI</span>
+        </div>
+    </div>
+
+    <nav aria-label="Menu Fasilitas Farmasi">
+        <!-- Menu Utama -->
+        <section class="menu-group">
+            <h2 class="menu-heading">Menu Utama</h2>
+            <a class="menu-link" title="Dashboard Fasilitas" aria-label="Dashboard" routerLink="/fasilitas/dashboard" routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }">
+                <i class="ri-dashboard-3-line" aria-hidden="true"></i>
+                <span class="menu-text">Dashboard</span>
+            </a>
+        </section>
+
+        <!-- Pelayanan Farmasi Klinis -->
+        <section class="menu-group">
+            <h2 class="menu-heading">Pelayanan Farmasi</h2>
+            <a class="menu-link" title="Telaah Resep & Validasi APJ" aria-label="Resep" routerLink="/fasilitas/resep" routerLinkActive="active">
+                <i class="ri-file-list-3-line" aria-hidden="true"></i>
+                <span class="menu-text">Resep Masuk</span>
+                <span class="menu-pill pill-amber" aria-hidden="true">Telaah</span>
+            </a>
+            <a class="menu-link" title="Konseling Telefarmasi & PIO" aria-label="Telefarmasi" routerLink="/fasilitas/telefarmasi" routerLinkActive="active">
+                <i class="ri-customer-service-2-line" aria-hidden="true"></i>
+                <span class="menu-text">Telefarmasi (PIO)</span>
+                <span class="menu-pill pill-teal" aria-hidden="true">Live</span>
+            </a>
+            <a class="menu-link" title="Riwayat & Rekam Pasien Farmasi" aria-label="Pasien" routerLink="/fasilitas/pasien" routerLinkActive="active">
+                <i class="ri-user-heart-line" aria-hidden="true"></i>
+                <span class="menu-text">Pasien</span>
+            </a>
+        </section>
+
+        <!-- Operasional & Sediaan -->
+        <section class="menu-group">
+            <h2 class="menu-heading">Sediaan & Logistik</h2>
+            <a class="menu-link" title="Katalog Obat & Stok Sediaan" aria-label="Katalog Obat" routerLink="/fasilitas/produk" routerLinkActive="active">
+                <i class="ri-capsule-line" aria-hidden="true"></i>
+                <span class="menu-text">Katalog Obat & Stok</span>
+            </a>
+            <a class="menu-link" title="Pesanan Tebus & Dispensing" aria-label="Pesanan" routerLink="/fasilitas/pesanan" routerLinkActive="active">
+                <i class="ri-shopping-bag-3-line" aria-hidden="true"></i>
+                <span class="menu-text">Pesanan & Dispensing</span>
+            </a>
+            <a class="menu-link" title="Transaksi & Settlement Keuangan" aria-label="Transaksi" routerLink="/fasilitas/transaksi" routerLinkActive="active">
+                <i class="ri-exchange-funds-line" aria-hidden="true"></i>
+                <span class="menu-text">Transaksi & Klaim</span>
+            </a>
+        </section>
+
+        <!-- Sumber Daya Medis & Promosi -->
+        <section class="menu-group">
+            <h2 class="menu-heading">SDM & Promosi</h2>
+            <a class="menu-link" title="Apoteker Penanggung Jawab & TTK" aria-label="Apoteker" routerLink="/fasilitas/apoteker" routerLinkActive="active">
+                <i class="ri-nurse-line" aria-hidden="true"></i>
+                <span class="menu-text">Apoteker & TTK</span>
+            </a>
+            <a class="menu-link" title="Promo & Kupon Apotek" aria-label="Promo" routerLink="/fasilitas/promo" routerLinkActive="active">
+                <i class="ri-price-tag-3-line" aria-hidden="true"></i>
+                <span class="menu-text">Promo</span>
+            </a>
+        </section>
+
+        <!-- Regulasi & Konfigurasi -->
+        <section class="menu-group">
+            <h2 class="menu-heading">Kepatuhan & Sistem</h2>
+            <a class="menu-link" title="Profil Sarana & Legalitas Apotek" aria-label="Profil & Sarana" routerLink="/fasilitas/profile" routerLinkActive="active">
+                <i class="ri-store-3-line" aria-hidden="true"></i>
+                <span class="menu-text">Profil & Sarana</span>
+            </a>
+            <a class="menu-link" title="Laporan SIPNAP & Mutu Kemenkes" aria-label="Laporan" routerLink="/fasilitas/laporan" routerLinkActive="active">
+                <i class="ri-bar-chart-box-line" aria-hidden="true"></i>
+                <span class="menu-text">Laporan SIPNAP</span>
+            </a>
+            <a class="menu-link" title="Pengaturan Sarana & Legalitas Apotek" aria-label="Pengaturan" routerLink="/fasilitas/pengaturan" routerLinkActive="active">
+                <i class="ri-settings-3-line" aria-hidden="true"></i>
+                <span class="menu-text">Pengaturan Fasilitas</span>
+            </a>
+        </section>
+    </nav>
+
+    <!-- Bottom Cold-Chain / Compliance Widget -->
+    <div class="sidebar-compliance-widget">
+        <div class="compliance-header">
+            <i class="ri-temp-cold-line" aria-hidden="true"></i>
+            <span>Monitoring Cold-Chain</span>
+        </div>
+        <div class="compliance-body">
+            <span class="temp-indicator font-mono">4.2°C <small class="text-safe">(Normal 2-8°C)</small></span>
+            <span class="chiller-name">Chiller Farmasi Utama</span>
+        </div>
+    </div>
+</aside>

@@ -1,0 +1,621 @@
+<div class="fasilitas-dashboard-container">
+  <!-- Operational Header & Command Bar -->
+  <header class="dashboard-header-panel">
+    <div class="header-main-info">
+      <div class="facility-logo-box">
+        <i class="ri-store-2-fill"></i>
+      </div>
+      <div class="facility-identity-text">
+        <div class="facility-badges-row">
+          <span class="facility-sia-badge font-mono">{{ facilityProfile.sia }}</span>
+          <span class="facility-sipnap-badge font-mono">
+            <i class="ri-shield-check-fill text-emerald"></i>
+            {{ facilityProfile.noSipnap }}
+          </span>
+          <div class="status-live-toggle" (click)="toggleApotekStatus()" [class.status-active]="isApotekOpen()" title="Klik untuk ubah status operasional apotek">
+            <span class="live-dot" [class.dot-green]="isApotekOpen()"></span>
+            <span class="toggle-text">{{ isApotekOpen() ? 'Apotek Buka & Siap Layani Resep' : 'Apotek Istirahat / Tutup Sementara' }}</span>
+          </div>
+        </div>
+
+        <h1 class="facility-title-heading">{{ facilityProfile.nama }}</h1>
+
+        <div class="facility-meta-row">
+          <span><i class="ri-map-pin-2-line"></i> {{ facilityProfile.lokasi }}</span>
+          <span class="meta-sep">•</span>
+          <span><i class="ri-time-line"></i> {{ currentShift() }}</span>
+          <span class="meta-sep">•</span>
+          <span><i class="ri-user-star-line"></i> APJ: <strong>{{ facilityProfile.apj }}</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Controls: Periode Selector & Quick Actions -->
+    <div class="header-right-controls">
+      <div class="periode-segmented-control" role="group" aria-label="Pilih Periode Dashboard">
+        <button
+          type="button"
+          class="periode-btn"
+          [class.active]="activePeriode() === 'hari_ini'"
+          (click)="setPeriode('hari_ini')"
+        >
+          Hari Ini
+        </button>
+        <button
+          type="button"
+          class="periode-btn"
+          [class.active]="activePeriode() === '7_hari'"
+          (click)="setPeriode('7_hari')"
+        >
+          7 Hari Terakhir
+        </button>
+        <button
+          type="button"
+          class="periode-btn"
+          [class.active]="activePeriode() === 'bulan_ini'"
+          (click)="setPeriode('bulan_ini')"
+        >
+          Bulan Ini (Mei 2026)
+        </button>
+      </div>
+
+      <div class="quick-action-btns">
+        <button type="button" class="btn btn-outline" (click)="tambahStok()" title="Tambah sediaan atau cek stok obat">
+          <i class="ri-add-line"></i>
+          <span>Tambah Obat</span>
+        </button>
+        <button type="button" class="btn btn-primary" (click)="kePesanan()" title="Buka antrean peracikan dan dispensing">
+          <i class="ri-shopping-bag-3-fill"></i>
+          <span>Antrean Dispensing</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 5 Executive KPI Cards -->
+  <section class="kpi-banner-grid" aria-label="Ringkasan Indikator Kinerja Utama">
+    <!-- Card 1: Resep Perlu Skrining -->
+    <div class="kpi-stat-card amber-card" (click)="bukaResep('RX-2026-9038')">
+      <div class="kpi-top-row">
+        <span class="kpi-caption">Resep Masuk Perlu Skrining</span>
+        <div class="kpi-icon-pill amber">
+          <i class="ri-file-list-3-line"></i>
+        </div>
+      </div>
+      <div class="kpi-main-number-group">
+        <span class="kpi-number">{{ kpis().resepMasuk }}</span>
+        <span class="kpi-unit">Resep Digital</span>
+      </div>
+      <div class="kpi-footer-status">
+        <span class="status-pill-sub danger">
+          <i class="ri-alarm-warning-line"></i> {{ kpis().resepUrgent }} CITO / Segera
+        </span>
+        <span class="kpi-hint">Avg telaah: {{ kpis().rataWaktuSkrining }}</span>
+      </div>
+    </div>
+
+    <!-- Card 2: Dispensing & Penyiapan Obat -->
+    <div class="kpi-stat-card emerald-card" (click)="kePesanan()">
+      <div class="kpi-top-row">
+        <span class="kpi-caption">Sediaan Siap Dispensing</span>
+        <div class="kpi-icon-pill emerald">
+          <i class="ri-capsule-fill"></i>
+        </div>
+      </div>
+      <div class="kpi-main-number-group">
+        <span class="kpi-number text-emerald">{{ kpis().dispensingSiap }}</span>
+        <span class="kpi-unit">Antrean Selesai</span>
+      </div>
+      <div class="kpi-footer-status">
+        <span class="status-pill-sub success">
+          <i class="ri-checkbox-circle-line"></i> 99.1% Tepat SLA
+        </span>
+        <span class="kpi-hint">Siap kirim kurir</span>
+      </div>
+    </div>
+
+    <!-- Card 3: Konseling Telefarmasi PIO -->
+    <div class="kpi-stat-card sky-card" (click)="keTelefarmasi()">
+      <div class="kpi-top-row">
+        <span class="kpi-caption">Konseling Telefarmasi (PIO)</span>
+        <div class="kpi-icon-pill sky">
+          <i class="ri-customer-service-2-fill"></i>
+        </div>
+      </div>
+      <div class="kpi-main-number-group">
+        <span class="kpi-number text-primary">{{ kpis().telefarmasiSelesai }}</span>
+        <span class="kpi-unit">Sesi Edukasi</span>
+      </div>
+      <div class="kpi-footer-status">
+        <span class="status-pill-sub info">
+          <i class="ri-chat-voice-line"></i> {{ kpis().telefarmasiPending }} Menunggu KIE
+        </span>
+        <span class="kpi-hint">Aturan pakai & efek samping</span>
+      </div>
+    </div>
+
+    <!-- Card 4: Omzet & Tebus Resep -->
+    <div class="kpi-stat-card teal-card">
+      <div class="kpi-top-row">
+        <span class="kpi-caption">Omzet Transaksi Tebus Resep</span>
+        <div class="kpi-icon-pill teal">
+          <i class="ri-wallet-3-line"></i>
+        </div>
+      </div>
+      <div class="kpi-main-number-group">
+        <span class="kpi-number">{{ kpis().omzetFormatted }}</span>
+      </div>
+      <div class="kpi-footer-status">
+        <span class="status-pill-sub success">
+          <i class="ri-arrow-up-line"></i> {{ kpis().omzetGrowth }} vs periode lalu
+        </span>
+        <span class="kpi-hint">Settlement otomatis</span>
+      </div>
+    </div>
+
+    <!-- Card 5: Sensor Rantai Dingin & SIPNAP -->
+    <div class="kpi-stat-card indigo-card" (click)="keSipnap()">
+      <div class="kpi-top-row">
+        <span class="kpi-caption">Monitoring Cold-Chain & SIPNAP</span>
+        <div class="kpi-icon-pill indigo">
+          <i class="ri-temp-cold-line"></i>
+        </div>
+      </div>
+      <div class="kpi-main-number-group">
+        <span class="kpi-number font-mono">{{ kpis().coldChainStatus }}</span>
+      </div>
+      <div class="kpi-footer-status">
+        <span class="status-pill-sub purple">
+          <i class="ri-shield-check-line"></i> SIPNAP 100% Cocok
+        </span>
+        <span class="kpi-hint">3 Sensor Chiller OK</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Visual Analytics & Charts Section (Grid 2 Primary Charts) -->
+  <section class="charts-primary-grid" aria-label="Grafik Analitik Layanan Farmasi">
+    <!-- Chart 1: Tren Layanan Resep Masuk vs Dispensing -->
+    <div class="panel-card chart-panel-large">
+      <div class="panel-header-row">
+        <div class="panel-title-group">
+          <div class="panel-icon-wrap blue">
+            <i class="ri-line-chart-line"></i>
+          </div>
+          <div>
+            <h2 class="panel-title">Tren Penerimaan Resep & Throughput Dispensing</h2>
+            <p class="panel-sub">Volume resep digital masuk diverifikasi APJ dibandingkan waktu dispensing farmasi</p>
+          </div>
+        </div>
+
+        <div class="chart-badges-legend">
+          <span class="legend-chip blue"><span class="chip-dot blue"></span> Resep Digital Masuk</span>
+          <span class="legend-chip green"><span class="chip-dot green"></span> Selesai Dispensing</span>
+        </div>
+      </div>
+
+      <!-- ApexChart Area -->
+      <div class="chart-wrapper">
+        <apx-chart
+          [series]="trendSeries"
+          [chart]="trendChart"
+          [colors]="trendColors"
+          [stroke]="trendStroke"
+          [fill]="trendFill"
+          [xaxis]="trendXAxis"
+          [yaxis]="trendYAxis"
+          [grid]="trendGrid"
+          [tooltip]="trendTooltip"
+          [dataLabels]="trendDataLabels"
+        ></apx-chart>
+      </div>
+
+      <!-- Metrics Bottom Strip -->
+      <div class="metrics-horizontal-strip">
+        <div class="metric-item">
+          <span class="metric-lbl">Rata-rata Waktu Skrining APJ:</span>
+          <strong class="metric-val text-primary">6.2 Menit</strong>
+          <small class="metric-sub">Batas maksimal: 15 menit</small>
+        </div>
+        <div class="metric-item">
+          <span class="metric-lbl">SLA Penyiapan Obat Non-Racikan:</span>
+          <strong class="metric-val text-emerald">14.5 Menit</strong>
+          <small class="metric-sub">Sesuai standar Permenkes</small>
+        </div>
+        <div class="metric-item">
+          <span class="metric-lbl">SLA Peracikan Puyer / Kapsul:</span>
+          <strong class="metric-val text-amber">28.0 Menit</strong>
+          <small class="metric-sub">Termasuk kendali mutu</small>
+        </div>
+        <div class="metric-item">
+          <span class="metric-lbl">Tingkat Penolakan Resep:</span>
+          <strong class="metric-val">0.6% (Nihil Masalah Fatal)</strong>
+          <small class="metric-sub">Intervensi klinis cepat</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chart 2: Komposisi Kategori Obat Sediaan (Donut Chart) -->
+    <div class="panel-card chart-panel-donut">
+      <div class="panel-header-row">
+        <div class="panel-title-group">
+          <div class="panel-icon-wrap purple">
+            <i class="ri-pie-chart-2-fill"></i>
+          </div>
+          <div>
+            <h2 class="panel-title">Komposisi Sediaan Farmasi</h2>
+            <p class="panel-sub">Distribusi resep berdasarkan kategori dan regulasi obat</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="donut-chart-container">
+        <apx-chart
+          [series]="categorySeries"
+          [chart]="categoryChart"
+          [labels]="categoryLabels"
+          [colors]="categoryColors"
+          [dataLabels]="donutDataLabels"
+          [plotOptions]="categoryPlotOptions"
+          [stroke]="donutStroke"
+          [legend]="hiddenLegend"
+          [tooltip]="donutTooltip"
+        ></apx-chart>
+      </div>
+
+      <!-- Clean Structured Category Legend List -->
+      <div class="donut-legend-list">
+        @for (item of categoryList; track item.label) {
+          <div class="donut-legend-item">
+            <div class="dli-left">
+              <span class="dli-dot" [style.background]="item.color"></span>
+              <span class="dli-label">{{ item.label }}</span>
+            </div>
+            <div class="dli-right">
+              <span class="dli-count font-mono">{{ item.count }}</span>
+              <span class="dli-pill font-mono" [style.background]="item.color + '18'" [style.color]="item.color">{{ item.percentage }}%</span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Secondary Insights Section (3 Pillars + Delivery Methods) -->
+  <section class="charts-secondary-grid" aria-label="Analitik Skrining dan Distribusi">
+    <!-- Chart 3: 3 Pilar Skrining Resep APJ -->
+    <div class="panel-card pilar-panel">
+      <div class="panel-header-row">
+        <div class="panel-title-group">
+          <div class="panel-icon-wrap emerald">
+            <i class="ri-shield-cross-fill"></i>
+          </div>
+          <div>
+            <h2 class="panel-title">Evaluasi 3 Pilar Skrining Resep Farmasi</h2>
+            <p class="panel-sub">Kepatuhan kajian resep Permenkes RI No. 73/2016 oleh Apoteker Penanggung Jawab</p>
+          </div>
+        </div>
+        <span class="badge-pill-success">98.6% Lulus Uji</span>
+      </div>
+
+      <div class="pilar-chart-box">
+        <apx-chart
+          [series]="screeningSeries"
+          [chart]="screeningChart"
+          [colors]="screeningColors"
+          [plotOptions]="screeningPlotOptions"
+          [xaxis]="screeningXAxis"
+          [yaxis]="screeningYAxis"
+          [tooltip]="trendTooltip"
+        ></apx-chart>
+      </div>
+
+      <div class="pilar-note-footer">
+        <i class="ri-information-line"></i>
+        <span>
+          Semua resep digital otomatis melalui <strong>Pemeriksaan Interaksi Obat & Duplikasi Terapi AI-Assisted</strong> sebelum divalidasi tanda tangan elektronik APJ.
+        </span>
+      </div>
+    </div>
+
+    <!-- Chart 4: Metode Distribusi dan Penyerahan Obat -->
+    <div class="panel-card delivery-panel">
+      <div class="panel-header-row">
+        <div class="panel-title-group">
+          <div class="panel-icon-wrap sky">
+            <i class="ri-e-bike-2-line"></i>
+          </div>
+          <div>
+            <h2 class="panel-title">Kanal Penyerahan & Logistik Obat</h2>
+            <p class="panel-sub">Metode pemenuhan penyerahan sediaan farmasi kepada pasien</p>
+          </div>
+        </div>
+        <span class="badge-pill-sky">98.4% Tepat Waktu</span>
+      </div>
+
+      <div class="delivery-content-layout">
+        <div class="delivery-donut-col">
+          <apx-chart
+            [series]="deliverySeries"
+            [chart]="deliveryChart"
+            [labels]="deliveryLabels"
+            [colors]="deliveryColors"
+            [dataLabels]="donutDataLabels"
+            [plotOptions]="deliveryPlotOptions"
+            [stroke]="donutStroke"
+            [legend]="hiddenLegend"
+            [tooltip]="donutTooltip"
+          ></apx-chart>
+        </div>
+
+        <div class="delivery-details-col">
+          @for (item of deliveryList; track item.label) {
+            <div class="delivery-metric-row">
+              <div class="dmr-icon" [style.background]="item.color + '18'" [style.color]="item.color">
+                <i [class]="item.icon"></i>
+              </div>
+              <div class="dmr-info">
+                <div class="dmr-header">
+                  <span class="dmr-label">{{ item.label }}</span>
+                  <strong class="dmr-pct font-mono" [style.color]="item.color">{{ item.percentage }}%</strong>
+                </div>
+                <div class="dmr-track">
+                  <div class="dmr-fill" [style.width.%]="item.percentage" [style.background]="item.color"></div>
+                </div>
+                <span class="dmr-count">{{ item.count }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="delivery-footer-note">
+        <div class="df-item">
+          <span>Rata-rata Waktu Pengantaran Instan:</span>
+          <strong>34 Menit</strong>
+        </div>
+        <div class="df-item">
+          <span>Kemasan Khusus Cold-Chain:</span>
+          <strong>ThermaFreeze + Chilled Bag</strong>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Operational Hub & Live Worklists (2 Column Layout) -->
+  <section class="operational-hub-grid" aria-label="Daftar Kerja Operasional & Alarm">
+    <!-- Left Column: Antrean Resep Menunggu Telaah APJ Segera -->
+    <div class="panel-card worklist-panel">
+      <div class="panel-header-row">
+        <div class="panel-title-group">
+          <div class="panel-icon-wrap amber">
+            <i class="ri-stethoscope-line"></i>
+          </div>
+          <div>
+            <h2 class="panel-title">Antrean Resep Perlu Skrining APJ Segera</h2>
+            <p class="panel-sub">Resep digital masuk memerlukan validasi telaah administratif, farmasetis, dan klinis</p>
+          </div>
+        </div>
+
+        <a routerLink="/fasilitas/resep" class="view-all-link">
+          <span>Lihat Semua Resep</span>
+          <i class="ri-arrow-right-line"></i>
+        </a>
+      </div>
+
+      <div class="resep-antrean-list">
+        @for (item of antreanResepList(); track item.id) {
+          <div class="antrean-item-card" [class.is-cito]="item.isCito">
+            <div class="antrean-top-bar">
+              <div class="at-left">
+                <span class="at-code font-mono">{{ item.noResep }}</span>
+                @if (item.isCito) {
+                  <span class="badge-cito font-mono">
+                    <i class="ri-alarm-warning-fill"></i> CITO
+                  </span>
+                }
+                <span class="badge-jenis" [class.jenis-racikan]="item.jenisResep === 'Racikan'">
+                  {{ item.jenisResep }}
+                </span>
+              </div>
+              <div class="at-right">
+                <span class="at-time"><i class="ri-time-line"></i> {{ item.waktuMasuk }}</span>
+                <span class="at-sla font-mono danger">{{ item.estimasiSla }}</span>
+              </div>
+            </div>
+
+            <div class="antrean-middle-body">
+              <div class="patient-doctor-info">
+                <div class="patient-line">
+                  <i class="ri-user-heart-line text-primary"></i>
+                  <strong class="patient-name">{{ item.pasien }}</strong>
+                  <span class="patient-age">({{ item.umur }})</span>
+                </div>
+                <div class="doctor-line">
+                  <i class="ri-nurse-line"></i>
+                  <span>{{ item.dokter }} — <small class="text-muted">{{ item.spesialis }}</small></span>
+                </div>
+                <div class="diag-line">
+                  <i class="ri-capsule-line text-emerald"></i>
+                  <span>Diagnosis: <em>{{ item.diagnosis }}</em></span>
+                </div>
+              </div>
+
+              <div class="screening-status-box">
+                <span class="ss-label"><i class="ri-file-search-line"></i> Status Telaah:</span>
+                <strong class="ss-val text-amber">{{ item.statusKajian }}</strong>
+              </div>
+            </div>
+
+            <div class="antrean-footer-action">
+              <button type="button" class="btn-telaah-action" (click)="bukaResep(item.id)">
+                <span>Telaah & Validasi Resep</span>
+                <i class="ri-arrow-right-s-line"></i>
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Right Column: Monitoring Alarm Sediaan & Sensor Chiller -->
+    <div class="panel-card alarms-panel">
+      <div class="panel-header-row">
+        <div class="panel-title-group">
+          <div class="panel-icon-wrap red">
+            <i class="ri-notification-badge-line"></i>
+          </div>
+          <div>
+            <h2 class="panel-title">Peringatan Operasional & Sensor Apotek</h2>
+            <p class="panel-sub">Pengawasan otomatis ketersediaan stok kritis, masa simpan, dan rantai dingin</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Buttons for Alarms -->
+      <div class="alarm-tabs-switch" role="tablist">
+        <button
+          type="button"
+          class="alarm-tab-btn"
+          [class.active]="activeAlarmTab() === 'stok'"
+          (click)="activeAlarmTab.set('stok')"
+        >
+          <i class="ri-alarm-warning-line"></i>
+          <span>Stok Kritis & ED ({{ alarmStokList().length }})</span>
+        </button>
+        <button
+          type="button"
+          class="alarm-tab-btn"
+          [class.active]="activeAlarmTab() === 'chiller'"
+          (click)="activeAlarmTab.set('chiller')"
+        >
+          <i class="ri-temp-cold-line"></i>
+          <span>Sensor Rantai Dingin IoT (3)</span>
+        </button>
+      </div>
+
+      <!-- Tab Content 1: Stok Kritis & Kadaluarsa -->
+      @if (activeAlarmTab() === 'stok') {
+        <div class="alarm-items-list">
+          @for (stk of alarmStokList(); track stk.id) {
+            <div class="alarm-item-card" [class.kritis-border]="stk.tipeAlarm === 'Kritis'">
+              <div class="aic-header">
+                <div class="aic-title-block">
+                  <strong class="aic-med-name">{{ stk.namaObat }}</strong>
+                  <span class="aic-cat">{{ stk.kategori }}</span>
+                </div>
+                <span
+                  class="badge-alarm-pill"
+                  [class.pill-kritis]="stk.tipeAlarm === 'Kritis'"
+                  [class.pill-ed]="stk.tipeAlarm === 'Kadaluarsa'"
+                >
+                  {{ stk.tipeAlarm === 'Kritis' ? 'Stok Kritis' : 'Mendekati ED' }}
+                </span>
+              </div>
+
+              <div class="aic-meta-grid">
+                <div class="meta-col">
+                  <span class="m-lbl">Sisa Stok Fisik:</span>
+                  <strong class="m-val danger font-mono">{{ stk.sisaStok }} {{ stk.satuan }}</strong>
+                  <span class="m-sub">Min safety: {{ stk.minStok }} {{ stk.satuan }}</span>
+                </div>
+                <div class="meta-col">
+                  <span class="m-lbl">Nomor Batch:</span>
+                  <strong class="m-val font-mono">{{ stk.noBatch }}</strong>
+                </div>
+                <div class="meta-col">
+                  <span class="m-lbl">Kadaluarsa (ED):</span>
+                  <strong class="m-val font-mono text-amber">{{ stk.expiredDate }}</strong>
+                </div>
+              </div>
+
+              <div class="aic-actions-row">
+                <button type="button" class="btn-po-quick" (click)="tambahStok()">
+                  <i class="ri-file-add-line"></i>
+                  <span>Buat Surat Pesanan (PO) ke PBF</span>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Tab Content 2: Sensor Cold-Chain IoT -->
+      @if (activeAlarmTab() === 'chiller') {
+        <div class="chiller-sensors-list">
+          @for (ch of chillerSensors; track ch.id) {
+            <div class="chiller-card">
+              <div class="ch-head">
+                <div class="ch-icon">
+                  <i class="ri-temp-cold-line"></i>
+                </div>
+                <div class="ch-title-wrap">
+                  <strong class="ch-name">{{ ch.nama }}</strong>
+                  <span class="ch-range font-mono">Standar: {{ ch.minTemp }}°C – {{ ch.maxTemp }}°C</span>
+                </div>
+                <span class="ch-status-badge badge-success">
+                  <i class="ri-checkbox-circle-fill"></i> {{ ch.status }}
+                </span>
+              </div>
+
+              <div class="ch-temp-display">
+                <div class="temp-big font-mono">
+                  <span class="temp-val">{{ ch.suhu }}</span>
+                  <span class="temp-unit">°C</span>
+                </div>
+                <div class="ch-metrics">
+                  <span>Kelembaban: <strong>{{ ch.kelembaban }}</strong></span>
+                  <span>Pintu: <strong>{{ ch.pintuStatus }}</strong></span>
+                  <span class="text-muted"><i class="ri-history-line"></i> Update: {{ ch.lastUpdate }}</span>
+                </div>
+              </div>
+            </div>
+          }
+
+          <div class="ups-backup-box">
+            <i class="ri-battery-charge-fill text-emerald"></i>
+            <div>
+              <strong>Sistem Daya Cadangan (UPS & Genset Otomatis): Aktif</strong>
+              <p>Daya cadangan otomatis menyala dalam &lt; 5 detik bila terjadi gangguan listrik demi menjaga stabilitas rantai dingin vaksin &amp; insulin.</p>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- Real-Time Activity Feed Strip -->
+  <section class="live-activity-panel" aria-label="Aktivitas Pelayanan Terkini">
+    <div class="panel-header-row">
+      <div class="panel-title-group">
+        <div class="panel-icon-wrap teal">
+          <i class="ri-pulse-line"></i>
+        </div>
+        <div>
+          <h2 class="panel-title">Aktivitas Pelayanan Farmasi Real-Time</h2>
+          <p class="panel-sub">Pencatatan riwayat transaksi telaah resep, penyerahan obat, dan kepatuhan sistem</p>
+        </div>
+      </div>
+      <span class="live-feed-badge">
+        <span class="live-dot dot-green"></span> Live Stream
+      </span>
+    </div>
+
+    <div class="activities-grid">
+      @for (act of liveActivities; track act.id) {
+        <div class="activity-feed-card">
+          <div class="act-icon-box" [class]="act.badgeClass">
+            <i [class]="act.icon"></i>
+          </div>
+          <div class="act-text-content">
+            <div class="act-top">
+              <strong class="act-title">{{ act.judul }}</strong>
+              <span class="act-time font-mono">{{ act.waktu }}</span>
+            </div>
+            <p class="act-desc">{{ act.deskripsi }}</p>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+</div>

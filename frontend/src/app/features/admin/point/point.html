@@ -1,0 +1,509 @@
+<div class="point-container">
+  <!-- Child Router Outlet for Detail View -->
+  <router-outlet></router-outlet>
+
+  <!-- Main Point Health View (hidden when viewing detail) -->
+  <div *ngIf="!showingDetails()" class="point-main-view">
+    <!-- Header Section -->
+    <header class="page-header">
+      <div class="header-left">
+        <div class="header-icon-box">
+          <i class="ri-medal-fill"></i>
+        </div>
+        <div>
+          <h1 class="page-title">Point Health & Gamifikasi Loyalitas</h1>
+          <p class="page-subtitle">
+            Pantau perolehan poin kesehatan pasien PSEF, penukaran voucher obat & telemedisin, misi kesehatan, dan penyesuaian saldo poin
+          </p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button type="button" class="btn btn-outline" (click)="exportData()" title="Ekspor data mutasi poin">
+          <i class="ri-download-2-line"></i>
+          <span>Ekspor Buku Besar</span>
+        </button>
+        <button type="button" class="btn btn-primary" (click)="openAdjustmentModal()" title="Sesuaikan atau beri poin manual ke pasien">
+          <i class="ri-add-circle-line"></i>
+          <span>Sesuaikan Poin Pasien</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- 4 KPI Summary Cards -->
+    <section class="kpi-grid" aria-label="Statistik Point Health">
+      <div *ngFor="let kpi of kpiCards" class="kpi-card" [ngClass]="kpi.colorClass">
+        <div class="kpi-header">
+          <span class="kpi-title">{{ kpi.title }}</span>
+          <div class="kpi-icon-wrapper">
+            <i [class]="kpi.icon"></i>
+          </div>
+        </div>
+        <div class="kpi-value-row">
+          <span class="kpi-value">{{ kpi.value }}</span>
+          <span *ngIf="kpi.percentage" class="kpi-badge" [class.positive]="!kpi.percentage.includes('-')" [class.negative]="kpi.percentage.includes('-')">
+            {{ kpi.percentage }}
+          </span>
+        </div>
+        <p class="kpi-period">{{ kpi.period }}</p>
+      </div>
+    </section>
+
+    <!-- Main Navigation Tabs -->
+    <div class="main-tabs-wrapper">
+      <nav class="main-tabs-nav" aria-label="Kategori Modul Poin">
+        <button
+          *ngFor="let tab of mainTabs"
+          type="button"
+          class="main-tab-btn"
+          [class.active]="activeMainTab() === tab"
+          (click)="setMainTab(tab)"
+        >
+          <span class="tab-label">{{ tab }}</span>
+          <span class="tab-counter" *ngIf="tab === 'Semua Riwayat Poin'">{{ pointList().length }}</span>
+          <span class="tab-counter counter-earned" *ngIf="tab === 'Perolehan (Earned)'">{{ earnedCount() }}</span>
+          <span class="tab-counter counter-redeemed" *ngIf="tab === 'Penukaran (Redeemed)'">{{ redeemedCount() }}</span>
+          <span class="tab-counter" *ngIf="tab === 'Katalog Hadiah'">{{ rewardCatalog().length }}</span>
+          <span class="tab-counter" *ngIf="tab === 'Misi Kesehatan'">{{ healthMissions().length }}</span>
+          <span class="tab-counter" *ngIf="tab === 'Leaderboard Pasien'">Top 5</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- VIEW 1: TABEL MUTASI RIWAYAT POIN (Semua / Earned / Redeemed) -->
+    <ng-container *ngIf="activeMainTab() === 'Semua Riwayat Poin' || activeMainTab() === 'Perolehan (Earned)' || activeMainTab() === 'Penukaran (Redeemed)'">
+      <!-- Toolbar Filter -->
+      <section class="toolbar-card">
+        <div class="toolbar-search">
+          <i class="ri-search-line search-icon"></i>
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Cari pasien, no transaksi, atau ID mutasi..."
+            [ngModel]="searchQuery()"
+            (ngModelChange)="searchQuery.set($event)"
+          />
+          <button
+            *ngIf="searchQuery()"
+            type="button"
+            class="clear-search-btn"
+            (click)="searchQuery.set('')"
+            title="Hapus pencarian"
+          >
+            <i class="ri-close-line"></i>
+          </button>
+        </div>
+
+        <div class="toolbar-filters">
+          <!-- Filter Tipe -->
+          <div class="filter-item">
+            <label class="filter-label" for="filter-tipe">Tipe:</label>
+            <div class="select-wrapper">
+              <select
+                id="filter-tipe"
+                class="filter-select"
+                [ngModel]="filterTipe()"
+                (ngModelChange)="filterTipe.set($event)"
+              >
+                <option *ngFor="let opt of tipeOptions" [value]="opt">{{ opt }}</option>
+              </select>
+              <i class="ri-arrow-down-s-line select-arrow"></i>
+            </div>
+          </div>
+
+          <!-- Filter Sumber -->
+          <div class="filter-item">
+            <label class="filter-label" for="filter-sumber">Sumber:</label>
+            <div class="select-wrapper">
+              <select
+                id="filter-sumber"
+                class="filter-select"
+                [ngModel]="filterSumber()"
+                (ngModelChange)="filterSumber.set($event)"
+              >
+                <option *ngFor="let opt of sumberOptions" [value]="opt">{{ opt }}</option>
+              </select>
+              <i class="ri-arrow-down-s-line select-arrow"></i>
+            </div>
+          </div>
+
+          <!-- Filter Status -->
+          <div class="filter-item">
+            <label class="filter-label" for="filter-status">Status:</label>
+            <div class="select-wrapper">
+              <select
+                id="filter-status"
+                class="filter-select"
+                [ngModel]="filterStatus()"
+                (ngModelChange)="filterStatus.set($event)"
+              >
+                <option *ngFor="let opt of statusOptions" [value]="opt">{{ opt }}</option>
+              </select>
+              <i class="ri-arrow-down-s-line select-arrow"></i>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Data Table -->
+      <section class="table-card">
+        <div class="table-responsive">
+          <table class="point-table">
+            <thead>
+              <tr>
+                <th class="th-center" style="width: 50px;">No</th>
+                <th>ID Mutasi Poin</th>
+                <th>Pasien & Tier</th>
+                <th>Tipe</th>
+                <th>Sumber & Layanan Pemicu</th>
+                <th>Jumlah Poin</th>
+                <th>Konversi Rupiah</th>
+                <th>Saldo Akhir</th>
+                <th>Status</th>
+                <th class="th-center" style="width: 80px;">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of filteredPointList(); let idx = index" class="table-row">
+                <td class="td-center text-muted font-mono">{{ idx + 1 }}</td>
+                <td>
+                  <div class="id-date-cell">
+                    <span class="id-text font-mono">{{ item.id }}</span>
+                    <span class="date-sub">{{ item.tanggal }} &bull; {{ item.waktu }}</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="patient-cell">
+                    <img [src]="item.pasien.avatar" [alt]="item.pasien.nama" class="patient-avatar" />
+                    <div class="patient-info">
+                      <div class="name-tier-row">
+                        <span class="patient-name">{{ item.pasien.nama }}</span>
+                        <span class="tier-chip" [ngClass]="'tier-' + item.pasien.tierBadgeColor">{{ item.pasien.tier }}</span>
+                      </div>
+                      <span class="patient-email text-muted">{{ item.pasien.email }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="type-badge" [ngClass]="getTypeClass(item.tipe)">
+                    <i class="ri-arrow-up-line" *ngIf="item.tipe === 'Earned'"></i>
+                    <i class="ri-arrow-down-line" *ngIf="item.tipe === 'Redeemed'"></i>
+                    <i class="ri-equalizer-line" *ngIf="item.tipe === 'Adjustment'"></i>
+                    <i class="ri-time-line" *ngIf="item.tipe === 'Expired'"></i>
+                    {{ item.tipe }}
+                  </span>
+                </td>
+                <td>
+                  <div class="source-cell">
+                    <span class="source-title">{{ item.sumber }}</span>
+                    <span class="source-ref font-mono">Ref: {{ item.refId }}</span>
+                    <small *ngIf="item.tenagaMedis" class="source-doctor text-muted">
+                      <i class="ri-stethoscope-line"></i> {{ item.tenagaMedis }}
+                    </small>
+                  </div>
+                </td>
+                <td>
+                  <div class="points-val-cell" [class.text-earned]="item.jumlahPoint > 0" [class.text-redeemed]="item.jumlahPoint < 0">
+                    <span class="pts-number font-mono">
+                      {{ item.jumlahPoint > 0 ? '+' : '' }}{{ item.jumlahPoint.toLocaleString('id-ID') }}
+                    </span>
+                    <span class="pts-unit">Pts</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="rupiah-val font-mono">{{ item.nilaiRupiah }}</span>
+                </td>
+                <td>
+                  <span class="balance-after font-mono">{{ item.saldoSetelah.toLocaleString('id-ID') }} Pts</span>
+                </td>
+                <td>
+                  <span class="status-badge" [ngClass]="getStatusClass(item.status)">
+                    {{ item.status }}
+                  </span>
+                </td>
+                <td class="td-center">
+                  <button
+                    type="button"
+                    class="btn-icon"
+                    (click)="viewDetail(item)"
+                    title="Lihat Detail Mutasi Poin Pasien"
+                  >
+                    <i class="ri-eye-line"></i>
+                  </button>
+                </td>
+              </tr>
+
+              <tr *ngIf="filteredPointList().length === 0">
+                <td colspan="10" class="empty-state-cell">
+                  <div class="empty-state-content">
+                    <i class="ri-coins-line empty-icon"></i>
+                    <p class="empty-text">Tidak ada riwayat mutasi poin yang sesuai kriteria filter</p>
+                    <button type="button" class="btn btn-outline btn-sm" (click)="searchQuery.set(''); filterTipe.set('Semua Tipe'); filterSumber.set('Semua Sumber')">
+                      Reset Filter
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </ng-container>
+
+    <!-- VIEW 2: KATALOG HADIAH & PENUKARAN (REWARD CATALOG) -->
+    <ng-container *ngIf="activeMainTab() === 'Katalog Hadiah'">
+      <section class="rewards-section">
+        <div class="section-banner-info">
+          <i class="ri-gift-2-line banner-icon"></i>
+          <div>
+            <h2 class="banner-title">Katalog Hadiah & Penukaran Point Health PSEF</h2>
+            <p class="banner-desc">
+              Daftar voucher diskon obat, gratis ongkir pengiriman resep, sesi konsultasi dokter, dan paket pemeriksaan kesehatan yang dapat ditukarkan pasien menggunakan poin loyalitas.
+            </p>
+          </div>
+        </div>
+
+        <div class="rewards-grid">
+          <div *ngFor="let reward of rewardCatalog()" class="reward-card" [ngClass]="reward.colorClass">
+            <div class="reward-header">
+              <div class="reward-icon-wrapper">
+                <i [class]="reward.icon"></i>
+              </div>
+              <span class="reward-category-pill">{{ reward.kategori }}</span>
+            </div>
+
+            <h3 class="reward-name">{{ reward.nama }}</h3>
+
+            <div class="reward-cost-box">
+              <div class="cost-pts">
+                <span class="pts-big font-mono">{{ reward.poinDibutuhkan.toLocaleString('id-ID') }}</span>
+                <span class="pts-lbl">Poin</span>
+              </div>
+              <span class="cost-rupiah font-mono">Setara {{ reward.nilaiRupiah }}</span>
+            </div>
+
+            <div class="reward-stats-row">
+              <div class="rstat-item">
+                <span class="rstat-label">Stok Tersedia:</span>
+                <span class="rstat-val font-mono">{{ reward.stokTersedia }}</span>
+              </div>
+              <div class="rstat-item">
+                <span class="rstat-label">Telah Ditukar:</span>
+                <span class="rstat-val font-mono">{{ reward.totalDitukar }}x</span>
+              </div>
+            </div>
+
+            <div class="reward-footer">
+              <span class="reward-id font-mono">{{ reward.id }}</span>
+              <button type="button" class="btn btn-outline btn-sm" (click)="openAdjustmentModal()">
+                <span>Kelola Hadiah</span>
+                <i class="ri-arrow-right-line"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </ng-container>
+
+    <!-- VIEW 3: MISI KESEHATAN PASIEN (GAMIFICATION) -->
+    <ng-container *ngIf="activeMainTab() === 'Misi Kesehatan'">
+      <section class="missions-section">
+        <div class="section-banner-info">
+          <i class="ri-run-line banner-icon"></i>
+          <div>
+            <h2 class="banner-title">Misi Kesehatan & Gamifikasi Pasien</h2>
+            <p class="banner-desc">
+              Tantangan hidup sehat yang memotivasi pasien untuk patuh minum obat resep, kontrol rutin ke dokter, dan melengkapi data riwayat kesehatan digital PSEF.
+            </p>
+          </div>
+        </div>
+
+        <div class="missions-grid">
+          <div *ngFor="let mission of healthMissions()" class="mission-card">
+            <div class="mission-header">
+              <div class="mission-icon-box">
+                <i [class]="mission.icon"></i>
+              </div>
+              <span class="mission-reward-badge font-mono">
+                <i class="ri-add-line"></i>{{ mission.rewardPoin }} Pts
+              </span>
+            </div>
+
+            <span class="mission-category">{{ mission.kategori }}</span>
+            <h3 class="mission-title">{{ mission.judul }}</h3>
+
+            <div class="mission-stats-box">
+              <div class="mstat-item">
+                <span class="mstat-lbl">Peserta Aktif:</span>
+                <span class="mstat-val">{{ mission.pesertaAktif.toLocaleString('id-ID') }} Pasien</span>
+              </div>
+              <div class="mstat-item">
+                <span class="mstat-lbl">Tingkat Keberhasilan:</span>
+                <span class="mstat-val text-success">{{ mission.tingkatSelesai }}</span>
+              </div>
+            </div>
+
+            <div class="mission-footer">
+              <span class="status-badge badge-berhasil">{{ mission.status }}</span>
+              <span class="mission-id font-mono">{{ mission.id }}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </ng-container>
+
+    <!-- VIEW 4: LEADERBOARD PASIEN TERAKTIF -->
+    <ng-container *ngIf="activeMainTab() === 'Leaderboard Pasien'">
+      <section class="leaderboard-section">
+        <div class="section-banner-info">
+          <i class="ri-trophy-line banner-icon"></i>
+          <div>
+            <h2 class="banner-title">Peringkat Pasien Teraktif & Loyalitas Tertinggi</h2>
+            <p class="banner-desc">
+              Pasien PSEF dengan akumulasi poin kesehatan dan aktivitas telemedisin terbanyak bulan ini.
+            </p>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="table-responsive">
+            <table class="point-table leaderboard-table">
+              <thead>
+                <tr>
+                  <th class="th-center" style="width: 80px;">Peringkat</th>
+                  <th>Pasien & Identitas</th>
+                  <th>Tingkatan Member</th>
+                  <th>Poin Diperoleh (Bulan Ini)</th>
+                  <th>Total Poin Sepanjang Masa</th>
+                  <th>Total Aktivitas Kesehatan</th>
+                  <th class="th-center" style="width: 100px;">Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let earner of topEarners()" class="table-row">
+                  <td class="td-center">
+                    <div class="rank-badge" [class.rank-gold]="earner.peringkat === 1" [class.rank-silver]="earner.peringkat === 2" [class.rank-bronze]="earner.peringkat === 3">
+                      <i class="ri-trophy-fill" *ngIf="earner.peringkat <= 3"></i>
+                      <span>#{{ earner.peringkat }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="patient-cell">
+                      <img [src]="earner.pasien.avatar" [alt]="earner.pasien.nama" class="patient-avatar" />
+                      <div>
+                        <span class="patient-name">{{ earner.pasien.nama }}</span>
+                        <span class="patient-email text-muted">{{ earner.pasien.email }}</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="tier-chip" [ngClass]="'tier-' + earner.pasien.tierBadgeColor">{{ earner.pasien.tier }} Member</span>
+                  </td>
+                  <td>
+                    <span class="pts-number font-mono text-earned">+{{ earner.totalPoinBulanIni.toLocaleString('id-ID') }} Pts</span>
+                  </td>
+                  <td>
+                    <span class="balance-after font-mono">{{ earner.lifetimePoin.toLocaleString('id-ID') }} Pts</span>
+                  </td>
+                  <td>
+                    <span class="activity-count">{{ earner.totalAktivitas }} Aktivitas</span>
+                  </td>
+                  <td class="td-center">
+                    <button type="button" class="btn btn-outline btn-sm" (click)="viewPatientPoints(earner.pasien.id)">
+                      Profil Poin
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </ng-container>
+  </div>
+
+  <!-- MODAL: SESUAIKAN / BERI POIN MANUAL KE PASIEN -->
+  <div *ngIf="showAdjustmentModal()" class="modal-backdrop" (click)="closeAdjustmentModal()">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title-row">
+          <div class="modal-icon-badge">
+            <i class="ri-hand-coin-fill"></i>
+          </div>
+          <div>
+            <h2 class="modal-title">Penyesuaian Saldo Poin Pasien</h2>
+            <p class="modal-subtitle">Berikan poin bonus penghargaan atau penyesuaian koreksi saldo pasien</p>
+          </div>
+        </div>
+        <button type="button" class="btn-close-modal" (click)="closeAdjustmentModal()" title="Tutup modal">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Target Pasien -->
+        <div class="form-group">
+          <label class="form-label">Pilih Pasien Penerima</label>
+          <select class="form-control" [(ngModel)]="adjustmentForm.pasienNama">
+            <option value="Andi Putra">Andi Putra (#PSN-001 - Platinum Member)</option>
+            <option value="Dewi Lestari">Dewi Lestari (#PSN-002 - Gold Member)</option>
+            <option value="Budi Santoso">Budi Santoso (#PSN-003 - Silver Member)</option>
+            <option value="Rina Wulandari">Rina Wulandari (#PSN-004 - Gold Member)</option>
+            <option value="Siti Aminah">Siti Aminah (#PSN-006 - VIP Priority)</option>
+          </select>
+        </div>
+
+        <!-- Tipe Penyesuaian -->
+        <div class="form-group">
+          <label class="form-label">Jenis Penyesuaian</label>
+          <div class="radio-pill-group">
+            <label class="radio-pill" [class.active]="adjustmentForm.tipe === 'Penambahan'">
+              <input type="radio" name="adjType" [(ngModel)]="adjustmentForm.tipe" value="Penambahan" />
+              <i class="ri-add-circle-line"></i>
+              <span>Penambahan (+ Earned)</span>
+            </label>
+            <label class="radio-pill" [class.active]="adjustmentForm.tipe === 'Pengurangan'">
+              <input type="radio" name="adjType" [(ngModel)]="adjustmentForm.tipe" value="Pengurangan" />
+              <i class="ri-indeterminate-circle-line"></i>
+              <span>Pengurangan (- Debet)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Jumlah Poin -->
+        <div class="form-group">
+          <label class="form-label" for="inp-pts">Jumlah Poin <span class="text-danger">*</span></label>
+          <div class="input-with-suffix">
+            <input
+              id="inp-pts"
+              type="number"
+              class="form-control font-mono"
+              placeholder="Contoh: 150"
+              [(ngModel)]="adjustmentForm.jumlahPoin"
+            />
+            <span class="suffix-text font-mono">Poin (= Rp {{ (adjustmentForm.jumlahPoin * 10).toLocaleString('id-ID') }})</span>
+          </div>
+          <small class="form-hint">Konversi resmi PSEF: 1 Poin = Rp 10 nilai transaksi.</small>
+        </div>
+
+        <!-- Alasan / Catatan Penyesuaian -->
+        <div class="form-group">
+          <label class="form-label">Keterangan / Alasan Penyesuaian</label>
+          <textarea
+            class="form-control"
+            rows="3"
+            placeholder="Contoh: Bonus kompensasi keterlambatan kurir obat resep, atau reward kampanye kesehatan..."
+            [(ngModel)]="adjustmentForm.alasan"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" (click)="closeAdjustmentModal()">Batal</button>
+        <button type="button" class="btn btn-primary" (click)="saveAdjustment()">
+          <i class="ri-check-line"></i>
+          <span>Simpan Penyesuaian Poin</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

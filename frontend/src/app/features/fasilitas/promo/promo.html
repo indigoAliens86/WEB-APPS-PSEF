@@ -1,0 +1,461 @@
+<div class="promo-container">
+  <!-- Child Router Outlet for Detail, Tambah, and Edit Views -->
+  <router-outlet (activate)="showingDetails.set(true)" (deactivate)="showingDetails.set(false)"></router-outlet>
+
+  <!-- Main Promo & Voucher List (hidden when viewing child view) -->
+  @if (!showingDetails()) {
+    <div class="promo-main-view">
+      <!-- Header Section -->
+      <header class="page-header">
+        <div class="header-left">
+          <div class="header-icon-box">
+            <i class="ri-price-tag-3-line" aria-hidden="true"></i>
+          </div>
+          <div>
+            <h1 class="page-title">Promo & Voucher Apotek</h1>
+            <p class="page-subtitle">
+              Kelola program voucher diskon, penawaran tebus resep murah, dan campaign suplemen resmi di <strong>{{ promoService.currentFacilityName }}</strong>
+            </p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button type="button" class="btn btn-outline" (click)="exportData()" title="Ekspor data rekapitulasi ke CSV">
+            <i class="ri-download-2-line" aria-hidden="true"></i>
+            <span>Ekspor Data</span>
+          </button>
+          <button type="button" class="btn btn-primary" (click)="openTambah()" title="Buat promo atau voucher baru">
+            <i class="ri-add-line" aria-hidden="true"></i>
+            <span>Tambah Promo Baru</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- 4 KPI Summary Cards -->
+      <section class="kpi-grid" aria-label="Statistik Program Promo Apotek">
+        @for (kpi of promoService.kpiCards(); track kpi.title) {
+          <div class="kpi-card" [ngClass]="kpi.colorClass">
+            <div class="kpi-header">
+              <span class="kpi-title">{{ kpi.title }}</span>
+              <div class="kpi-icon-wrapper">
+                <i [class]="kpi.icon" aria-hidden="true"></i>
+              </div>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-value">{{ kpi.value }}</span>
+              @if (kpi.percentage) {
+                <span class="kpi-badge positive">
+                  <i class="ri-arrow-up-line" aria-hidden="true"></i> {{ kpi.percentage }}
+                </span>
+              }
+            </div>
+            <p class="kpi-period">{{ kpi.period }}</p>
+          </div>
+        }
+      </section>
+
+      <!-- Main Navigation Tabs -->
+      <div class="main-tabs-wrapper">
+        <nav class="main-tabs-nav" aria-label="Kategori Program">
+          @for (tab of mainTabs; track tab) {
+            <button
+              type="button"
+              class="main-tab-btn"
+              [class.active]="activeMainTab() === tab"
+              (click)="setMainTab(tab)"
+            >
+              <span class="tab-label">{{ tab }}</span>
+              @if (tab === 'Semua Promo') {
+                <span class="tab-counter">{{ promoService.promoList().length }}</span>
+              }
+              @if (tab === 'Voucher Diskon Apotek') {
+                <span class="tab-counter">{{ voucherCount() }}</span>
+              }
+              @if (tab === 'Campaign Diskon Produk') {
+                <span class="tab-counter">{{ campaignCount() }}</span>
+              }
+              @if (tab === 'Diskon Telefarmasi') {
+                <span class="tab-counter">{{ telefarmasiCount() }}</span>
+              }
+            </button>
+          }
+        </nav>
+
+        <!-- View Switcher (Table vs Cards) -->
+        <div class="view-switch-group">
+          <button
+            type="button"
+            class="view-toggle-btn"
+            [class.active]="viewMode() === 'table'"
+            (click)="setViewMode('table')"
+            title="Tampilan Tabel"
+          >
+            <i class="ri-table-line" aria-hidden="true"></i>
+            <span class="hide-mobile">Tabel</span>
+          </button>
+          <button
+            type="button"
+            class="view-toggle-btn"
+            [class.active]="viewMode() === 'cards'"
+            (click)="setViewMode('cards')"
+            title="Tampilan Katalog Kupon"
+          >
+            <i class="ri-grid-fill" aria-hidden="true"></i>
+            <span class="hide-mobile">Katalog Kupon</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Toolbar Filters -->
+      <section class="toolbar-card">
+        <div class="toolbar-search">
+          <i class="ri-search-line search-icon" aria-hidden="true"></i>
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Cari nama promo, kode voucher, atau layanan sasaran..."
+            [ngModel]="searchQuery()"
+            (ngModelChange)="searchQuery.set($event)"
+            aria-label="Cari promo"
+          />
+          @if (searchQuery()) {
+            <button
+              type="button"
+              class="btn-clear-search"
+              (click)="searchQuery.set('')"
+              title="Hapus pencarian"
+            >
+              <i class="ri-close-line" aria-hidden="true"></i>
+            </button>
+          }
+        </div>
+
+        <div class="toolbar-filters">
+          <!-- Status Filter -->
+          <div class="select-wrapper">
+            <select
+              class="filter-select"
+              [ngModel]="filterStatus()"
+              (ngModelChange)="filterStatus.set($event)"
+              aria-label="Filter status promo"
+            >
+              @for (st of statusOptions; track st) {
+                <option [value]="st">{{ st }}</option>
+              }
+            </select>
+            <i class="ri-arrow-down-s-line select-arrow" aria-hidden="true"></i>
+          </div>
+
+          <!-- Target Layanan Filter -->
+          <div class="select-wrapper">
+            <select
+              class="filter-select"
+              [ngModel]="filterTargetLayanan()"
+              (ngModelChange)="filterTargetLayanan.set($event)"
+              aria-label="Filter target layanan"
+            >
+              @for (tgt of targetOptions; track tgt) {
+                <option [value]="tgt">{{ tgt }}</option>
+              }
+            </select>
+            <i class="ri-arrow-down-s-line select-arrow" aria-hidden="true"></i>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 1: TABLE VIEW -->
+      @if (viewMode() === 'table') {
+        <section class="table-card" aria-label="Tabel Program Promo Apotek">
+          <div class="table-responsive">
+            <table class="promo-table">
+              <thead>
+                <tr>
+                  <th scope="col" class="th-prog">Program & Kategori</th>
+                  <th scope="col" class="th-code">Kode Voucher</th>
+                  <th scope="col" class="th-discount">Diskon / Potongan</th>
+                  <th scope="col" class="th-period">Periode Berlaku</th>
+                  <th scope="col" class="th-target">Sasaran Layanan</th>
+                  <th scope="col" class="th-quota">Klaim Kuota</th>
+                  <th scope="col" class="th-status">Status</th>
+                  <th scope="col" class="th-action text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of filteredPromoList(); track item.id) {
+                  <tr class="table-row">
+                    <!-- Program & Info -->
+                    <td class="td-prog">
+                      <div class="prog-meta-cell">
+                        <span class="type-badge" [ngClass]="item.badgeColor">
+                          {{ item.tipe }}
+                        </span>
+                        <div class="prog-info">
+                          <strong class="prog-name" (click)="openDetail(item)">{{ item.nama }}</strong>
+                          <span class="prog-id font-mono">{{ item.id }}</span>
+                        </div>
+                      </div>
+                    </td>
+
+                    <!-- Kode Voucher -->
+                    <td class="td-code">
+                      @if (item.kodeVoucher) {
+                        <div class="code-pill font-mono" (click)="copyVoucherCode(item.kodeVoucher)" title="Klik untuk salin kode voucher">
+                          <i class="ri-coupon-3-line" aria-hidden="true"></i>
+                          <span>{{ item.kodeVoucher }}</span>
+                          <button type="button" class="btn-mini-copy" aria-label="Salin kode">
+                            <i [class]="copiedCode() === item.kodeVoucher ? 'ri-check-line text-success' : 'ri-file-copy-line'" aria-hidden="true"></i>
+                          </button>
+                        </div>
+                      } @else {
+                        <span class="text-muted">Potongan Langsung</span>
+                      }
+                    </td>
+
+                    <!-- Nilai Diskon -->
+                    <td class="td-discount">
+                      <div class="discount-cell">
+                        <strong class="discount-value">{{ item.diskon.formatted }}</strong>
+                        @if (item.diskon.maxDiskon) {
+                          <span class="discount-sub">Maks: {{ item.diskon.maxDiskon }}</span>
+                        }
+                        <span class="min-spend">Min. {{ item.minTransaksi }}</span>
+                      </div>
+                    </td>
+
+                    <!-- Periode -->
+                    <td class="td-period">
+                      <div class="period-cell">
+                        <span class="period-dates">{{ item.periodeMulai }} - {{ item.periodeSelesai }}</span>
+                        <span class="period-faskes">{{ promoService.currentFacilityName }}</span>
+                      </div>
+                    </td>
+
+                    <!-- Target Layanan -->
+                    <td class="td-target">
+                      <span class="target-tag">
+                        <i class="ri-check-line text-emerald" aria-hidden="true"></i>
+                        {{ item.targetLayanan }}
+                      </span>
+                    </td>
+
+                    <!-- Kuota Progress -->
+                    <td class="td-quota">
+                      <div class="quota-cell">
+                        <div class="quota-text-row">
+                          <span class="quota-used font-semibold">{{ item.kuotaTerpakai }}</span>
+                          <span class="quota-total text-muted">/ {{ item.kuotaTotal }}</span>
+                          <span class="quota-pct font-mono">({{ getQuotaPercentage(item.kuotaTerpakai, item.kuotaTotal) }}%)</span>
+                        </div>
+                        <div class="progress-bar-bg" role="progressbar" [attr.aria-valuenow]="getQuotaPercentage(item.kuotaTerpakai, item.kuotaTotal)" aria-valuemin="0" aria-valuemax="100">
+                          <div class="progress-bar-fill" [style.width.%]="getQuotaPercentage(item.kuotaTerpakai, item.kuotaTotal)"></div>
+                        </div>
+                      </div>
+                    </td>
+
+                    <!-- Status -->
+                    <td class="td-status">
+                      <span class="status-badge" [ngClass]="getStatusClass(item.status)">
+                        {{ item.status }}
+                      </span>
+                    </td>
+
+                    <!-- Actions -->
+                    <td class="td-action text-right">
+                      <div class="action-btn-group">
+                        <button
+                          type="button"
+                          class="action-btn view"
+                          (click)="openDetail(item)"
+                          title="Lihat rincian lengkap program"
+                          aria-label="Detail program"
+                        >
+                          <i class="ri-eye-line" aria-hidden="true"></i>
+                        </button>
+
+                        <button
+                          type="button"
+                          class="action-btn edit"
+                          (click)="openEdit(item)"
+                          title="Edit ketentuan promo"
+                          aria-label="Edit promo"
+                        >
+                          <i class="ri-edit-line" aria-hidden="true"></i>
+                        </button>
+
+                        <button
+                          type="button"
+                          class="action-btn toggle"
+                          [class.is-active]="item.status === 'Aktif'"
+                          (click)="toggleProgramStatus(item)"
+                          [title]="item.status === 'Aktif' ? 'Nonaktifkan sementara' : 'Aktifkan program'"
+                          aria-label="Toggle status"
+                        >
+                          <i [class]="item.status === 'Aktif' ? 'ri-toggle-fill' : 'ri-toggle-line'" aria-hidden="true"></i>
+                        </button>
+
+                        <button
+                          type="button"
+                          class="action-btn delete"
+                          (click)="confirmDelete(item)"
+                          title="Hapus promo"
+                          aria-label="Hapus promo"
+                        >
+                          <i class="ri-delete-bin-line" aria-hidden="true"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="8" class="table-empty">
+                      <div class="empty-state">
+                        <i class="ri-price-tag-3-line empty-icon" aria-hidden="true"></i>
+                        <p class="empty-title">Tidak ada program promo yang cocok</p>
+                        <span class="empty-desc">Coba sesuaikan kata kunci pencarian atau ubah filter status & layanan.</span>
+                        <button type="button" class="btn btn-outline mt-3" (click)="searchQuery.set(''); filterStatus.set('Semua Status'); filterTargetLayanan.set('Semua Layanan')">
+                          Reset Filter
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </section>
+      }
+
+      <!-- VIEW 2: CARDS / VOUCHER CATALOG VIEW -->
+      @if (viewMode() === 'cards') {
+        <section class="cards-grid" aria-label="Katalog Kupon & Voucher Apotek">
+          @for (item of filteredPromoList(); track item.id) {
+            <article class="voucher-card" [ngClass]="item.badgeColor">
+              <!-- Left Stub / Value Banner -->
+              <div class="voucher-stub">
+                <span class="stub-type">{{ item.tipe }}</span>
+                <strong class="stub-value">{{ item.diskon.formatted }}</strong>
+                @if (item.diskon.maxDiskon) {
+                  <span class="stub-max">Maks {{ item.diskon.maxDiskon }}</span>
+                }
+                <span class="stub-min">Min. {{ item.minTransaksi }}</span>
+              </div>
+
+              <!-- Center Divider with Perforation Circles -->
+              <div class="voucher-perforation" aria-hidden="true">
+                <span class="perf-dot top"></span>
+                <span class="perf-line"></span>
+                <span class="perf-dot bottom"></span>
+              </div>
+
+              <!-- Right Body -->
+              <div class="voucher-body">
+                <div class="vcard-top">
+                  <div class="vcard-title-group">
+                    <span class="status-badge" [ngClass]="getStatusClass(item.status)">
+                      {{ item.status }}
+                    </span>
+                    <span class="vcard-id font-mono">{{ item.id }}</span>
+                  </div>
+                  <h2 class="vcard-title" (click)="openDetail(item)">{{ item.nama }}</h2>
+                  <p class="vcard-desc">{{ item.deskripsi }}</p>
+                </div>
+
+                <!-- Code & Quota Box -->
+                <div class="vcard-middle">
+                  @if (item.kodeVoucher) {
+                    <div class="vcard-code-row">
+                      <span class="vcard-code font-mono">{{ item.kodeVoucher }}</span>
+                      <button
+                        type="button"
+                        class="btn-copy-tag"
+                        (click)="copyVoucherCode(item.kodeVoucher)"
+                        title="Salin kode kupon"
+                      >
+                        <i [class]="copiedCode() === item.kodeVoucher ? 'ri-check-line text-success' : 'ri-file-copy-line'" aria-hidden="true"></i>
+                        <span>{{ copiedCode() === item.kodeVoucher ? 'Tersalin' : 'Salin' }}</span>
+                      </button>
+                    </div>
+                  } @else {
+                    <div class="vcard-badge-direct">
+                      <i class="ri-flashlight-line" aria-hidden="true"></i>
+                      <span>Diskon Otomatis Saat Checkout</span>
+                    </div>
+                  }
+
+                  <div class="vcard-quota-bar">
+                    <div class="quota-meta">
+                      <span class="quota-lbl">Kuota Pemakaian</span>
+                      <span class="quota-nums font-mono">{{ item.kuotaTerpakai }} / {{ item.kuotaTotal }}</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                      <div class="progress-bar-fill" [style.width.%]="getQuotaPercentage(item.kuotaTerpakai, item.kuotaTotal)"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Footer & Action -->
+                <footer class="vcard-footer">
+                  <span class="vcard-period">
+                    <i class="ri-calendar-line" aria-hidden="true"></i>
+                    s/d {{ item.periodeSelesai }}
+                  </span>
+                  <div class="vcard-actions">
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-outline"
+                      (click)="openEdit(item)"
+                      title="Edit Promo"
+                    >
+                      <i class="ri-edit-line" aria-hidden="true"></i>
+                      <span>Edit</span>
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-primary"
+                      (click)="openDetail(item)"
+                    >
+                      <span>Detail</span>
+                      <i class="ri-arrow-right-line" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </footer>
+              </div>
+            </article>
+          } @empty {
+            <div class="empty-cards-state">
+              <i class="ri-coupon-3-line" aria-hidden="true"></i>
+              <p>Tidak ada voucher yang sesuai kriteria pencarian</p>
+            </div>
+          }
+        </section>
+      }
+    </div>
+  }
+
+  <!-- Delete Modal -->
+  @if (deletingItem()) {
+    <div class="modal-backdrop" (click)="closeDeleteModal()">
+      <div class="modal-dialog" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <div class="modal-icon-danger">
+            <i class="ri-delete-bin-line" aria-hidden="true"></i>
+          </div>
+          <div>
+            <h3 class="modal-title">Hapus Program Promo?</h3>
+            <p class="modal-subtitle">Tindakan ini tidak dapat dibatalkan</p>
+          </div>
+        </div>
+
+        <div class="modal-body">
+          <p class="modal-text">
+            Apakah Anda yakin ingin menghapus program promo <strong>"{{ deletingItem()?.nama }}"</strong> ({{ deletingItem()?.id }}) dari katalog Apotek Kimia Sehat PSEF?
+          </p>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" (click)="closeDeleteModal()">Batal</button>
+          <button type="button" class="btn btn-danger" (click)="executeDelete()">Ya, Hapus Promo</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

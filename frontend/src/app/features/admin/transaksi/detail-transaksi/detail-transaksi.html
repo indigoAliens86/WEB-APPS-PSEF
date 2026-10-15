@@ -1,0 +1,341 @@
+<div class="detail-transaksi-container">
+  <!-- TOP HEADER & CONTROLS -->
+  <div class="detail-header-card">
+    <div class="header-left-col">
+      <div class="breadcrumb-row">
+        <span class="bc-link" (click)="goBack()">Transaksi</span>
+        <i class="ri-arrow-right-s-line bc-sep"></i>
+        <span class="bc-current">Detail Transaksi</span>
+      </div>
+
+      <div class="title-status-row">
+        <h3 class="tx-title">{{ detail().id }}</h3>
+        <span class="status-badge-lg badge-selesai">
+          <i class="ri-checkbox-circle-fill"></i>
+          {{ detail().status }}
+        </span>
+        <span class="tx-time-label">{{ detail().waktuTransaksi }}</span>
+      </div>
+    </div>
+
+    <div class="header-right-col">
+      <!-- Preview Switcher for testing all transaction origins -->
+      <div class="origin-preview-switcher" title="Ubah pratinjau asal sumber transaksi">
+        <button
+          type="button"
+          class="switch-btn"
+          [class.active]="detail().sumber.tipe === 'Pesanan Obat Resep'"
+          (click)="switchSourcePreview('Pesanan Obat Resep')"
+        >
+          Pesanan Resep
+        </button>
+        <button
+          type="button"
+          class="switch-btn"
+          [class.active]="detail().sumber.tipe === 'Konsultasi Dokter'"
+          (click)="switchSourcePreview('Konsultasi Dokter')"
+        >
+          Konsultasi Dokter
+        </button>
+        <button
+          type="button"
+          class="switch-btn"
+          [class.active]="detail().sumber.tipe === 'Konsultasi Apoteker'"
+          (click)="switchSourcePreview('Konsultasi Apoteker')"
+        >
+          Telefarmasi
+        </button>
+        <button
+          type="button"
+          class="switch-btn"
+          [class.active]="detail().sumber.tipe === 'Pesanan Obat Non-Resep'"
+          (click)="switchSourcePreview('Pesanan Obat Non-Resep')"
+        >
+          Non-Resep
+        </button>
+      </div>
+
+      <button type="button" class="btn-print" (click)="printInvoice()" title="Cetak Bukti Pembayaran">
+        <i class="ri-printer-line"></i>
+        Cetak Invoice
+      </button>
+
+      <button type="button" class="btn-back" (click)="goBack()">
+        <i class="ri-arrow-left-line"></i>
+        Kembali
+      </button>
+    </div>
+  </div>
+
+  <!-- MAIN 2-COLUMN DETAIL GRID -->
+  <div class="detail-grid">
+    <!-- LEFT COLUMN: ORIGIN, ITEMS & PATIENT -->
+    <div class="detail-left-column">
+      <!-- 1. KARTU ASAL SUMBER TRANSAKSI -->
+      <div class="source-info-card">
+        <div class="source-icon-circle" [ngClass]="{
+          'resep': detail().sumber.tipe === 'Pesanan Obat Resep',
+          'telemed': detail().sumber.tipe === 'Konsultasi Dokter',
+          'telefarm': detail().sumber.tipe === 'Konsultasi Apoteker',
+          'market': detail().sumber.tipe === 'Pesanan Obat Non-Resep'
+        }">
+          @if (detail().sumber.tipe === 'Pesanan Obat Resep') {
+            <i class="ri-file-list-3-line"></i>
+          } @else if (detail().sumber.tipe === 'Konsultasi Dokter') {
+            <i class="ri-stethoscope-line"></i>
+          } @else if (detail().sumber.tipe === 'Konsultasi Apoteker') {
+            <i class="ri-capsule-line"></i>
+          } @else {
+            <i class="ri-shopping-cart-2-line"></i>
+          }
+        </div>
+
+        <div class="source-text-meta">
+          <div class="source-tag-row">
+            <span class="source-pill">{{ detail().sumber.tipe }}</span>
+            <span class="ref-id-pill">Ref ID: {{ detail().sumber.refId }}</span>
+          </div>
+          <h4 class="source-title">{{ detail().sumber.namaLayanan }}</h4>
+          <p class="source-desc">{{ detail().sumber.deskripsi }}</p>
+
+          @if (detail().sumber.tenagaKesehatan) {
+            <div class="doctor-badge-row">
+              <img
+                [src]="detail().sumber.tenagaKesehatan?.avatar"
+                alt="Tenaga Medis"
+                class="doc-avatar"
+                onerror="this.src='assets/images/avatar/male.png'"
+              />
+              <div class="doc-meta">
+                <strong class="doc-name">{{ detail().sumber.tenagaKesehatan?.nama }}</strong>
+                <span class="doc-role">
+                  {{ detail().sumber.tenagaKesehatan?.role }} • {{ detail().sumber.tenagaKesehatan?.sipAtauStra }}
+                </span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- 2. KARTU RINCIAN PEMBAYARAN / INVOICE ITEMS -->
+      <div class="content-card">
+        <div class="card-header-clean">
+          <h4 class="card-title">Rincian Item & Jasa Layanan</h4>
+        </div>
+
+        <div class="table-responsive">
+          <table class="items-table">
+            <thead>
+              <tr>
+                <th class="th-no">No</th>
+                <th class="th-item">Deskripsi Item / Jasa</th>
+                <th class="th-kat">Kategori</th>
+                <th class="th-qty">Qty</th>
+                <th class="th-harga">Harga Satuan</th>
+                <th class="th-subtotal">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of detail().rincianItem; track item.no) {
+                <tr>
+                  <td class="td-no">{{ item.no }}</td>
+                  <td class="td-item">
+                    <strong class="item-name">{{ item.nama }}</strong>
+                  </td>
+                  <td class="td-kat">
+                    <span class="kat-badge">{{ item.kategori }}</span>
+                  </td>
+                  <td class="td-qty">{{ item.qty }}</td>
+                  <td class="td-harga">{{ item.harga }}</td>
+                  <td class="td-subtotal font-bold">{{ item.subtotal }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- PRICING BREAKDOWN TOTALS (RIGHT-ALIGNED) -->
+        <div class="pricing-breakdown-wrapper">
+          <div class="pricing-box">
+            <div class="price-row">
+              <span class="price-label">Subtotal Produk & Jasa</span>
+              <span class="price-val">{{ detail().biaya.subtotal }}</span>
+            </div>
+            @if (detail().biaya.jasaLayanan !== 'Rp 0') {
+              <div class="price-row">
+                <span class="price-label">Biaya Resep & Racik</span>
+                <span class="price-val">{{ detail().biaya.jasaLayanan }}</span>
+              </div>
+            }
+            @if (detail().biaya.ongkosKirim !== 'Rp 0') {
+              <div class="price-row">
+                <span class="price-label">Ongkos Pengiriman Obat</span>
+                <span class="price-val">{{ detail().biaya.ongkosKirim }}</span>
+              </div>
+            }
+            @if (detail().biaya.diskon !== 'Rp 0') {
+              <div class="price-row">
+                <span class="price-label">Diskon / Voucher</span>
+                <span class="price-val text-red">{{ detail().biaya.diskon }}</span>
+              </div>
+            }
+            <div class="price-row total-highlight-row">
+              <span class="price-label font-bold">Total Pembayaran</span>
+              <span class="price-val total-amount-teal">{{ detail().biaya.totalPembayaran }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. KARTU INFORMASI PEMBAYAR / PASIEN -->
+      <div class="content-card">
+        <div class="card-header-clean">
+          <h4 class="card-title">Informasi Pembayar / Pasien</h4>
+        </div>
+
+        <div class="patient-info-body">
+          <div class="patient-main-row">
+            <img
+              [src]="detail().pelanggan.avatar"
+              [alt]="detail().pelanggan.nama"
+              class="patient-avatar"
+              onerror="this.src='assets/images/avatar/male.png'"
+            />
+            <div class="patient-meta">
+              <h4 class="patient-name">{{ detail().pelanggan.nama }}</h4>
+              <span class="patient-nik">NIK: {{ detail().pelanggan.nik }}</span>
+            </div>
+          </div>
+
+          <div class="patient-contact-grid">
+            <div class="contact-card-item">
+              <i class="ri-phone-line"></i>
+              <div>
+                <span class="contact-lbl">No. Telepon / WhatsApp</span>
+                <strong class="contact-val">{{ detail().pelanggan.telepon }}</strong>
+              </div>
+            </div>
+
+            <div class="contact-card-item">
+              <i class="ri-mail-line"></i>
+              <div>
+                <span class="contact-lbl">Alamat Email</span>
+                <strong class="contact-val">{{ detail().pelanggan.email }}</strong>
+              </div>
+            </div>
+
+            <div class="contact-card-item full-width">
+              <i class="ri-map-pin-line"></i>
+              <div>
+                <span class="contact-lbl">Alamat Penagihan & Pengiriman</span>
+                <strong class="contact-val">{{ detail().pelanggan.alamat }}</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN: GATEWAY SUMMARY & TIMELINE -->
+    <div class="detail-right-column">
+      <!-- 1. KARTU GATEWAY & METODE PEMBAYARAN -->
+      <div class="sidebar-payment-card">
+        <div class="card-top-status">
+          <span class="status-indicator-pill">
+            <i class="ri-shield-check-fill"></i>
+            Pembayaran Lunas
+          </span>
+          <span class="settle-label">{{ detail().metodePembayaran.statusSettlement }}</span>
+        </div>
+
+        <!-- TOTAL NOMINAL BIG DISPLAY -->
+        <div class="total-big-display">
+          <span class="total-caption">Total Pembayaran Diterima</span>
+          <h2 class="total-headline">{{ detail().biaya.totalPembayaran }}</h2>
+        </div>
+
+        <div class="divider-line"></div>
+
+        <!-- DETAIL METODE & REKENING -->
+        <div class="payment-method-details-box">
+          <div class="method-header-row">
+            <div class="provider-logo-box">
+              <img
+                [src]="detail().metodePembayaran.logo"
+                [alt]="detail().metodePembayaran.provider"
+                class="provider-img"
+                onerror="this.style.display='none'"
+              />
+            </div>
+            <div>
+              <strong class="provider-name">{{ detail().metodePembayaran.provider }}</strong>
+              <span class="provider-cat">{{ detail().metodePembayaran.kategori }}</span>
+            </div>
+          </div>
+
+          <div class="account-info-row">
+            <span class="info-lbl">Nomor Rekening / Akun:</span>
+            <strong class="info-val">{{ detail().metodePembayaran.noRekening }}</strong>
+          </div>
+
+          <div class="account-info-row">
+            <span class="info-lbl">Atas Nama:</span>
+            <strong class="info-val">{{ detail().metodePembayaran.atasNama }}</strong>
+          </div>
+        </div>
+
+        <div class="divider-line"></div>
+
+        <!-- NO REFERENSI GATEWAY WITH COPY BUTTON -->
+        <div class="gateway-ref-box">
+          <div class="ref-text-col">
+            <span class="ref-lbl">No. Referensi Gateway</span>
+            <strong class="ref-code">{{ detail().noReferensiGateway }}</strong>
+          </div>
+          <button type="button" class="btn-copy-ref" (click)="copyRefId()" title="Salin No. Referensi">
+            @if (copiedRef()) {
+              <i class="ri-check-line text-emerald"></i>
+              <span class="copy-text text-emerald">Tersalin!</span>
+            } @else {
+              <i class="ri-file-copy-line"></i>
+              <span class="copy-text">Salin</span>
+            }
+          </button>
+        </div>
+
+        <div class="completion-time-box">
+          <i class="ri-time-line"></i>
+          <span>Waktu Selesai: {{ detail().waktuSelesai }}</span>
+        </div>
+      </div>
+
+      <!-- 2. KARTU TIMELINE ALUR PEMBAYARAN -->
+      <div class="sidebar-timeline-card">
+        <h4 class="timeline-card-title">Alur Riwayat Transaksi</h4>
+
+        <div class="timeline-stepper-list">
+          @for (step of detail().timeline; track step.label; let last = $last) {
+            <div class="timeline-step-item" [class.is-last]="last">
+              <div class="step-indicator-col">
+                <div class="step-circle completed">
+                  <i class="ri-check-line"></i>
+                </div>
+                @if (!last) {
+                  <div class="step-line"></div>
+                }
+              </div>
+
+              <div class="step-content-col">
+                <div class="step-header">
+                  <h5 class="step-title">{{ step.label }}</h5>
+                  <span class="step-time">{{ step.waktu }}</span>
+                </div>
+                <p class="step-desc">{{ step.deskripsi }}</p>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

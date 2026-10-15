@@ -1,0 +1,419 @@
+:host {
+    display: block;
+    height: 100%;
+    min-height: 0;
+    background-color: #ffffff;
+}
+
+.sidebar {
+    height: 100%;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    scroll-behavior: smooth;
+    scrollbar-color: transparent transparent;
+    scrollbar-width: thin;
+    padding: 1.5rem 1rem 2rem;
+    background-color: #ffffff;
+    border-right: 1px solid #e9eef0;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+.sidebar:hover {
+    scrollbar-color: #cbd5d5 transparent;
+}
+
+.sidebar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background-color: transparent;
+    transition: background-color 180ms ease;
+}
+
+.sidebar:hover::-webkit-scrollbar-thumb {
+    background-color: #cbd5d5;
+}
+
+/* Brand Section */
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0 0 1.25rem;
+    padding: 0 0.5rem;
+    color: #0f2e2b;
+    text-decoration: none;
+    transition: transform 0.15s ease;
+}
+
+.sidebar-brand:hover {
+    transform: translateX(2px);
+}
+
+.brand-mark {
+    display: grid;
+    width: 2.5rem;
+    height: 2.5rem;
+    place-items: center;
+    border-radius: 0.75rem;
+    background: linear-gradient(135deg, #059669 0%, #0ab39c 100%);
+    color: #ffffff;
+    font-size: 1.35rem;
+    box-shadow: 0 4px 12px rgba(10, 179, 156, 0.25);
+    flex-shrink: 0;
+}
+
+.brand-info {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.brand-label {
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: #113430;
+}
+
+.brand-sub {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #0ab39c;
+    margin-top: 0.15rem;
+}
+
+/* Practitioner Badge Card */
+.practitioner-badge-card {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.65rem 0.85rem;
+    margin-bottom: 1.5rem;
+    background: #f0fdf9;
+    border: 1px solid #bbf7d0;
+    border-radius: 0.625rem;
+    box-shadow: 0 1px 2px rgba(16, 185, 129, 0.05);
+}
+
+.badge-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+    flex-shrink: 0;
+    animation: pulse-live 2s infinite ease-in-out;
+}
+
+@keyframes pulse-live {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.15); opacity: 0.7; }
+}
+
+.badge-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.practitioner-name {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #065f46;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.practitioner-sipa {
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: #059669;
+}
+
+/* Nav Menu Styles */
+nav {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    flex: 1 1 auto;
+}
+
+.menu-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.menu-heading {
+    margin: 0;
+    padding: 0 0.75rem 0.35rem;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #92a4a7;
+}
+
+.menu-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.55rem 0.75rem;
+    border-radius: 0.5rem;
+    color: #4b6367;
+    font-size: 0.84rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.15s ease;
+}
+
+.menu-link > i {
+    font-size: 1.15rem;
+    color: #7b9396;
+    transition: color 0.15s ease;
+}
+
+.menu-link:hover {
+    background-color: #f1f8f7;
+    color: #0a8f7d;
+}
+
+.menu-link:hover > i {
+    color: #0a8f7d;
+}
+
+.menu-link.active {
+    background-color: #e6f6f3;
+    color: #087d6d;
+    font-weight: 700;
+}
+
+.menu-link.active > i {
+    color: #087d6d;
+}
+
+.menu-text {
+    flex: 1 1 auto;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Badges on links */
+.menu-pill {
+    padding: 0.15rem 0.45rem;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.02em;
+}
+
+.pill-amber {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.pill-teal {
+    background: #ccfbf1;
+    color: #0f766e;
+}
+
+/* Compliance / Bottom SIPA Widget */
+.sidebar-compliance-widget {
+    margin-top: 1.5rem;
+    padding: 0.75rem 0.85rem;
+    border-radius: 0.75rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.compliance-header {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #059669;
+}
+
+.compliance-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.sipa-indicator {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.sipa-validity {
+    font-size: 0.68rem;
+    color: #475569;
+}
+
+.sipa-validity strong {
+    color: #10b981;
+}
+
+.facility-sub {
+    font-size: 0.68rem;
+    color: #64748b;
+}
+
+/* Compact Sidebar States */
+:host(.sidebar-compact) .sidebar {
+    padding: 1.25rem 0.5rem;
+}
+
+:host(.sidebar-compact) .sidebar-brand {
+    justify-content: center;
+    padding: 0;
+}
+
+:host(.sidebar-compact) .brand-info,
+:host(.sidebar-compact) .practitioner-badge-card,
+:host(.sidebar-compact) .menu-heading,
+:host(.sidebar-compact) .menu-text,
+:host(.sidebar-compact) .menu-pill,
+:host(.sidebar-compact) .sidebar-compliance-widget {
+    display: none;
+}
+
+:host(.sidebar-compact) .menu-link {
+    justify-content: center;
+    padding: 0.65rem 0;
+}
+
+:host(.sidebar-compact) .menu-link > i {
+    font-size: 1.3rem;
+}
+
+/* Dark Theme Overrides */
+:host-context(html.dark-theme) .sidebar,
+:host-context(html.dark-theme) {
+    border-right-color: #29383d;
+    background-color: #172327;
+}
+
+:host-context(html.dark-theme) .sidebar:hover {
+    scrollbar-color: #526568 transparent;
+}
+
+:host-context(html.dark-theme) .sidebar:hover::-webkit-scrollbar-thumb {
+    background-color: #526568;
+}
+
+:host-context(html.dark-theme) .sidebar-brand {
+    color: #e4ebed;
+}
+
+:host-context(html.dark-theme) .brand-label {
+    color: #e4ebed;
+}
+
+:host-context(html.dark-theme) .practitioner-badge-card {
+    background: #1e3337;
+    border-color: #2a474d;
+}
+
+:host-context(html.dark-theme) .practitioner-name {
+    color: #34d399;
+}
+
+:host-context(html.dark-theme) .practitioner-sipa {
+    color: #a7f3d0;
+}
+
+:host-context(html.dark-theme) .menu-heading {
+    color: #8fa2a6;
+}
+
+:host-context(html.dark-theme) .menu-link {
+    color: #c4cecf;
+}
+
+:host-context(html.dark-theme) .menu-link > i {
+    color: #92a4a7;
+}
+
+:host-context(html.dark-theme) .menu-link:hover {
+    background-color: #203539;
+    color: #39c6ad;
+}
+
+:host-context(html.dark-theme) .menu-link:hover > i {
+    color: #39c6ad;
+}
+
+:host-context(html.dark-theme) .menu-link.active {
+    background-color: #263b3e;
+    color: #39c6ad;
+}
+
+:host-context(html.dark-theme) .menu-link.active > i {
+    color: #39c6ad;
+}
+
+:host-context(html.dark-theme) .sidebar-compliance-widget {
+    background: #1c2a2e;
+    border-color: #2c3f44;
+}
+
+:host-context(html.dark-theme) .sipa-indicator {
+    color: #e2e8f0;
+}
+
+:host-context(html.dark-theme) .sipa-validity {
+    color: #94a3b8;
+}
+
+:host-context(html.dark-theme) .facility-sub {
+    color: #94a3b8;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    :host(.sidebar-compact) .sidebar {
+        padding: 1.5rem 1rem;
+    }
+
+    :host(.sidebar-compact) .sidebar-brand {
+        justify-content: flex-start;
+        padding: 0 0.5rem;
+    }
+
+    :host(.sidebar-compact) .brand-info,
+    :host(.sidebar-compact) .practitioner-badge-card,
+    :host(.sidebar-compact) .menu-heading,
+    :host(.sidebar-compact) .menu-text,
+    :host(.sidebar-compact) .menu-pill,
+    :host(.sidebar-compact) .sidebar-compliance-widget {
+        display: flex;
+    }
+
+    :host(.sidebar-compact) .menu-heading {
+        display: block;
+    }
+
+    :host(.sidebar-compact) .menu-link {
+        justify-content: flex-start;
+        padding: 0.55rem 0.75rem;
+    }
+}

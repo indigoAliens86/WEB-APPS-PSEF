@@ -1,0 +1,286 @@
+<div class="detail-container">
+  <!-- Top Breadcrumb & Actions -->
+  <header class="detail-header">
+    <div class="header-left">
+      <button type="button" class="btn-back" (click)="goBack()" title="Kembali ke Daftar">
+        <i class="ri-arrow-left-line"></i>
+      </button>
+      <div class="breadcrumb-info">
+        <div class="breadcrumb-trail">
+          <span class="crumb-link" (click)="goBack()">Point Health & Loyalitas</span>
+          <i class="ri-arrow-right-s-line crumb-sep"></i>
+          <span class="crumb-current">{{ detail().id }}</span>
+        </div>
+        <h1 class="page-title">Detail Mutasi Poin & Buku Besar</h1>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <button type="button" class="btn btn-outline" (click)="printReceipt()" title="Cetak bukti mutasi poin">
+        <i class="ri-printer-line"></i>
+        <span>Cetak Bukti</span>
+      </button>
+      <button type="button" class="btn btn-outline" (click)="goBack()">
+        <i class="ri-close-line"></i>
+        <span>Tutup</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Interactive Simulation Preview Switcher -->
+  <div class="simulation-banner">
+    <div class="sim-label">
+      <i class="ri-cursor-line"></i>
+      <span>Simulasi Sumber Mutasi Poin:</span>
+    </div>
+    <div class="sim-buttons">
+      <button
+        type="button"
+        class="sim-btn"
+        [class.active]="detail().sumber === 'Penebusan Obat Resep'"
+        (click)="switchSourcePreview('Resep')"
+      >
+        <i class="ri-capsule-line"></i>
+        <span>Penebusan Resep (+285 Pts)</span>
+      </button>
+      <button
+        type="button"
+        class="sim-btn"
+        [class.active]="detail().sumber === 'Konsultasi Telemedisin'"
+        (click)="switchSourcePreview('Telemedisin')"
+      >
+        <i class="ri-stethoscope-line"></i>
+        <span>Telemedisin Dokter (+150 Pts)</span>
+      </button>
+      <button
+        type="button"
+        class="sim-btn"
+        [class.active]="detail().sumber === 'Penukaran Voucher'"
+        (click)="switchSourcePreview('Penukaran')"
+      >
+        <i class="ri-coupon-3-line"></i>
+        <span>Penukaran Voucher (-500 Pts)</span>
+      </button>
+      <button
+        type="button"
+        class="sim-btn"
+        [class.active]="detail().sumber === 'Misi Kesehatan'"
+        (click)="switchSourcePreview('Misi')"
+      >
+        <i class="ri-run-line"></i>
+        <span>Misi Kesehatan (+100 Pts)</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Hero Overview Card -->
+  <section class="hero-point-card">
+    <div class="hero-top-row">
+      <div class="hero-badges">
+        <span class="type-badge" [class.type-earned]="detail().tipe === 'Earned'" [class.type-redeemed]="detail().tipe === 'Redeemed'">
+          <i class="ri-arrow-up-line" *ngIf="detail().tipe === 'Earned'"></i>
+          <i class="ri-arrow-down-line" *ngIf="detail().tipe === 'Redeemed'"></i>
+          {{ detail().tipe }}
+        </span>
+        <span class="id-badge font-mono">{{ detail().id }}</span>
+        <span class="status-badge badge-berhasil">{{ detail().status }}</span>
+      </div>
+
+      <div class="hero-time">
+        <i class="ri-time-line"></i>
+        <span>{{ detail().waktuTransaksi }}</span>
+      </div>
+    </div>
+
+    <div class="hero-main-row">
+      <div class="hero-source-info">
+        <span class="source-category-tag">{{ detail().sumber }}</span>
+        <h2 class="hero-activity-name">{{ detail().layananTerkait }}</h2>
+        <p class="hero-ref font-mono">
+          <span>Referensi Transaksi:</span>
+          <strong>{{ detail().refTransaksiId }}</strong>
+        </p>
+      </div>
+
+      <div class="hero-point-highlight" [class.highlight-earned]="detail().jumlahPoint > 0" [class.highlight-redeemed]="detail().jumlahPoint < 0">
+        <div class="points-large font-mono">
+          {{ detail().jumlahPoint > 0 ? '+' : '' }}{{ detail().jumlahPoint.toLocaleString('id-ID') }}
+          <span class="pts-unit">Pts</span>
+        </div>
+        <div class="rupiah-equivalent font-mono">
+          Setara {{ detail().nilaiRupiahKonversi }}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 Patient Balance Summary Cards -->
+  <section class="balance-grid" aria-label="Buku Besar Saldo Poin Pasien">
+    <div class="balance-card current-balance">
+      <span class="bcard-label">Saldo Poin Saat Ini</span>
+      <div class="bcard-val font-mono">{{ detail().saldoPasien.saldoSaatIni.toLocaleString('id-ID') }} Pts</div>
+      <span class="bcard-sub font-mono">Nilai Tukar: Rp {{ (detail().saldoPasien.saldoSaatIni * 10).toLocaleString('id-ID') }}</span>
+    </div>
+
+    <div class="balance-card">
+      <span class="bcard-label">Saldo Sebelum Mutasi</span>
+      <div class="bcard-val font-mono">{{ detail().saldoPasien.saldoSebelumTransaksi.toLocaleString('id-ID') }} Pts</div>
+      <span class="bcard-sub">Saldo awal sebelum transaksi ini</span>
+    </div>
+
+    <div class="balance-card">
+      <span class="bcard-label">Total Poin Diperoleh (Lifetime)</span>
+      <div class="bcard-val text-earned font-mono">+{{ detail().saldoPasien.totalEarnedLifetime.toLocaleString('id-ID') }} Pts</div>
+      <span class="bcard-sub">Akumulasi seluruh perolehan</span>
+    </div>
+
+    <div class="balance-card">
+      <span class="bcard-label">Total Poin Ditukarkan (Lifetime)</span>
+      <div class="bcard-val text-redeemed font-mono">-{{ detail().saldoPasien.totalRedeemedLifetime.toLocaleString('id-ID') }} Pts</div>
+      <span class="bcard-sub">Akumulasi voucher & potongan</span>
+    </div>
+  </section>
+
+  <!-- 2-Column Content Layout -->
+  <div class="details-content-grid">
+    <!-- Left Column: Patient Profile & Calculation Details -->
+    <div class="details-left-col">
+      <!-- Patient Profile Card -->
+      <section class="section-card">
+        <div class="section-header-row">
+          <i class="ri-user-heart-line section-icon"></i>
+          <h3 class="section-title">Profil Pasien Terkait</h3>
+        </div>
+
+        <div class="patient-profile-box">
+          <img [src]="detail().pasien.avatar" [alt]="detail().pasien.nama" class="profile-avatar" />
+          <div class="profile-info">
+            <h4 class="profile-name">{{ detail().pasien.nama }}</h4>
+            <div class="tier-multiplier-row">
+              <span class="tier-chip" [ngClass]="'tier-' + detail().pasien.tierBadgeColor">{{ detail().pasien.tier }} Member</span>
+              <span class="multiplier-tag font-mono">{{ detail().saldoPasien.tierMultiplier }}</span>
+            </div>
+            <div class="profile-meta font-mono">
+              <span>ID: {{ detail().pasien.id }}</span> &bull;
+              <span>{{ detail().pasien.email }}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Doctor / Pharmacist in Charge (if applicable) -->
+      <section *ngIf="detail().tenagaMedis" class="section-card">
+        <div class="section-header-row">
+          <i class="ri-stethoscope-line section-icon text-teal"></i>
+          <h3 class="section-title">Tenaga Kesehatan Terkait</h3>
+        </div>
+
+        <div class="med-profile-box">
+          <img [src]="detail().tenagaMedis?.avatar" [alt]="detail().tenagaMedis?.nama" class="med-avatar" />
+          <div>
+            <h4 class="med-name">{{ detail().tenagaMedis?.nama }}</h4>
+            <span class="med-role">{{ detail().tenagaMedis?.role }}</span>
+            <span class="med-sip font-mono">{{ detail().tenagaMedis?.sipAtauStra }}</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Point Calculation Breakdown -->
+      <section class="section-card">
+        <div class="section-header-row">
+          <i class="ri-calculator-line section-icon"></i>
+          <h3 class="section-title">Rincian Kalkulasi Poin</h3>
+        </div>
+
+        <div class="calc-list">
+          <div class="calc-item">
+            <span class="calc-label">Poin Dasar Aktivitas</span>
+            <span class="calc-val font-mono">{{ detail().rincianPoin.poinDasar }} Pts</span>
+          </div>
+          <div class="calc-item">
+            <span class="calc-label">Bonus Tier Multiplier</span>
+            <span class="calc-val font-mono">+{{ detail().rincianPoin.poinMultiplierTier }} Pts</span>
+          </div>
+          <div class="calc-item">
+            <span class="calc-label">Bonus Misi / Event</span>
+            <span class="calc-val font-mono">+{{ detail().rincianPoin.poinBonusAktivitas }} Pts</span>
+          </div>
+          <div class="calc-item total-row">
+            <span class="calc-label font-bold">Total Mutasi Poin</span>
+            <span class="calc-val font-mono font-bold" [class.text-earned]="detail().jumlahPoint > 0" [class.text-redeemed]="detail().jumlahPoint < 0">
+              {{ detail().jumlahPoint > 0 ? '+' : '' }}{{ detail().rincianPoin.totalPerolehan }} Pts
+            </span>
+          </div>
+        </div>
+        <p class="calc-note">{{ detail().rincianPoin.keteranganKalkulasi }}</p>
+      </section>
+    </div>
+
+    <!-- Right Column: Audit Trail & Patient's Recent Point Ledger -->
+    <div class="details-right-col">
+      <!-- Audit Trail Timeline -->
+      <section class="section-card">
+        <div class="section-header-row">
+          <i class="ri-history-line section-icon"></i>
+          <h3 class="section-title">Audit Trail & Verifikasi Sistem</h3>
+        </div>
+
+        <div class="audit-timeline">
+          <div *ngFor="let step of detail().auditTrail; let i = index" class="timeline-step">
+            <div class="step-marker" [class.completed]="step.completed">
+              <i class="ri-check-line" *ngIf="step.completed"></i>
+              <span *ngIf="!step.completed">{{ i + 1 }}</span>
+            </div>
+            <div class="step-content">
+              <div class="step-header">
+                <span class="step-label">{{ step.label }}</span>
+                <span class="step-time text-muted">{{ step.waktu }}</span>
+              </div>
+              <p class="step-desc">{{ step.deskripsi }}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Patient's Recent Point History Table -->
+      <section class="section-card">
+        <div class="section-header-row">
+          <i class="ri-file-list-2-line section-icon"></i>
+          <div>
+            <h3 class="section-title">Riwayat Poin Pasien Ini</h3>
+            <span class="section-sub">Mutasi poin terbaru yang dicatat pada akun pasien</span>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="recent-table">
+            <thead>
+              <tr>
+                <th style="width: 40px;">No</th>
+                <th>ID Mutasi</th>
+                <th>Aktivitas</th>
+                <th>Poin</th>
+                <th>Tanggal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let r of detail().riwayatTerkaitPasien" class="recent-row">
+                <td class="font-mono text-muted">{{ r.no }}</td>
+                <td>
+                  <span class="font-mono font-bold text-primary">{{ r.id }}</span>
+                </td>
+                <td>{{ r.sumber }}</td>
+                <td>
+                  <span class="font-mono font-bold" [class.text-earned]="r.poin > 0" [class.text-redeemed]="r.poin < 0">
+                    {{ r.poin > 0 ? '+' : '' }}{{ r.poin }} Pts
+                  </span>
+                </td>
+                <td class="text-muted font-mono text-xs">{{ r.tanggal }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

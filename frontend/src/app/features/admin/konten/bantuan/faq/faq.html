@@ -1,0 +1,468 @@
+<div class="faq-wrapper">
+  <!-- Sub Header -->
+  <div class="sub-header">
+    <div class="sub-header-info">
+      <h3 class="sub-title">Frequently Asked Questions (FAQ) Platform PSEF</h3>
+      <p class="sub-desc">
+        Kelola kumpulan pertanyaan umum seputar regulasi resep obat digital, jaminan mutu rantai dingin, batasan hukum Kemenkes, dan kebijakan pembatalan pesanan.
+      </p>
+    </div>
+    <div class="sub-header-actions">
+      <button type="button" class="btn btn-outline" (click)="expandAll()" title="Buka Semua Jawaban">
+        <i class="ri-expand-vertical-line"></i>
+        <span>Buka Semua</span>
+      </button>
+      <button type="button" class="btn btn-outline" (click)="collapseAll()" title="Tutup Semua Jawaban">
+        <i class="ri-collapse-vertical-line"></i>
+        <span>Tutup Semua</span>
+      </button>
+      <button type="button" class="btn btn-primary" (click)="openAddModal()" id="btn-tambah-faq">
+        <i class="ri-add-circle-line"></i>
+        <span>Tambah FAQ Baru</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="kpi-grid">
+    <div *ngFor="let k of kpiStats" class="kpi-card" [ngClass]="'kpi-' + k.color">
+      <div class="kpi-icon-box">
+        <i [class]="k.icon"></i>
+      </div>
+      <div>
+        <div class="kpi-value">{{ k.value }}</div>
+        <div class="kpi-label">{{ k.label }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toolbar Filters -->
+  <div class="faq-toolbar">
+    <div class="search-box">
+      <i class="ri-search-line search-icon"></i>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Cari kata kunci pertanyaan atau rincian jawaban..."
+        [ngModel]="searchQuery()"
+        (ngModelChange)="searchQuery.set($event)"
+      />
+    </div>
+
+    <div class="filter-actions-row">
+      <div class="filter-group">
+        <label class="filter-label" for="filter-faq-cat">Kategori:</label>
+        <select
+          id="filter-faq-cat"
+          class="filter-select"
+          [ngModel]="filterKategori()"
+          (ngModelChange)="filterKategori.set($event)"
+        >
+          <option value="Semua">Semua Kategori</option>
+          <option value="Resep & Obat">Resep & Obat</option>
+          <option value="Telemedisin">Telemedisin</option>
+          <option value="Pembayaran">Pembayaran</option>
+          <option value="Pengiriman">Pengiriman</option>
+          <option value="Regulasi PSEF">Regulasi PSEF</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label" for="filter-faq-status">Status:</label>
+        <select
+          id="filter-faq-status"
+          class="filter-select"
+          [ngModel]="filterStatus()"
+          (ngModelChange)="filterStatus.set($event)"
+        >
+          <option value="Semua">Semua Status</option>
+          <option value="Aktif">Aktif (Tayang)</option>
+          <option value="Nonaktif">Nonaktif (Arsip)</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ Accordion List Card -->
+  <div class="faq-list-card">
+    <div class="faq-card-header">
+      <span class="faq-counter">
+        <i class="ri-questionnaire-line"></i>
+        <span>{{ filteredFaqList().length }} Butir FAQ Ditampilkan</span>
+      </span>
+      <span class="faq-hint">Klik baris pertanyaan untuk melihat jawaban lengkap</span>
+    </div>
+
+    <div class="accordion-container">
+      <div
+        *ngFor="let item of filteredFaqList()"
+        class="faq-accordion-item"
+        [class.open]="item.terbuka"
+        [class.disabled-item]="item.status === 'Nonaktif'"
+      >
+        <div class="faq-question-row" (click)="toggleAccordion(item)">
+          <div class="faq-q-left">
+            <div class="faq-badges-row">
+              <span class="faq-cat-badge">{{ item.kategori }}</span>
+              <span class="faq-urutan-chip">Slot #{{ item.urutan }}</span>
+              <span class="faq-meta-stat font-mono">
+                <i class="ri-eye-line"></i> {{ item.viewsCount.toLocaleString('id-ID') }}x dibaca
+              </span>
+              <span class="faq-meta-stat text-emerald">
+                <i class="ri-thumb-up-line"></i> {{ item.helpfulCount }}% terbantu
+              </span>
+            </div>
+            <h4 class="faq-question-text">{{ item.pertanyaan }}</h4>
+          </div>
+
+          <div class="faq-q-right" (click)="$event.stopPropagation()">
+            <!-- Status Toggle Chip -->
+            <button
+              type="button"
+              class="status-pill-toggle"
+              [class.active]="item.status === 'Aktif'"
+              (click)="toggleStatus(item)"
+              [title]="item.status === 'Aktif' ? 'Klik untuk nonaktifkan' : 'Klik untuk aktifkan'"
+            >
+              <span class="dot"></span>
+              <span>{{ item.status }}</span>
+            </button>
+
+            <!-- Edit Button -->
+            <button
+              type="button"
+              class="btn-icon"
+              (click)="openEditModal(item)"
+              title="Edit Butir FAQ"
+            >
+              <i class="ri-edit-line"></i>
+            </button>
+
+            <!-- Delete Button (Anti-Analytics Disruption) -->
+            <button
+              type="button"
+              class="btn-icon btn-danger-hover"
+              (click)="openDeleteModal(item)"
+              title="Kelola / Nonaktifkan FAQ"
+            >
+              <i class="ri-delete-bin-line"></i>
+            </button>
+
+            <!-- Chevron Toggle Button -->
+            <button
+              type="button"
+              class="btn-chevron"
+              (click)="toggleAccordion(item)"
+              title="Buka / Tutup Jawaban"
+            >
+              <i [class]="item.terbuka ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line'"></i>
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="item.terbuka" class="faq-answer-row">
+          <div class="faq-answer-content">
+            <i class="ri-reply-line reply-icon"></i>
+            <div class="faq-answer-body">
+              <p class="answer-text">{{ item.jawaban }}</p>
+              <div class="faq-answer-footer">
+                <span class="faq-updated-text">
+                  <i class="ri-time-line"></i> Terakhir diperbarui: {{ item.updatedAt }}
+                </span>
+                <span class="faq-audit-tag font-mono">ID: #FAQ-{{ item.id }} • PSEF Validated</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="filteredFaqList().length === 0" class="empty-faq">
+        <i class="ri-question-line"></i>
+        <p>Tidak ada butir FAQ yang sesuai dengan filter pencarian.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Tambah / Edit FAQ (Static Backdrop to prevent accidental dismiss) -->
+  <div *ngIf="showFormModal()" class="modal-backdrop">
+    <div class="modal-dialog modal-faq-form" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-header-icon" [class.edit-mode]="isEditing()">
+          <i [class]="isEditing() ? 'ri-edit-2-line' : 'ri-questionnaire-line'"></i>
+        </div>
+        <div>
+          <h4 class="modal-title">{{ isEditing() ? 'Edit Butir FAQ #' + currentFaq.id : 'Tambah FAQ Baru' }}</h4>
+          <p class="modal-subtitle">Berikan panduan yang jelas, akurat, dan sesuai regulasi informasi kefarmasian PSEF</p>
+        </div>
+        <button type="button" class="btn-close" (click)="closeFormModal()">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group flex-2">
+            <label class="form-label" for="inp-faq-kat">Kategori Pertanyaan <span class="text-danger">*</span></label>
+            <select id="inp-faq-kat" class="form-control" [(ngModel)]="currentFaq.kategori">
+              <option value="Resep & Obat">Resep & Obat</option>
+              <option value="Telemedisin">Telemedisin</option>
+              <option value="Pembayaran">Pembayaran</option>
+              <option value="Pengiriman">Pengiriman</option>
+              <option value="Regulasi PSEF">Regulasi PSEF</option>
+            </select>
+          </div>
+          <div class="form-group flex-1">
+            <label class="form-label" for="inp-faq-urutan">Nomor Urutan Slot</label>
+            <input
+              id="inp-faq-urutan"
+              type="number"
+              class="form-control"
+              [(ngModel)]="currentFaq.urutan"
+              min="1"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="form-label-row">
+            <label class="form-label" for="inp-faq-q">Pertanyaan Pasien <span class="text-danger">*</span></label>
+            <span class="char-counter font-mono">{{ currentFaq.pertanyaan.length }} karakter</span>
+          </div>
+          <input
+            id="inp-faq-q"
+            type="text"
+            class="form-control"
+            [class.is-invalid]="formSubmitted() && !currentFaq.pertanyaan.trim()"
+            placeholder="Contoh: Apakah resep digital bisa ditebus di luar jam operasional?"
+            [(ngModel)]="currentFaq.pertanyaan"
+          />
+          <span *ngIf="formSubmitted() && !currentFaq.pertanyaan.trim()" class="form-error-msg">
+            <i class="ri-error-warning-fill"></i> Pertanyaan wajib diisi secara jelas
+          </span>
+        </div>
+
+        <div class="form-group">
+          <div class="form-label-row">
+            <label class="form-label" for="inp-faq-a">Jawaban Edukatif & Rinci <span class="text-danger">*</span></label>
+            <span class="char-counter font-mono">{{ currentFaq.jawaban.length }} karakter</span>
+          </div>
+          <textarea
+            id="inp-faq-a"
+            rows="5"
+            class="form-control"
+            [class.is-invalid]="formSubmitted() && !currentFaq.jawaban.trim()"
+            placeholder="Tuliskan jawaban yang ramah, informatif, dan menyertakan rujukan ketentuan bila relevan..."
+            [(ngModel)]="currentFaq.jawaban"
+          ></textarea>
+          <span *ngIf="formSubmitted() && !currentFaq.jawaban.trim()" class="form-error-msg">
+            <i class="ri-error-warning-fill"></i> Jawaban edukatif wajib diisi
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Status Visibilitas Publik</label>
+          <div class="radio-options">
+            <label class="radio-card" [class.selected]="currentFaq.status === 'Aktif'">
+              <input type="radio" name="faq-status" value="Aktif" [(ngModel)]="currentFaq.status" />
+              <div class="radio-card-content">
+                <span class="radio-title"><i class="ri-eye-line text-emerald"></i> Aktif</span>
+                <span class="radio-sub">Tampil di pusat bantuan aplikasi dan web pasien</span>
+              </div>
+            </label>
+            <label class="radio-card" [class.selected]="currentFaq.status === 'Nonaktif'">
+              <input type="radio" name="faq-status" value="Nonaktif" [(ngModel)]="currentFaq.status" />
+              <div class="radio-card-content">
+                <span class="radio-title"><i class="ri-eye-off-line text-amber"></i> Nonaktif</span>
+                <span class="radio-sub">Draf / disembunyikan sementara waktu</span>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" (click)="closeFormModal()">Batal</button>
+        <button type="button" class="btn btn-primary" (click)="saveFaq()" id="btn-save-faq">
+          <i [class]="isEditing() ? 'ri-save-line' : 'ri-check-line'"></i>
+          <span>{{ isEditing() ? 'Simpan Perubahan' : 'Terbitkan FAQ' }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Konfirmasi Nonaktifkan / Hapus FAQ (Static Backdrop) -->
+  <div *ngIf="showDeleteModal() && selectedFaq() as targetFaq" class="modal-backdrop">
+    <div class="modal-dialog modal-faq-delete" (click)="$event.stopPropagation()">
+      <!-- Modal Header -->
+      <div class="delete-modal-header">
+        <div class="delete-icon-pulse" [class.danger]="deleteMode() === 'permanent'">
+          <i [class]="deleteMode() === 'deactivate' ? 'ri-archive-line' : 'ri-delete-bin-7-line'"></i>
+        </div>
+        <div class="delete-header-titles">
+          <h4 class="modal-title" [class.text-amber]="deleteMode() === 'deactivate'" [class.text-danger]="deleteMode() === 'permanent'">
+            {{ deleteMode() === 'deactivate' ? 'Nonaktifkan Butir FAQ?' : 'Hapus FAQ Permanen?' }}
+          </h4>
+          <p class="modal-subtitle">Kelola status penayangan butir FAQ dengan perlindungan data analitik pusat bantuan PSEF</p>
+        </div>
+        <button type="button" class="btn-close" (click)="closeDeleteModal()" [disabled]="isProcessing()">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="delete-modal-body">
+        <!-- Target FAQ Preview Card -->
+        <div class="faq-preview-delete-card">
+          <div class="faq-preview-header">
+            <span class="preview-cat-badge">{{ targetFaq.kategori }}</span>
+            <span class="preview-status-pill" [class.status-aktif]="targetFaq.status === 'Aktif'" [class.status-nonaktif]="targetFaq.status === 'Nonaktif'">
+              {{ targetFaq.status === 'Aktif' ? 'Aktif (Tayang)' : 'Nonaktif (Arsip)' }}
+            </span>
+          </div>
+          <h5 class="faq-preview-question">{{ targetFaq.pertanyaan }}</h5>
+          <p class="faq-preview-answer">{{ targetFaq.jawaban }}</p>
+
+          <!-- Analytics Highlight Pill Box -->
+          <div class="faq-analytics-pill-box">
+            <div class="analytics-stat">
+              <i class="ri-eye-fill stat-icon text-indigo"></i>
+              <span class="stat-num font-mono">{{ targetFaq.viewsCount.toLocaleString('id-ID') }}x</span>
+              <span class="stat-lbl">Dibaca Pasien</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="analytics-stat">
+              <i class="ri-thumb-up-fill stat-icon text-emerald"></i>
+              <span class="stat-num font-mono">{{ targetFaq.helpfulCount }}%</span>
+              <span class="stat-lbl">Terbantu</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="analytics-stat">
+              <i class="ri-calendar-check-fill stat-icon text-sky"></i>
+              <span class="stat-num">{{ targetFaq.updatedAt }}</span>
+              <span class="stat-lbl">Pembaruan</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Analytics Protection Callout Box -->
+        <div class="analytics-notice-box" [class.warning-border]="deleteMode() === 'permanent'">
+          <div class="notice-icon-box" [class.danger-bg]="deleteMode() === 'permanent'">
+            <i [class]="deleteMode() === 'deactivate' ? 'ri-shield-star-line' : 'ri-error-warning-fill'"></i>
+          </div>
+          <div class="notice-text-content">
+            <h6 class="notice-title">
+              {{ deleteMode() === 'deactivate' ? 'Perlindungan Metrik & Analitik Pusat Bantuan' : 'Peringatan Kehilangan Data Analitik' }}
+            </h6>
+            <p class="notice-desc" *ngIf="deleteMode() === 'deactivate'">
+              Dengan <strong>menonaktifkan</strong>, butir FAQ langsung disembunyikan dari aplikasi mobile dan web pasien, namun 
+              <strong>{{ targetFaq.viewsCount.toLocaleString('id-ID') }} riwayat pembaca</strong> dan 
+              <strong>{{ targetFaq.helpfulCount }}% rasio kepuasan</strong> 
+              <strong>tetap utuh tersimpan</strong> untuk evaluasi defleksi tiket CS PSEF. Butir ini dapat diaktifkan kembali sewaktu-waktu.
+            </p>
+            <p class="notice-desc text-danger-text" *ngIf="deleteMode() === 'permanent'">
+              Menghapus permanen akan <strong>menghilangkan riwayat {{ targetFaq.viewsCount.toLocaleString('id-ID') }} pembaca</strong> 
+              dan metrik evaluasi kepuasan bantuan dari dashboard secara permanen. Tindakan ini tidak dapat dibatalkan!
+            </p>
+          </div>
+        </div>
+
+        <!-- Mode Selection Options -->
+        <div class="delete-options-group">
+          <div
+            class="action-choice-card"
+            role="button"
+            tabindex="0"
+            [class.selected]="deleteMode() === 'deactivate'"
+            (click)="setDeleteMode('deactivate')"
+            (keydown.enter)="setDeleteMode('deactivate')"
+            (keydown.space)="setDeleteMode('deactivate')"
+          >
+            <div class="choice-indicator radio-amber"></div>
+            <div class="choice-content">
+              <div class="choice-header-row">
+                <span class="choice-title">Nonaktifkan / Sembunyikan FAQ</span>
+                <span class="recommend-badge"><i class="ri-star-fill"></i> Disarankan</span>
+              </div>
+              <p class="choice-desc">
+                Tarik dari aplikasi pasien tanpa menghapus riwayat pembaca, indeks pencarian, dan skor kepuasan.
+              </p>
+            </div>
+          </div>
+
+          <div
+            class="action-choice-card"
+            role="button"
+            tabindex="0"
+            [class.selected]="deleteMode() === 'permanent'"
+            (click)="setDeleteMode('permanent')"
+            (keydown.enter)="setDeleteMode('permanent')"
+            (keydown.space)="setDeleteMode('permanent')"
+          >
+            <div class="choice-indicator radio-danger"></div>
+            <div class="choice-content">
+              <div class="choice-header-row">
+                <span class="choice-title text-danger">Hapus Permanen dari Basis Data</span>
+                <span class="danger-badge">Merusak Analitik</span>
+              </div>
+              <p class="choice-desc">
+                Hanya gunakan jika pertanyaan adalah duplikat atau salah input yang belum pernah dipublikasikan ke pasien.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="delete-modal-footer">
+        <button
+          id="btn-cancel-faq-action"
+          type="button"
+          class="btn btn-outline"
+          (click)="closeDeleteModal()"
+          [disabled]="isProcessing()"
+        >
+          Batal
+        </button>
+
+        <!-- Button changes based on selected mode -->
+        <button
+          *ngIf="deleteMode() === 'deactivate'"
+          id="btn-confirm-faq-action"
+          type="button"
+          class="btn btn-warning-action"
+          (click)="confirmDeleteAction()"
+          [disabled]="isProcessing()"
+        >
+          <i [class]="isProcessing() ? 'ri-loader-4-line ri-spin' : 'ri-archive-line'"></i>
+          <span>{{ isProcessing() ? 'Memproses...' : 'Nonaktifkan FAQ' }}</span>
+        </button>
+
+        <button
+          *ngIf="deleteMode() === 'permanent'"
+          id="btn-confirm-faq-action"
+          type="button"
+          class="btn btn-danger-action"
+          (click)="confirmDeleteAction()"
+          [disabled]="isProcessing()"
+        >
+          <i [class]="isProcessing() ? 'ri-loader-4-line ri-spin' : 'ri-delete-bin-line'"></i>
+          <span>{{ isProcessing() ? 'Menghapus...' : 'Ya, Hapus Permanen' }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Feedback -->
+  <div *ngIf="toastMessage()" class="faq-toast" [class]="'toast-' + toastType()">
+    <div class="toast-icon">
+      <i [class]="toastType() === 'success' ? 'ri-checkbox-circle-fill' : toastType() === 'danger' ? 'ri-error-warning-fill' : 'ri-information-fill'"></i>
+    </div>
+    <div class="toast-content">
+      <p class="toast-text">{{ toastMessage() }}</p>
+    </div>
+    <button type="button" class="toast-close" (click)="toastMessage.set('')">
+      <i class="ri-close-line"></i>
+    </button>
+  </div>
+</div>
+

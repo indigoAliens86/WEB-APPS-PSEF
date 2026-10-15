@@ -1,0 +1,1146 @@
+<div class="detail-page-container">
+  <!-- Top Navigation: Back Button & Actions -->
+  <div class="top-nav-bar">
+    <button type="button" class="btn-back" (click)="goBack()" aria-label="Kembali ke Dashboard">
+      <i class="ri-arrow-left-line" aria-hidden="true"></i>
+      <span>Kembali ke Dashboard</span>
+    </button>
+    <button type="button" class="btn-edit-action" (click)="goToEdit()" aria-label="Edit Data Apoteker">
+      <i class="ri-edit-line" aria-hidden="true"></i>
+      <span>Edit Data Apoteker</span>
+    </button>
+  </div>
+
+  <!-- Header Card: Profile & Primary Info -->
+  <header class="profile-header-card">
+    <div class="profile-left">
+      <img
+        [src]="pharmacist().avatar"
+        [alt]="pharmacist().name"
+        class="profile-avatar"
+        (error)="onAvatarError($event)"
+      />
+      <div class="profile-info">
+        <div class="name-badge-row">
+          <h1 class="profile-name">{{ pharmacist().name }}</h1>
+          <span class="badge-role">{{ pharmacist().roleTag }}</span>
+          <span class="badge-sub-role">{{ pharmacist().statusTag }}</span>
+        </div>
+        <p class="profile-facility">{{ pharmacist().facility }}</p>
+        <span class="profile-specialty">{{ pharmacist().specialty }}</span>
+
+        <div class="profile-contacts-row">
+          <span class="contact-item">
+            <i class="ri-mail-line" aria-hidden="true"></i>
+            <span class="contact-label">Email</span>
+            <span class="contact-val">{{ pharmacist().email }}</span>
+          </span>
+          <span class="contact-item">
+            <i class="ri-phone-line" aria-hidden="true"></i>
+            <span class="contact-label">No. Telepon</span>
+            <span class="contact-val">{{ pharmacist().phone }}</span>
+          </span>
+          <span class="contact-item contact-address">
+            <i class="ri-map-pin-line" aria-hidden="true"></i>
+            <span class="contact-label">Alamat</span>
+            <span class="contact-val">{{ pharmacist().address }}</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-right">
+      <div class="status-badge-top">
+        <span class="badge-pending">{{ pharmacist().verificationStatus }}</span>
+      </div>
+
+      <div class="license-meta-row">
+        <div class="license-meta-item">
+          <span class="license-label">Nomor SIPA</span>
+          <strong class="license-val">{{ pharmacist().sipa }}</strong>
+          <span class="license-expiry">Masa Berlaku: {{ pharmacist().sipaExpiry }}</span>
+        </div>
+        <div class="license-meta-item">
+          <span class="license-label">Nomor STRA</span>
+          <strong class="license-val">{{ pharmacist().stra }}</strong>
+          <span class="license-expiry">Masa Berlaku: {{ pharmacist().straExpiry }}</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Layout (Left Column + Right Sidebar) -->
+  <div class="detail-body-layout">
+    <!-- Left Column -->
+    <main class="detail-main-column">
+      <!-- Tabs Bar -->
+      <nav class="detail-tabs-nav" aria-label="Tab Informasi Apoteker">
+        <button
+          type="button"
+          class="tab-btn"
+          [class.active]="activeTab() === 'informasi'"
+          (click)="selectTab('informasi')"
+        >
+          Informasi Pribadi
+        </button>
+        <button
+          type="button"
+          class="tab-btn"
+          [class.active]="activeTab() === 'verifikasi'"
+          (click)="selectTab('verifikasi')"
+        >
+          Verifikasi & Perizinan
+        </button>
+        <button
+          type="button"
+          class="tab-btn"
+          [class.active]="activeTab() === 'praktik'"
+          (click)="selectTab('praktik')"
+        >
+          Praktik
+        </button>
+      </nav>
+
+      <!-- TAB 1: INFORMASI PRIBADI -->
+      @if (activeTab() === 'informasi') {
+        <div class="tab-pane">
+          <!-- Top Grid: Informasi Pribadi & (Tentang Apoteker + Pendidikan) -->
+          <div class="info-top-grid">
+            <!-- Informasi Pribadi Card -->
+            <section class="section-card personal-info-card">
+              <h2 class="card-section-title">Informasi Pribadi</h2>
+              <div class="kv-list">
+                <div class="kv-row">
+                  <span class="kv-key">NIK</span>
+                  <span class="kv-val">{{ pharmacist().nik }}</span>
+                </div>
+                <div class="kv-row">
+                  <span class="kv-key">Nama Lengkap</span>
+                  <span class="kv-val">{{ pharmacist().name }}</span>
+                </div>
+                <div class="kv-row">
+                  <span class="kv-key">Tempat Tanggal Lahir</span>
+                  <span class="kv-val">{{ pharmacist().birthPlaceDate }}</span>
+                </div>
+                <div class="kv-row">
+                  <span class="kv-key">Kontak</span>
+                  <span class="kv-val">{{ pharmacist().phone }}</span>
+                </div>
+                <div class="kv-row">
+                  <span class="kv-key">Email</span>
+                  <span class="kv-val">{{ pharmacist().email }}</span>
+                </div>
+                <div class="kv-row address-row">
+                  <span class="kv-key">Alamat KTP</span>
+                  <span class="kv-val">{{ pharmacist().ktpAddress }}</span>
+                </div>
+                <div class="kv-row">
+                  <span class="kv-key">Pendidikan Terakhir</span>
+                  <span class="kv-val">{{ pharmacist().lastEducation }}</span>
+                </div>
+                <div class="kv-row">
+                  <span class="kv-key">Nomor Ijazah</span>
+                  <span class="kv-val">{{ pharmacist().diplomaNumber }}</span>
+                </div>
+                <div class="kv-row">
+                  <span class="kv-key">Tahun Kelulusan</span>
+                  <span class="kv-val">{{ pharmacist().graduationYear }}</span>
+                </div>
+                <div class="kv-row">
+                  <span class="kv-key">NPSN</span>
+                  <span class="kv-val">{{ pharmacist().npsn }}</span>
+                </div>
+                <div class="kv-row">
+                  <span class="kv-key">Institusi Pendidikan</span>
+                  <span class="kv-val">{{ pharmacist().educationInstitution }}</span>
+                </div>
+              </div>
+            </section>
+
+            <!-- Stacked Right Side: Tentang Apoteker & Informasi Pendidikan -->
+            <div class="info-right-stack">
+              <!-- Tentang Apoteker Card -->
+              <section class="section-card">
+                <h2 class="card-section-title">Tentang Apoteker</h2>
+                <p class="about-doctor-text">{{ pharmacist().about }}</p>
+              </section>
+
+              <!-- Informasi Pendidikan Card -->
+              <section class="section-card">
+                <h2 class="card-section-title">Informasi Pendidikan</h2>
+                <div class="table-scroll-wrap">
+                  <table class="simple-table">
+                    <thead>
+                      <tr>
+                        <th>Tingkat Pendidikan</th>
+                        <th>Institusi Pendidikan</th>
+                        <th>Lulus</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (edu of educationList(); track $index) {
+                        <tr>
+                          <td>{{ edu.degree }}</td>
+                          <td>{{ edu.institution }}</td>
+                          <td>{{ edu.year }}</td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            </div>
+          </div>
+
+          <!-- Kompetensi Card -->
+          <section class="section-card">
+            <h2 class="card-section-title">Kompetensi</h2>
+            <div class="table-scroll-wrap">
+              <table class="simple-table skill-table">
+                <thead>
+                  <tr>
+                    <th style="width: 40%">Skill</th>
+                    <th style="width: 45%">Skill</th>
+                    <th style="width: 15%; text-align: right">Level</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (skill of skills(); track skill.name) {
+                    <tr>
+                      <td class="skill-name">{{ skill.name }}</td>
+                      <td class="skill-bar-cell">
+                        <div class="skill-progress-track">
+                          <div
+                            class="skill-progress-fill"
+                            [style.width.%]="skill.percentage"
+                          ></div>
+                        </div>
+                      </td>
+                      <td class="skill-level">{{ skill.level }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- Riwayat Pekerjaan Card -->
+          <section class="section-card">
+            <h2 class="card-section-title">Riwayat Pekerjaan</h2>
+            <div class="table-scroll-wrap">
+              <table class="simple-table work-table">
+                <thead>
+                  <tr>
+                    <th style="width: 8%">No.</th>
+                    <th style="width: 32%">Posisi</th>
+                    <th style="width: 35%">Fasilitas</th>
+                    <th style="width: 25%">Masa Bekerja</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (job of jobExperiences(); track job.position; let idx = $index) {
+                    <tr class="job-main-row">
+                      <td class="job-no">{{ idx + 1 }}</td>
+                      <td class="job-pos">{{ job.position }}</td>
+                      <td class="job-fac">{{ job.facility }}</td>
+                      <td class="job-per">{{ job.period }}</td>
+                    </tr>
+                    <tr class="job-desc-row">
+                      <td></td>
+                      <td colspan="3" class="job-desc-cell">
+                        <span class="desc-heading">Deskripsi</span>
+                        <p class="desc-text">{{ job.description }}</p>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- Riwayat Mengajar / Pelatihan Card -->
+          <section class="section-card">
+            <h2 class="card-section-title">Riwayat Mengajar & Pelatihan</h2>
+            <div class="table-scroll-wrap">
+              <table class="simple-table teaching-table">
+                <thead>
+                  <tr>
+                    <th style="width: 8%">No.</th>
+                    <th style="width: 32%">Peran</th>
+                    <th style="width: 35%">Bentuk Kegiatan</th>
+                    <th style="width: 25%">Penyelenggara</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (teach of teachingExperiences(); track teach.role; let idx = $index) {
+                    <tr class="teach-main-row">
+                      <td>{{ idx + 1 }}</td>
+                      <td>{{ teach.role }}</td>
+                      <td>{{ teach.activityType }}</td>
+                      <td>{{ teach.organizer }}</td>
+                    </tr>
+                    <tr class="teach-desc-row">
+                      <td></td>
+                      <td colspan="3">
+                        <span class="desc-heading">Topik Materi yang disampaikan</span>
+                        <p class="desc-text">{{ teach.topic }}</p>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      }
+
+      <!-- TAB 2: VERIFIKASI & PERIZINAN -->
+      @if (activeTab() === 'verifikasi') {
+        <div class="tab-pane">
+          <!-- Verifikasi Dokumen Card -->
+          <section class="section-card verif-documents-card">
+            <div class="card-section-header-row">
+              <div class="header-left-title-group">
+                <div class="icon-circle emerald">
+                  <i class="ri-shield-check-line" aria-hidden="true"></i>
+                </div>
+                <div>
+                  <div class="title-with-pill">
+                    <h2 class="card-section-title">Verifikasi Dokumen & Legalitas Praktik</h2>
+                    <span class="badge-pr-tag">4 dari 4 Terverifikasi</span>
+                  </div>
+                  <p class="section-subtitle-desc">
+                    Kelengkapan berkas resmi identitas kependudukan, izin praktik, dan registrasi apoteker yang telah diverifikasi instansi terkait
+                  </p>
+                </div>
+              </div>
+
+              <div class="header-status-indicator">
+                <span class="badge-all-clear">
+                  <i class="ri-checkbox-circle-fill" aria-hidden="true"></i>
+                  <span>Kepatuhan 100% Lengkap</span>
+                </span>
+              </div>
+            </div>
+
+            <div class="doc-list">
+              @for (doc of verificationDocs(); track doc.id) {
+                <div class="doc-card-item doc-card-row" [class]="'doc-theme-' + doc.id">
+                  <!-- Col 1: Main Document Info -->
+                  <div class="doc-main-col">
+                    <div class="doc-icon-box" [class]="'icon-' + doc.id">
+                      <i [class]="doc.icon" aria-hidden="true"></i>
+                    </div>
+                    <div class="doc-info-block">
+                      <div class="doc-title-row">
+                        <strong class="doc-title">{{ doc.title }}</strong>
+                        <span class="doc-badge-type">{{ getDocTypeLabel(doc.id) }}</span>
+                      </div>
+                      <div class="doc-meta-row">
+                        <span class="doc-format-tag" [class]="getFileExt(doc.filename)">{{ getFileExt(doc.filename) }}</span>
+                        <span class="doc-filename font-mono">{{ doc.filename }}</span>
+                        <span class="meta-separator">•</span>
+                        <span class="doc-upload-date">
+                          <i class="ri-time-line" aria-hidden="true"></i>
+                          Diunggah: {{ doc.uploadedAt }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Col 2: Status & Validation Note -->
+                  <div class="doc-validation-col">
+                    <div
+                      class="doc-status-tag"
+                      [ngClass]="{
+                        'status-valid': doc.status === 'Terverifikasi',
+                        'status-wait': doc.status === 'Menunggu Verifikasi',
+                        'status-invalid': doc.status === 'Tidak Sesuai'
+                      }"
+                    >
+                      @if (doc.status === 'Terverifikasi') {
+                        <i class="ri-checkbox-circle-fill" aria-hidden="true"></i>
+                      } @else if (doc.status === 'Menunggu Verifikasi') {
+                        <i class="ri-time-line" aria-hidden="true"></i>
+                      } @else {
+                        <i class="ri-close-circle-fill" aria-hidden="true"></i>
+                      }
+                      <span>{{ doc.status }}</span>
+                    </div>
+                    <div class="doc-note-box">
+                      <i class="ri-verified-badge-line" aria-hidden="true"></i>
+                      <span class="doc-note-text">{{ doc.note }}</span>
+                    </div>
+                  </div>
+
+                  <!-- Col 3: Action Button -->
+                  <div class="doc-action-col">
+                    <button
+                      type="button"
+                      class="btn-view-doc"
+                      (click)="openDocPreview(doc)"
+                      aria-label="Lihat dokumen {{ doc.title }}"
+                    >
+                      <i class="ri-eye-line" aria-hidden="true"></i>
+                      <span>Lihat Dokumen</span>
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+          </section>
+
+          <!-- Catatan Pendaftar & Catatan Moderasi 2-Col Grid -->
+          <div class="verification-notes-grid">
+            <!-- Card 1: Komitmen & Pernyataan Pendaftar -->
+            <section class="section-card note-card applicant-card">
+              <div class="note-card-header">
+                <div class="note-icon-wrap user-theme">
+                  <i class="ri-user-voice-line" aria-hidden="true"></i>
+                </div>
+                <div>
+                  <h3 class="note-card-title">Pernyataan & Komitmen Apoteker</h3>
+                  <span class="note-card-sub">Pakta integritas disampaikan saat registrasi</span>
+                </div>
+              </div>
+
+              <div class="note-quote-box">
+                <i class="ri-double-quotes-l quote-watermark" aria-hidden="true"></i>
+                <p class="applicant-note-text">
+                  "Saya siap memberikan pelayanan farmasi terbaik dan mematuhi semua ketentuan perundang-undangan kefarmasian serta standar pelayanan PSEF yang berlaku."
+                </p>
+              </div>
+
+              <div class="note-card-footer">
+                <div class="note-footer-meta">
+                  <i class="ri-calendar-check-line" aria-hidden="true"></i>
+                  <span>Diajukan: 12 Januari 2024</span>
+                </div>
+                <span class="pill-signed-status">
+                  <i class="ri-checkbox-circle-fill" aria-hidden="true"></i>
+                  Ditandatangani Digital
+                </span>
+              </div>
+            </section>
+
+            <!-- Card 2: Hasil Moderasi & Status Akun -->
+            <section class="section-card note-card moderation-card">
+              <div class="note-card-header">
+                <div class="note-icon-wrap shield-theme">
+                  <i class="ri-shield-check-line" aria-hidden="true"></i>
+                </div>
+                <div>
+                  <h3 class="note-card-title">Hasil Moderasi & Status Akun</h3>
+                  <span class="note-card-sub">Verifikasi berkas resmi Kemenkes RI & Dinkes</span>
+                </div>
+              </div>
+
+              <div class="moderation-highlight-box">
+                <div class="moderation-status-head">
+                  <span class="badge-moderation-approved">
+                    <i class="ri-verified-badge-fill" aria-hidden="true"></i>
+                    Disetujui & Akun Aktif
+                  </span>
+                  <span class="moderation-date-tag">
+                    <i class="ri-time-line" aria-hidden="true"></i>
+                    16 Jan 2024, 10:00 WIB
+                  </span>
+                </div>
+                <p class="moderation-verif-text">
+                  {{ pharmacist().notes || 'Dokumen legalitas KTP, STRA Seumur Hidup, SIPA Aktif, dan Ijazah Apoteker telah tervalidasi resmi melalui SISK Kemenkes RI dan Dinas Kesehatan Kota Bandung.' }}
+                </p>
+              </div>
+
+              <div class="note-card-footer">
+                <div class="note-footer-meta">
+                  <i class="ri-building-line" aria-hidden="true"></i>
+                  <span>Verifikator: Ditjen Kefarmasian Kemenkes RI</span>
+                </div>
+                <span class="pill-official-seal">
+                  <i class="ri-lock-check-line" aria-hidden="true"></i>
+                  Keabsahan Sah & Legal
+                </span>
+              </div>
+            </section>
+          </div>
+        </div>
+      }
+
+      <!-- TAB 3: PRAKTIK -->
+      @if (activeTab() === 'praktik') {
+        <div class="tab-pane">
+          <!-- Praktik Info Card -->
+          <section class="section-card">
+            <h2 class="card-section-title">Praktik</h2>
+
+            <div class="practice-top-row">
+              <!-- Certificate Image Thumbnail -->
+              <div class="certificate-thumb-container" (click)="openCertificatePreview()">
+                <div class="certificate-frame">
+                  <div class="cert-border-inner">
+                    <div class="cert-header">
+                      <i class="ri-hospital-fill cert-emblem" aria-hidden="true"></i>
+                      <div class="cert-title-text">
+                        <small>SURAT IZIN PRAKTIK APOTEKER</small>
+                        <span>(SIPA)</span>
+                      </div>
+                    </div>
+                    <div class="cert-content-mock">
+                      <div class="cert-photo-box">
+                        <img [src]="pharmacist().avatar" alt="Foto Apoteker" (error)="onAvatarError($event)" />
+                      </div>
+                      <div class="cert-lines">
+                        <div class="cert-line short"></div>
+                        <div class="cert-line medium"></div>
+                        <div class="cert-line long"></div>
+                      </div>
+                    </div>
+                    <div class="cert-stamp">
+                      <i class="ri-shield-check-fill" aria-hidden="true"></i>
+                    </div>
+                  </div>
+                </div>
+                <span class="cert-zoom-hint">
+                  <i class="ri-zoom-in-line" aria-hidden="true"></i> Klik untuk perbesar
+                </span>
+              </div>
+
+              <!-- 3-Column Metadata -->
+              <div class="practice-meta-grid">
+                <div class="meta-col">
+                  <div class="meta-field">
+                    <span class="meta-lbl">Nomor Surat Izin Praktik (SIPA)</span>
+                    <strong class="meta-val">{{ practiceInfo().sipNumber }}</strong>
+                  </div>
+                  <div class="meta-field">
+                    <span class="meta-lbl">Nama Fasilitas</span>
+                    <strong class="meta-val">{{ practiceInfo().facilityName }}</strong>
+                  </div>
+                  <div class="meta-field">
+                    <span class="meta-lbl">Posisi</span>
+                    <strong class="meta-val">{{ practiceInfo().position }}</strong>
+                  </div>
+                </div>
+
+                <div class="meta-col">
+                  <div class="meta-field">
+                    <span class="meta-lbl">Penerbit Surat Izin Praktik</span>
+                    <strong class="meta-val">{{ practiceInfo().issuer }}</strong>
+                  </div>
+                  <div class="meta-field">
+                    <span class="meta-lbl">Tanggal Terbit SIPA</span>
+                    <strong class="meta-val">{{ practiceInfo().issueDate }}</strong>
+                  </div>
+                  <div class="meta-field">
+                    <span class="meta-lbl">Tanggal Berakhir SIPA</span>
+                    <strong class="meta-val">{{ practiceInfo().expiryDate }}</strong>
+                  </div>
+                </div>
+
+                <div class="meta-col">
+                  <div class="meta-field">
+                    <span class="meta-lbl">Bidang Pekerjaan</span>
+                    <strong class="meta-val">{{ practiceInfo().workField }}</strong>
+                  </div>
+                  <div class="meta-field">
+                    <span class="meta-lbl">Jenis Fasilitas</span>
+                    <strong class="meta-val">{{ practiceInfo().facilityType }}</strong>
+                  </div>
+                  <div class="meta-field">
+                    <span class="meta-lbl">Bagian</span>
+                    <strong class="meta-val">{{ practiceInfo().division }}</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <hr class="section-divider" />
+
+            <!-- Bottom Facility Details (4-Col Row) -->
+            <div class="facility-contact-grid">
+              <div class="fac-field">
+                <span class="fac-lbl">Kontak Fasilitas</span>
+                <strong class="fac-val">{{ practiceInfo().facilityPhone }}</strong>
+              </div>
+              <div class="fac-field">
+                <span class="fac-lbl">Email Fasilitas</span>
+                <strong class="fac-val">{{ practiceInfo().facilityEmail }}</strong>
+              </div>
+              <div class="fac-field">
+                <span class="fac-lbl">Web Fasilitas</span>
+                <strong class="fac-val">{{ practiceInfo().facilityWeb }}</strong>
+              </div>
+              <div class="fac-field">
+                <span class="fac-lbl">Kepemilikan</span>
+                <strong class="fac-val">{{ practiceInfo().ownership }}</strong>
+              </div>
+            </div>
+
+            <!-- Alamat Fasilitas -->
+            <div class="facility-address-box">
+              <span class="fac-lbl">Alamat Fasilitas</span>
+              <p class="fac-address-val">{{ practiceInfo().facilityAddress }}</p>
+            </div>
+          </section>
+
+          <!-- Jadwal Praktik & Operasional Fasilitas Card -->
+          <section class="section-card schedule-studio-card">
+            <div class="card-section-header-row">
+              <div class="header-left-title-group">
+                <div class="icon-circle emerald">
+                  <i class="ri-calendar-check-line" aria-hidden="true"></i>
+                </div>
+                <div>
+                  <div class="title-with-pill">
+                    <h2 class="card-section-title">Jadwal Praktik & Operasional Fasilitas</h2>
+                    <span class="badge-pr-tag">Balok Hijau di Atas Merah</span>
+                  </div>
+                  <p class="section-subtitle-desc">
+                    Shift dinas aktif apoteker (Warna Hijau) berada di atas jam operasional sarana (Latar Merah)
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                class="btn-edit-schedule-action"
+                (click)="goToEdit()"
+                title="Buka halaman edit profil untuk mengubah jadwal dinas"
+              >
+                <i class="ri-edit-line" aria-hidden="true"></i>
+                <span>Ubah Jadwal</span>
+              </button>
+            </div>
+
+            <!-- 4 HERO KPI METRIC CARDS -->
+            <div class="schedule-hero-kpi-grid">
+              <div class="kpi-metric-card emerald-theme">
+                <div class="kpi-icon-wrap emerald">
+                  <i class="ri-time-line" aria-hidden="true"></i>
+                </div>
+                <div class="kpi-info-block">
+                  <span class="kpi-title">Total Jam Praktik</span>
+                  <div class="kpi-value-row font-mono">
+                    <strong>{{ getTotalPracticeHours() }} Jam</strong>
+                    <small>/minggu</small>
+                  </div>
+                  <span class="kpi-subtext">Sesuai SIPA Dinkes</span>
+                </div>
+              </div>
+
+              <div class="kpi-metric-card blue-theme">
+                <div class="kpi-icon-wrap blue">
+                  <i class="ri-calendar-check-line" aria-hidden="true"></i>
+                </div>
+                <div class="kpi-info-block">
+                  <span class="kpi-title">Hari Dinas Aktif</span>
+                  <div class="kpi-value-row font-mono">
+                    <strong>{{ getActiveDaysCount() }} Hari</strong>
+                    <small>/7 hari</small>
+                  </div>
+                  <span class="kpi-subtext">Senin s/d Sabtu</span>
+                </div>
+              </div>
+
+              <div class="kpi-metric-card rose-theme">
+                <div class="kpi-icon-wrap rose">
+                  <i class="ri-store-2-line" aria-hidden="true"></i>
+                </div>
+                <div class="kpi-info-block">
+                  <span class="kpi-title">Buka Fasilitas</span>
+                  <div class="kpi-value-row font-mono">
+                    <strong>{{ getTotalOperationalHoursWeekly() }} Jam</strong>
+                    <small>/minggu</small>
+                  </div>
+                  <span class="kpi-subtext">Sarana Apotek PSEF</span>
+                </div>
+              </div>
+
+              <div class="kpi-metric-card teal-theme">
+                <div class="kpi-icon-wrap teal">
+                  <i class="ri-shield-check-line" aria-hidden="true"></i>
+                </div>
+                <div class="kpi-info-block">
+                  <span class="kpi-title">Cakupan Supervisi</span>
+                  <div class="kpi-value-row font-mono">
+                    <strong>{{ getSupervisionCoverageRatio() }}%</strong>
+                    <small>tercover APJ</small>
+                  </div>
+                  <span class="kpi-subtext">Kepatuhan Telefarmasi</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- DIAGRAM CONTROL & VIEW MODE SWITCHER -->
+            <div class="diagram-studio-toolbar">
+              <div class="toolbar-left-info">
+                <span class="toolbar-caption">
+                  <i class="ri-information-line text-emerald"></i>
+                  Status Pelayanan: <strong>Aktif Siap Melayani Telefarmasi</strong>
+                </span>
+              </div>
+
+              <!-- View Mode Switcher -->
+              <div class="toolbar-right-modes">
+                <span class="toolbar-caption">Tampilan:</span>
+                <div class="view-mode-switch-segmented">
+                  <button
+                    type="button"
+                    class="btn-mode-seg"
+                    [class.active]="scheduleViewMode() === 'timeline'"
+                    (click)="setScheduleViewMode('timeline')"
+                    title="Tampilan diagram timeline visual kalender berbalok hijau di atas merah"
+                  >
+                    <i class="ri-bar-chart-2-line"></i>
+                    <span>Diagram Timeline Visual</span>
+                  </button>
+                  <button
+                    type="button"
+                    class="btn-mode-seg"
+                    [class.active]="scheduleViewMode() === 'matrix'"
+                    (click)="setScheduleViewMode('matrix')"
+                    title="Tampilan tabel matriks slot interaktif per-jam (24 Jam)"
+                  >
+                    <i class="ri-grid-fill"></i>
+                    <span>Matriks Grid 24 Jam</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- DIAGRAM LEGEND -->
+            <div class="studio-legend-bar">
+              <div class="legend-items-wrap">
+                <div class="legend-chip">
+                  <span class="legend-color-box op-rose-box"></span>
+                  <span><strong>Jadwal Operasional Fasilitas</strong> (Latar Merah)</span>
+                </div>
+                <div class="legend-chip">
+                  <span class="legend-color-box pr-emerald-box"></span>
+                  <span><strong>Jadwal Praktik Apoteker</strong> (Balok Hijau di Atas Latar Merah)</span>
+                </div>
+                <div class="legend-chip">
+                  <span class="legend-color-box striped-rose-box"></span>
+                  <span>Fasilitas Buka di Luar Shift APJ (Delegasi)</span>
+                </div>
+              </div>
+              <span class="legend-hint-text">
+                <i class="ri-time-line"></i>
+                Balok hijau menunjukkan jam apoteker bertugas telaah resep & konseling
+              </span>
+            </div>
+
+            <!-- ========================================================
+                 MODE 1: THE VISUAL TIMELINE DIAGRAM
+                 ======================================================== -->
+            @if (scheduleViewMode() === 'timeline') {
+              <div class="visual-timeline-canvas-card">
+                <!-- Days Header Row -->
+                <div class="timeline-days-header-row">
+                  <div class="timeline-axis-corner">
+                    <span class="axis-corner-text">WAKTU (WIB)</span>
+                  </div>
+                  @for (col of calendarScheduleView; track col.key) {
+                    <div class="timeline-day-head-cell" [class.is-today]="col.key === 'rab'">
+                      <div class="day-head-name-group">
+                        <strong class="day-head-short">{{ col.label }}</strong>
+                        <span class="day-head-full">{{ col.subLabel }}</span>
+                      </div>
+                      <span
+                        class="day-shift-status-badge"
+                        [class.has-practice]="col.pr.hasPractice"
+                        [class.is-off]="!col.pr.hasPractice"
+                      >
+                        @if (col.pr.hasPractice) {
+                          {{ col.pr.duration }} Jam Dinas
+                        } @else {
+                          Libur
+                        }
+                      </span>
+                    </div>
+                  }
+                </div>
+
+                <!-- Timeline Chart Body: Left Axis + 7 Columns -->
+                <div class="timeline-canvas-body">
+                  <!-- Left Time Axis -->
+                  <div class="timeline-time-axis">
+                    @for (th of timelineScaleHours; track th.hour) {
+                      <div class="time-axis-marker">
+                        <span class="axis-time-tag font-mono">{{ th.label }}</span>
+                        <span class="axis-tick-line"></span>
+                      </div>
+                    }
+                  </div>
+
+                  <!-- 7 Day Columns Canvas -->
+                  <div class="timeline-columns-wrapper">
+                    <!-- Background Hour Lines for entire grid -->
+                    <div class="timeline-grid-guidelines" aria-hidden="true">
+                      @for (th of timelineScaleHours; track th.hour) {
+                        <div class="timeline-guideline-row"></div>
+                      }
+                    </div>
+
+                    <!-- 7 Day Render Columns -->
+                    @for (col of calendarScheduleView; track col.key) {
+                      <div
+                        class="timeline-day-track-column"
+                        [class.day-highlighted]="col.key === 'rab'"
+                        [class.day-has-shift]="col.pr.hasPractice"
+                      >
+                        <!-- 1. RED OPERATIONAL BACKGROUND ZONE (LATAR MERAH) -->
+                        @if (col.op.isOpen) {
+                          <div
+                            class="timeline-op-zone"
+                            [style.top.%]="col.op.topPct"
+                            [style.height.%]="col.op.heightPct"
+                            [title]="'Fasilitas ' + col.subLabel + ' Buka: ' + col.op.openTime + ' - ' + col.op.closeTime"
+                          >
+                            <div class="op-zone-top-tag">
+                              <i class="ri-store-2-line"></i>
+                              <span>Buka {{ col.op.openTime.slice(0, 5) }} - {{ col.op.closeTime.slice(0, 5) }}</span>
+                            </div>
+
+                            @if (!col.pr.hasPractice) {
+                              <div class="op-unstaffed-banner">
+                                <i class="ri-user-unfollow-line"></i>
+                                <span>Faskes Buka (Apoteker Libur)</span>
+                              </div>
+                            }
+                          </div>
+                        }
+
+                        <!-- 2. GREEN PRACTICE SHIFT BAR (BALOK HIJAU DI ATAS MERAH) -->
+                        @if (col.pr.hasPractice) {
+                          <div
+                            class="timeline-practice-card"
+                            [style.top.%]="col.pr.topPct"
+                            [style.height.%]="col.pr.heightPct"
+                            [title]="'Jadwal Praktik ' + col.subLabel + ': ' + col.pr.openTime + ' - ' + col.pr.closeTime + ' (' + col.pr.duration + ' Jam)'"
+                          >
+                            <div class="practice-card-glow-bar"></div>
+                            <div class="practice-card-inner">
+                              <div class="practice-header-line">
+                                <span class="pulse-beacon-dot"></span>
+                                <strong class="shift-title-text">Praktik Apoteker</strong>
+                                <i class="ri-check-double-line shift-check-icon"></i>
+                              </div>
+
+                              <div class="shift-time-bubble font-mono">
+                                <i class="ri-time-line"></i>
+                                <span>{{ col.pr.openTime.slice(0, 5) }} - {{ col.pr.closeTime.slice(0, 5) }} WIB</span>
+                              </div>
+
+                              <div class="shift-duration-badge">
+                                <span>{{ col.pr.duration }} Jam Pelayanan</span>
+                              </div>
+
+                              <div class="shift-services-indicator">
+                                <i class="ri-shield-check-fill text-emerald-light"></i>
+                                <span>APJ Aktif Telefarmasi</span>
+                              </div>
+                            </div>
+                          </div>
+                        }
+
+                        <!-- 3. If Day is entirely closed -->
+                        @if (!col.op.isOpen && !col.pr.hasPractice) {
+                          <div class="timeline-day-off-card">
+                            <i class="ri-hotel-bed-line"></i>
+                            <span>Libur Total</span>
+                          </div>
+                        }
+                      </div>
+                    }
+                  </div>
+                </div>
+              </div>
+            }
+
+            <!-- ========================================================
+                 MODE 2: MATRIKS GRID 24 JAM
+                 ======================================================== -->
+            @if (scheduleViewMode() === 'matrix') {
+              <div class="timetable-outer-wrapper">
+                <div class="matrix-helper-alert">
+                  <i class="ri-information-line"></i>
+                  <span>Mode Matriks 24 Jam: Hijau menandakan jam dinas aktif APJ yang bertugas di atas jam buka apotek (Merah).</span>
+                </div>
+
+                <!-- Day Header -->
+                <div class="timetable-header-grid">
+                  <div class="time-axis-head">
+                    <span class="axis-head-label">WAKTU</span>
+                  </div>
+                  @for (d of calendarDays; track d.key) {
+                    <div class="day-col-head" [class.highlighted-day]="d.key === 'rab'">
+                      <div class="day-head-content">
+                        <div class="day-titles-row">
+                          <span class="day-code">{{ d.label }}</span>
+                          <span class="day-full">{{ d.subLabel }}</span>
+                        </div>
+                        <span
+                          class="day-hours-badge"
+                          [class.has-shift]="getDayPracticeDetails(d.key).hasPractice"
+                          [class.is-off]="!getDayPracticeDetails(d.key).hasPractice"
+                        >
+                          @if (getDayPracticeDetails(d.key).hasPractice) {
+                            {{ getDayPracticeHours(d.key) }} Jam
+                          } @else {
+                            Libur
+                          }
+                        </span>
+                      </div>
+                    </div>
+                  }
+                </div>
+
+                <!-- Scrollable 24-Hour Rows -->
+                <div class="timetable-scrollable-body">
+                  @for (hour of matrixHours; track hour) {
+                    <div class="timetable-grid-row">
+                      <!-- Time axis cell -->
+                      <div class="time-axis-cell">
+                        <span class="time-24h font-mono">{{ formatHourLabel(hour) }}</span>
+                        <span class="time-12h font-mono">{{ hour < 12 ? 'Pagi' : (hour < 18 ? 'Siang' : 'Malam') }}</span>
+                      </div>
+
+                      <!-- 7 Days Slots -->
+                      @for (d of calendarDays; track d.key) {
+                        <div
+                          class="timetable-slot-cell"
+                          [class.operational-slot]="isOperationalSlot(d.key, hour)"
+                          [class.standby-highlight]="d.key === 'rab'"
+                        >
+                          <!-- Red Operational Watermark -->
+                          @if (isOperationalSlot(d.key, hour) && !isPracticeSlot(d.key, hour)) {
+                            <span class="slot-op-watermark">Buka</span>
+                          }
+
+                          <!-- Green Practice Layer directly on top of Red -->
+                          @if (isPracticeSlot(d.key, hour)) {
+                            <div class="practice-active-layer">
+                              <div class="chip-glow-pill">
+                                <span class="pulse-dot"></span>
+                                <span class="chip-label">Praktik</span>
+                              </div>
+                              <i class="ri-check-line chip-check" aria-hidden="true"></i>
+                            </div>
+                          }
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </section>
+        </div>
+      }
+    </main>
+
+    <!-- Right Column: Status Verifikasi, Ringkasan, & Aksi Moderasi -->
+    <aside class="detail-sidebar-column">
+      <!-- Panel 1: Status Verifikasi Akun -->
+      <section class="sidebar-panel">
+        <h2 class="sidebar-panel-title">Status Verifikasi Akun</h2>
+        <div class="verification-stepper">
+          @for (item of timelineSteps(); track item.step) {
+            <div class="stepper-item" [class.active]="item.active">
+              <div class="stepper-indicator">
+                <div class="step-circle" [class.active]="item.active">
+                  <span>{{ item.step }}</span>
+                </div>
+                @if (item.step > 1) {
+                  <div class="step-line" [class.active]="item.active"></div>
+                }
+              </div>
+              <div class="stepper-content">
+                <strong class="step-title">{{ item.title }}</strong>
+                <span class="step-time">{{ item.time }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+
+      <!-- Panel 2: Ringkasan Verifikasi -->
+      <section class="sidebar-panel">
+        <h2 class="sidebar-panel-title">Ringkasan Verifikasi</h2>
+        <div class="summary-list">
+          <div class="summary-item">
+            <div class="summary-left">
+              <i class="ri-file-text-line icon-teal" aria-hidden="true"></i>
+              <span>Dokumen Terverifikasi</span>
+            </div>
+            <strong class="summary-val">4 dari 4</strong>
+          </div>
+
+          <div class="summary-item">
+            <div class="summary-left">
+              <i class="ri-file-shield-line icon-amber" aria-hidden="true"></i>
+              <span>Dokumen Menunggu Verifikasi</span>
+            </div>
+            <strong class="summary-val">0 dari 4</strong>
+          </div>
+
+          <div class="summary-item">
+            <div class="summary-left">
+              <i class="ri-file-warning-line icon-red" aria-hidden="true"></i>
+              <span>Dokumen Ditolak</span>
+            </div>
+            <strong class="summary-val">0</strong>
+          </div>
+
+          <div class="summary-item progress-item">
+            <div class="summary-progress-header">
+              <div class="summary-left">
+                <i class="ri-folder-shield-2-line icon-blue" aria-hidden="true"></i>
+                <span>Kelengkapan Data</span>
+              </div>
+              <strong class="summary-val">100%</strong>
+            </div>
+            <div class="summary-progress-track">
+              <div class="summary-progress-bar" style="width: 100%"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Panel 3: Aksi Moderasi & Kredensial -->
+      <section class="sidebar-panel moderation-panel">
+        <h2 class="sidebar-panel-title">Aksi & Kredensial</h2>
+
+        <!-- Choice 1: Edit Data Apoteker -->
+        <label
+          class="moderation-choice-card"
+          (click)="goToEdit()"
+        >
+          <div class="choice-icon-box choice-approve">
+            <i class="ri-edit-line" aria-hidden="true"></i>
+          </div>
+          <div class="choice-text">
+            <strong class="choice-title approve">Edit Data Apoteker</strong>
+            <span class="choice-desc">Perbarui data diri, kontak, dan SIPA</span>
+          </div>
+        </label>
+
+        <!-- Choice 2: Lihat SIPA Digital -->
+        <label
+          class="moderation-choice-card"
+          (click)="openCertificatePreview()"
+        >
+          <div class="choice-icon-box choice-fix">
+            <i class="ri-file-shield-line" aria-hidden="true"></i>
+          </div>
+          <div class="choice-text">
+            <strong class="choice-title fix">Lihat SIPA Digital</strong>
+            <span class="choice-desc">Tampilkan Surat Izin Praktik Apoteker</span>
+          </div>
+        </label>
+
+        <button type="button" class="btn-save-moderation" (click)="goToEdit()">
+          Edit Data Apoteker
+        </button>
+      </section>
+    </aside>
+  </div>
+</div>
+
+<!-- Modal Preview Dokumen -->
+@if (selectedPreviewDoc(); as doc) {
+  <div class="preview-backdrop" (click)="closeDocPreview()">
+    <div class="preview-dialog" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <div class="preview-header">
+        <div class="preview-header-text">
+          <h2 class="preview-title">{{ doc.title }}</h2>
+          <span class="preview-subtitle">{{ doc.filename }} · Diunggah: {{ doc.uploadedAt }}</span>
+        </div>
+        <button type="button" class="btn-close-preview" (click)="closeDocPreview()" aria-label="Tutup preview">
+          <i class="ri-close-line" aria-hidden="true"></i>
+        </button>
+      </div>
+
+      <div class="preview-body">
+        <div class="doc-preview-sheet">
+          <div class="sheet-emblem-badge" [class]="'icon-' + doc.id">
+            <i [class]="doc.icon" aria-hidden="true"></i>
+          </div>
+          <div class="sheet-content">
+            <span class="sheet-category">{{ getDocTypeLabel(doc.id) }}</span>
+            <h3 class="sheet-title">{{ doc.title }}</h3>
+            <span class="sheet-filename font-mono">{{ doc.filename }}</span>
+
+            <div class="sheet-meta-grid">
+              <div class="sheet-meta-item">
+                <span class="meta-k">Status:</span>
+                <span class="meta-v-badge success">{{ doc.status }}</span>
+              </div>
+              <div class="sheet-meta-item">
+                <span class="meta-k">Tanggal Unggah:</span>
+                <span class="meta-v">{{ doc.uploadedAt }}</span>
+              </div>
+              <div class="sheet-meta-item full">
+                <span class="meta-k">Validasi:</span>
+                <span class="meta-v">{{ doc.note }}</span>
+              </div>
+            </div>
+
+            <div class="sheet-watermark-row">
+              <i class="ri-shield-check-fill" aria-hidden="true"></i>
+              <span>Dokumen Telah Terverifikasi Sistem Kemenkes RI</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="preview-footer">
+        <button type="button" class="btn-secondary" (click)="closeDocPreview()">Tutup</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Modal Preview Sertifikat / SIPA -->
+@if (previewCertificateModal()) {
+  <div class="preview-backdrop" (click)="closeCertificatePreview()">
+    <div class="preview-dialog preview-dialog-lg" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <div class="preview-header">
+        <div class="preview-header-text">
+          <h2 class="preview-title">Surat Izin Praktik Apoteker (SIPA)</h2>
+          <span class="preview-subtitle">{{ practiceInfo().sipNumber }} · {{ practiceInfo().facilityName }}</span>
+        </div>
+        <button type="button" class="btn-close-preview" (click)="closeCertificatePreview()" aria-label="Tutup preview">
+          <i class="ri-close-line" aria-hidden="true"></i>
+        </button>
+      </div>
+
+      <div class="preview-body">
+        <div class="certificate-modal-display">
+          <div class="modal-cert-inner">
+            <div class="cert-modal-head">
+              <h3>PEMERINTAH KOTA BANDUNG</h3>
+              <h4>DINAS KESEHATAN KOTA BANDUNG</h4>
+              <p>SURAT IZIN PRAKTIK APOTEKER (SIPA)</p>
+              <small>Nomor: {{ practiceInfo().sipNumber }}</small>
+            </div>
+            <div class="cert-modal-data">
+              <p><strong>Nama:</strong> {{ pharmacist().name }}</p>
+              <p><strong>Fasilitas:</strong> {{ practiceInfo().facilityName }}</p>
+              <p><strong>Alamat:</strong> {{ practiceInfo().facilityAddress }}</p>
+              <p><strong>Berlaku s/d:</strong> {{ practiceInfo().expiryDate }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="preview-footer">
+        <button type="button" class="btn-secondary" (click)="downloadSipa()">
+          <i class="ri-printer-line"></i> Cetak SIPA
+        </button>
+        <button type="button" class="btn-secondary" (click)="closeCertificatePreview()">Tutup</button>
+      </div>
+    </div>
+  </div>
+}

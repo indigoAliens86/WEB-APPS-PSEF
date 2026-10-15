@@ -1,0 +1,477 @@
+<div class="form-page-container">
+  <!-- Top Navigation & Header -->
+  <div class="header-nav-row">
+    <button
+      type="button"
+      class="btn-back"
+      (click)="goBack()"
+      aria-label="Kembali ke Daftar Apoteker"
+    >
+      <i class="ri-arrow-left-line" aria-hidden="true"></i>
+      <span>Kembali ke Daftar Apoteker</span>
+    </button>
+  </div>
+
+  <header class="page-title-card">
+    <div class="title-meta">
+      <span class="badge-role"><i class="ri-capsule-line" aria-hidden="true"></i> Apoteker Baru</span>
+      <h1 class="page-title">Tambah Apoteker Baru</h1>
+      <p class="page-subtitle">
+        Lengkapi formulir pendaftaran apoteker dan izin kefarmasian SIPA/STRA untuk verifikasi PSEF.
+      </p>
+    </div>
+  </header>
+
+  <!-- Alert Messages -->
+  @if (errorMessage()) {
+    <div class="alert alert-danger" role="alert">
+      <i class="ri-error-warning-line" aria-hidden="true"></i>
+      <span>{{ errorMessage() }}</span>
+    </div>
+  }
+
+  @if (saveSuccess()) {
+    <div class="alert alert-success" role="alert">
+      <i class="ri-checkbox-circle-line" aria-hidden="true"></i>
+      <span>Data apoteker berhasil disimpan! Mengalihkan ke daftar apoteker...</span>
+    </div>
+  }
+
+  <!-- Main Form Grid -->
+  <form (ngSubmit)="save()" class="form-layout" novalidate>
+    <!-- Section 1: Data Pribadi -->
+    <section class="form-card" aria-labelledby="section-personal">
+      <div class="card-section-header">
+        <div class="icon-circle teal">
+          <i class="ri-user-3-line" aria-hidden="true"></i>
+        </div>
+        <div>
+          <h2 id="section-personal" class="section-title">Data Pribadi & Identitas</h2>
+          <p class="section-desc">Informasi dasar kependudukan apoteker</p>
+        </div>
+      </div>
+
+      <div class="grid-2-col">
+        <div class="form-group">
+          <label for="pharmacist-name" class="form-label">
+            Nama Lengkap & Gelar <span class="required">*</span>
+          </label>
+          <input
+            id="pharmacist-name"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.name"
+            name="name"
+            placeholder="Contoh: apt. Andi Pratama, S.Farm"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="pharmacist-nik" class="form-label">
+            Nomor Induk Kependudukan (NIK) <span class="required">*</span>
+          </label>
+          <input
+            id="pharmacist-nik"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.nik"
+            name="nik"
+            maxlength="16"
+            placeholder="16 digit NIK sesuai KTP"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="pharmacist-gender" class="form-label">Jenis Kelamin</label>
+          <select
+            id="pharmacist-gender"
+            class="form-select"
+            [(ngModel)]="formData.gender"
+            name="gender"
+          >
+            <option value="male">Laki-laki</option>
+            <option value="female">Perempuan</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="pharmacist-birth" class="form-label">Tempat & Tanggal Lahir</label>
+          <div class="grid-2-inline">
+            <input
+              id="pharmacist-birth"
+              type="text"
+              class="form-control"
+              [(ngModel)]="formData.birthPlace"
+              name="birthPlace"
+              placeholder="Kota lahir"
+            />
+            <input
+              type="date"
+              class="form-control"
+              [(ngModel)]="formData.birthDate"
+              name="birthDate"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="pharmacist-email" class="form-label">
+            Email Resmi <span class="required">*</span>
+          </label>
+          <input
+            id="pharmacist-email"
+            type="email"
+            class="form-control"
+            [(ngModel)]="formData.email"
+            name="email"
+            placeholder="apoteker@healora.id"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="pharmacist-phone" class="form-label">Nomor Telepon / WhatsApp</label>
+          <input
+            id="pharmacist-phone"
+            type="tel"
+            class="form-control"
+            [(ngModel)]="formData.phone"
+            name="phone"
+            placeholder="0812-xxxx-xxxx"
+          />
+        </div>
+
+        <div class="form-group full-width">
+          <label for="pharmacist-address" class="form-label">Alamat Lengkap KTP</label>
+          <textarea
+            id="pharmacist-address"
+            rows="2"
+            class="form-control"
+            [(ngModel)]="formData.address"
+            name="address"
+            placeholder="Alamat domisili sesuai KTP"
+          ></textarea>
+        </div>
+
+        <div class="form-group full-width">
+          <label for="pharmacist-about" class="form-label">Tentang Apoteker / Profil Singkat</label>
+          <textarea
+            id="pharmacist-about"
+            rows="2"
+            class="form-control"
+            [(ngModel)]="formData.about"
+            name="about"
+            placeholder="Ringkasan pengalaman kefarmasian dan pelayanan resep..."
+          ></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Pendidikan & Peminatan Farmasi -->
+    <section class="form-card" aria-labelledby="section-education">
+      <div class="card-section-header">
+        <div class="icon-circle blue">
+          <i class="ri-graduation-cap-line" aria-hidden="true"></i>
+        </div>
+        <div>
+          <h2 id="section-education" class="section-title">Pendidikan & Bidang Kefarmasian</h2>
+          <p class="section-desc">Kualifikasi profesi apoteker dan peminatan spesialisasi</p>
+        </div>
+      </div>
+
+      <div class="grid-2-col">
+        <div class="form-group">
+          <label for="pharmacist-specialty" class="form-label">
+            Bidang / Peminatan Farmasi <span class="required">*</span>
+          </label>
+          <select
+            id="pharmacist-specialty"
+            class="form-select"
+            [(ngModel)]="formData.specialty"
+            name="specialty"
+          >
+            @for (sp of specialties; track sp) {
+              <option [value]="sp">{{ sp }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="pharmacist-lastEducation" class="form-label">Pendidikan Terakhir</label>
+          <input
+            id="pharmacist-lastEducation"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.lastEducation"
+            name="lastEducation"
+            placeholder="Contoh: Profesi Apoteker"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="pharmacist-univ" class="form-label">Institusi Pendidikan Kefarmasian</label>
+          <input
+            id="pharmacist-univ"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.educationInstitution"
+            name="educationInstitution"
+            placeholder="Contoh: Sekolah Tinggi Ilmu Farmasi Padang"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="pharmacist-diploma" class="form-label">Nomor Ijazah Apoteker</label>
+          <input
+            id="pharmacist-diploma"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.diplomaNumber"
+            name="diplomaNumber"
+            placeholder="Contoh: 105/STIFARM/Apt/VI/2024"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="pharmacist-gradYear" class="form-label">Tahun Kelulusan</label>
+          <input
+            id="pharmacist-gradYear"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.graduationYear"
+            name="graduationYear"
+            placeholder="Contoh: 2024"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Legalitas & Perizinan (SIPA & STRA) -->
+    <section class="form-card" aria-labelledby="section-legal">
+      <div class="card-section-header">
+        <div class="icon-circle amber">
+          <i class="ri-shield-check-line" aria-hidden="true"></i>
+        </div>
+        <div>
+          <h2 id="section-legal" class="section-title">Legalitas & Perizinan (SIPA / STRA)</h2>
+          <p class="section-desc">Nomor Surat Izin Praktik Apoteker dan Surat Tanda Registrasi</p>
+        </div>
+      </div>
+
+      <div class="grid-2-col">
+        <div class="form-group">
+          <label for="pharmacist-sipa" class="form-label">
+            Nomor SIPA (Surat Izin Praktik Apoteker) <span class="required">*</span>
+          </label>
+          <input
+            id="pharmacist-sipa"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.sipa"
+            name="sipa"
+            placeholder="Contoh: 35.79/25/1235"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="pharmacist-sipaExpiry" class="form-label">Masa Berlaku SIPA</label>
+          <input
+            id="pharmacist-sipaExpiry"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.sipaExpiry"
+            name="sipaExpiry"
+            placeholder="Contoh: 10 Mei 2028"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="pharmacist-sipaIssuer" class="form-label">Instansi Penerbit SIPA</label>
+          <input
+            id="pharmacist-sipaIssuer"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.sipaIssuer"
+            name="sipaIssuer"
+            placeholder="Contoh: Dinas Kesehatan Kota Bandung"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="pharmacist-stra" class="form-label">Nomor STRA</label>
+          <input
+            id="pharmacist-stra"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.stra"
+            name="stra"
+            placeholder="Contoh: 317129/25/1002"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="pharmacist-straExpiry" class="form-label">Masa Berlaku STRA</label>
+          <input
+            id="pharmacist-straExpiry"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.straExpiry"
+            name="straExpiry"
+            placeholder="Contoh: Seumur Hidup"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Fasilitas Kefarmasian & Jadwal -->
+    <section class="form-card" aria-labelledby="section-facility">
+      <div class="card-section-header">
+        <div class="icon-circle teal">
+          <i class="ri-store-2-line" aria-hidden="true"></i>
+        </div>
+        <div>
+          <h2 id="section-facility" class="section-title">Fasilitas Kefarmasian & Pelayanan</h2>
+          <p class="section-desc">Afiliasi apotek/faskes tempat berpraktik</p>
+        </div>
+      </div>
+
+      <div class="grid-2-col">
+        <div class="form-group">
+          <label for="pharmacist-facility" class="form-label">
+            Nama Fasilitas Kefarmasian <span class="required">*</span>
+          </label>
+          <input
+            id="pharmacist-facility"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.facility"
+            name="facility"
+            placeholder="Contoh: Apotek Keluarga Medika"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="pharmacist-facilityType" class="form-label">Jenis Fasilitas</label>
+          <select
+            id="pharmacist-facilityType"
+            class="form-select"
+            [(ngModel)]="formData.facilityType"
+            name="facilityType"
+          >
+            @for (ft of facilityTypes; track ft) {
+              <option [value]="ft">{{ ft }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="pharmacist-position" class="form-label">Jabatan Kefarmasian</label>
+          <input
+            id="pharmacist-position"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.position"
+            name="position"
+            placeholder="Contoh: Apoteker Pengelola Apotek (APA)"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="pharmacist-schedule" class="form-label">Jadwal Pelayanan Telefarmasi</label>
+          <input
+            id="pharmacist-schedule"
+            type="text"
+            class="form-control"
+            [(ngModel)]="formData.practiceSchedule"
+            name="practiceSchedule"
+            placeholder="Contoh: Senin - Sabtu (08.00 - 16.00)"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: Status Akun & Moderasi -->
+    <section class="form-card" aria-labelledby="section-status">
+      <div class="card-section-header">
+        <div class="icon-circle blue">
+          <i class="ri-settings-4-line" aria-hidden="true"></i>
+        </div>
+        <div>
+          <h2 id="section-status" class="section-title">Status Akun & Verifikasi</h2>
+          <p class="section-desc">Pengaturan keaktifan dan status moderasi PSEF</p>
+        </div>
+      </div>
+
+      <div class="grid-2-col">
+        <div class="form-group">
+          <label for="pharmacist-status" class="form-label">Status Keaktifan</label>
+          <select
+            id="pharmacist-status"
+            class="form-select"
+            [(ngModel)]="formData.status"
+            name="status"
+          >
+            <option value="Aktif">Aktif</option>
+            <option value="Non-Aktif">Non-Aktif</option>
+            <option value="Suspended">Suspended</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="pharmacist-verification" class="form-label">Status Verifikasi</label>
+          <select
+            id="pharmacist-verification"
+            class="form-select"
+            [(ngModel)]="formData.verification"
+            name="verification"
+          >
+            <option value="Terverifikasi">Terverifikasi</option>
+            <option value="Menunggu Verifikasi">Menunggu Verifikasi</option>
+            <option value="Ditolak">Ditolak</option>
+          </select>
+        </div>
+
+        <div class="form-group full-width">
+          <label for="pharmacist-notes" class="form-label">Catatan Admin / Internal</label>
+          <textarea
+            id="pharmacist-notes"
+            rows="2"
+            class="form-control"
+            [(ngModel)]="formData.notes"
+            name="notes"
+            placeholder="Catatan verifikasi SIPA/STRA apoteker..."
+          ></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- Form Action Bar -->
+    <div class="form-action-bar">
+      <button
+        type="button"
+        class="btn-secondary"
+        (click)="goBack()"
+      >
+        <i class="ri-close-line" aria-hidden="true"></i>
+        Batal
+      </button>
+
+      <button
+        type="submit"
+        class="btn-primary"
+        [disabled]="isSubmitting()"
+      >
+        @if (isSubmitting()) {
+          <i class="ri-loader-4-line ri-spin" aria-hidden="true"></i>
+          <span>Menyimpan...</span>
+        } @else {
+          <i class="ri-save-line" aria-hidden="true"></i>
+          <span>Simpan Data Apoteker</span>
+        }
+      </button>
+    </div>
+  </form>
+</div>

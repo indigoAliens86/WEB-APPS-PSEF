@@ -1,0 +1,454 @@
+@if (!showingDetails()) {
+<div class="apoteker-page-container">
+  <!-- Top Stat Cards (5 Cards) -->
+  <section class="stats-overview" aria-label="Ringkasan Statistik">
+    @for (card of statCards; track card.title) {
+      <article class="stat-card">
+        <div class="stat-icon-box" [ngClass]="card.color">
+          <i [class]="card.icon" aria-hidden="true"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">{{ card.title }}</span>
+          <strong class="stat-number">{{ card.value }}</strong>
+          <div class="stat-trend-row">
+            <span class="trend-pill" [ngClass]="card.color">
+              <i [class]="card.trendIcon || 'ri-arrow-up-line'" aria-hidden="true"></i> {{ card.percentage }}
+            </span>
+            <span class="trend-subtext">{{ card.period }}</span>
+          </div>
+        </div>
+      </article>
+    }
+  </section>
+
+  <!-- Main Directory Card -->
+  <section class="apoteker-card" aria-labelledby="apoteker-heading">
+    <!-- Header: Title & Main Action Buttons -->
+    <header class="card-header">
+      <h1 id="apoteker-heading" class="card-title">Daftar Apoteker</h1>
+      <div class="header-actions">
+        <button
+          type="button"
+          class="btn-icon-export"
+          (click)="exportData()"
+          title="Ekspor Data Excel"
+          aria-label="Ekspor data"
+        >
+          <i class="ri-file-excel-line" aria-hidden="true"></i>
+        </button>
+        <button
+          type="button"
+          class="btn-add-apoteker"
+          (click)="openAdd()"
+          aria-label="Tambah Apoteker"
+        >
+          <i class="ri-user-add-line" aria-hidden="true"></i>
+          <span>Tambah Apoteker</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Toolbar: Search, Select Filters & Filter Button -->
+    <div class="card-toolbar">
+      <div class="search-box">
+        <i class="ri-search-line search-icon" aria-hidden="true"></i>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Cari Apoteker..."
+          aria-label="Cari Apoteker"
+          [value]="search()"
+          (input)="onSearch($event)"
+        />
+      </div>
+
+      <div class="select-wrapper">
+        <select
+          class="filter-select"
+          aria-label="Filter Spesialisasi"
+          [(ngModel)]="specialtyFilter"
+          (ngModelChange)="onFilterChange()"
+        >
+          <option value="">Pilih Spesialisasi/Bidang</option>
+          @for (spec of specialties; track spec) {
+            <option [value]="spec">{{ spec }}</option>
+          }
+        </select>
+        <i class="ri-arrow-down-s-line select-arrow" aria-hidden="true"></i>
+      </div>
+
+      <div class="select-wrapper">
+        <select
+          class="filter-select"
+          aria-label="Filter Verifikasi"
+          [(ngModel)]="verificationFilter"
+          (ngModelChange)="onFilterChange()"
+        >
+          <option value="">Pilih Verifikasi</option>
+          @for (verif of verifications; track verif) {
+            <option [value]="verif">{{ verif }}</option>
+          }
+        </select>
+        <i class="ri-arrow-down-s-line select-arrow" aria-hidden="true"></i>
+      </div>
+
+      <div class="select-wrapper">
+        <select
+          class="filter-select"
+          aria-label="Filter Status"
+          [(ngModel)]="statusFilter"
+          (ngModelChange)="onFilterChange()"
+        >
+          <option value="">Pilih Status</option>
+          @for (stat of statuses; track stat) {
+            <option [value]="stat">{{ stat }}</option>
+          }
+        </select>
+        <i class="ri-arrow-down-s-line select-arrow" aria-hidden="true"></i>
+      </div>
+
+      <button
+        type="button"
+        class="btn-filters"
+        (click)="resetFilters()"
+        title="Reset / Toggle Filters"
+      >
+        <i class="ri-equalizer-line" aria-hidden="true"></i>
+        <span>Filters</span>
+      </button>
+    </div>
+
+    <!-- Table Container -->
+    <div class="table-container">
+      <table class="apoteker-table directory-table">
+        <thead>
+          <tr>
+            <th scope="col" class="th-no">No</th>
+            <th scope="col" class="th-nama">Nama</th>
+            <th scope="col" class="th-kontak">Kontak</th>
+            <th scope="col" class="th-spesialisasi">Spesialisasi</th>
+            <th scope="col" class="th-sip">SIP/STRA</th>
+            <th scope="col" class="th-bergabung">Bergabung</th>
+            <th scope="col" class="th-status">Status</th>
+            <th scope="col" class="th-verifikasi">Verifikasi</th>
+            <th scope="col" class="th-aksi">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of paginatedRecords(); track item.id; let idx = $index) {
+            <tr class="table-row">
+              <td class="td-no">{{ (page() - 1) * pageSize() + idx + 1 }}</td>
+              <td class="td-nama">
+                <div class="doctor-profile-cell">
+                  <img
+                    [src]="item.avatar"
+                    [alt]="item.name"
+                    class="doctor-avatar"
+                    (error)="onAvatarError($event)"
+                  />
+                  <div class="doctor-meta">
+                    <strong class="doctor-name">{{ item.name }}</strong>
+                    <span class="doctor-facility">{{ item.facility }}</span>
+                  </div>
+                </div>
+              </td>
+              <td class="td-kontak">
+                <div class="contact-cell">
+                  <span class="contact-email">{{ item.email }}</span>
+                  <span class="contact-phone">{{ item.phone }}</span>
+                </div>
+              </td>
+              <td class="td-spesialisasi">
+                <span class="specialty-text">{{ item.specialty }}</span>
+              </td>
+              <td class="td-sip">
+                <div class="license-cell">
+                  <span class="sip-line">SIP: {{ item.sip }}</span>
+                  <span class="stra-line">STR: {{ item.stra }}</span>
+                </div>
+              </td>
+              <td class="td-bergabung">
+                <div class="joined-cell">
+                  <span class="joined-date">{{ item.joinedDate }}</span>
+                  <span class="joined-time">{{ item.joinedTime }}</span>
+                </div>
+              </td>
+              <td class="td-status">
+                <span
+                  class="badge-status"
+                  [ngClass]="{
+                    'badge-aktif': item.status === 'Aktif',
+                    'badge-nonaktif': item.status === 'Non-Aktif',
+                    'badge-suspended': item.status === 'Suspended'
+                  }"
+                >
+                  {{ item.status }}
+                </span>
+              </td>
+              <td class="td-verifikasi">
+                <span
+                  class="badge-verifikasi"
+                  [ngClass]="{
+                    'badge-terverifikasi': item.verification === 'Terverifikasi',
+                    'badge-menunggu': item.verification === 'Menunggu Verifikasi',
+                    'badge-ditolak': item.verification === 'Ditolak'
+                  }"
+                >
+                  {{ item.verification }}
+                </span>
+              </td>
+              <td class="td-aksi">
+                <div class="actions-wrapper">
+                  <button
+                    type="button"
+                    class="btn-action-view"
+                    (click)="openDetail(item)"
+                    [attr.aria-label]="'Detail ' + item.name"
+                    title="Lihat Detail"
+                  >
+                    <i class="ri-eye-line" aria-hidden="true"></i>
+                  </button>
+                  <button
+                    type="button"
+                    class="btn-action-edit"
+                    (click)="openEdit(item)"
+                    [attr.aria-label]="'Edit ' + item.name"
+                    title="Edit Apoteker"
+                  >
+                    <i class="ri-edit-line" aria-hidden="true"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="9" class="table-empty">
+                <div class="empty-state">
+                  <i class="ri-search-line empty-icon" aria-hidden="true"></i>
+                  <p class="empty-title">Data tidak ditemukan</p>
+                  <span class="empty-desc">Tidak ada apoteker yang cocok dengan kriteria pencarian atau filter.</span>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination Footer -->
+    <footer class="card-pagination">
+      <div class="pagination-info">
+        Menampilkan 1-10 dari 12.458 apoteker
+      </div>
+      <div class="pagination-controls">
+        <button
+          type="button"
+          class="page-btn page-arrow"
+          aria-label="Halaman sebelumnya"
+          [disabled]="page() <= 1"
+          (click)="setPage(page() - 1)"
+        >
+          <i class="ri-arrow-left-s-line" aria-hidden="true"></i>
+        </button>
+
+        <button
+          type="button"
+          class="page-btn"
+          [class.active]="page() === 1"
+          (click)="setPage(1)"
+        >
+          1
+        </button>
+
+        <button
+          type="button"
+          class="page-btn"
+          [class.active]="page() === 2"
+          (click)="setPage(2)"
+        >
+          2
+        </button>
+
+        <button
+          type="button"
+          class="page-btn"
+          [class.active]="page() === 3"
+          (click)="setPage(3)"
+        >
+          3
+        </button>
+
+        <button
+          type="button"
+          class="page-btn"
+          [class.active]="page() === 4"
+          (click)="setPage(4)"
+        >
+          4
+        </button>
+
+        <span class="page-ellipsis">...</span>
+
+        <button
+          type="button"
+          class="page-btn page-large"
+          (click)="setPage(1246)"
+        >
+          1.246
+        </button>
+
+        <button
+          type="button"
+          class="page-btn page-arrow"
+          aria-label="Halaman berikutnya"
+          (click)="setPage(page() + 1)"
+        >
+          <i class="ri-arrow-right-s-line" aria-hidden="true"></i>
+        </button>
+
+        <div class="page-size-picker">
+          <select class="select-page-size" aria-label="Jumlah per halaman">
+            <option value="10">10/halaman</option>
+            <option value="25">25/halaman</option>
+            <option value="50">50/halaman</option>
+          </select>
+          <i class="ri-arrow-down-s-line page-size-arrow" aria-hidden="true"></i>
+        </div>
+      </div>
+    </footer>
+  </section>
+</div>
+}
+
+<router-outlet (activate)="showingDetails.set(true)" (deactivate)="showingDetails.set(false)"></router-outlet>
+
+<!-- Modal Tambah Apoteker -->
+@if (modal() === 'add') {
+  <div class="modal-backdrop" (click)="closeModal()">
+    <div class="modal-dialog modal-lg" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-header-text">
+          <h2 class="modal-title">Tambah Apoteker</h2>
+          <span class="modal-subtitle">Lengkapi formulir di bawah ini untuk mendaftarkan data baru.</span>
+        </div>
+        <button type="button" class="btn-modal-close" (click)="closeModal()" aria-label="Tutup modal">
+          <i class="ri-close-line" aria-hidden="true"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        @if (formError()) {
+          <div class="form-alert-error">{{ formError() }}</div>
+        }
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label" for="add-apt-name">Nama Lengkap & Gelar *</label>
+            <input
+              id="add-apt-name"
+              type="text"
+              class="form-control"
+              placeholder="Contoh: apt. Andi Pratama, S.Farm"
+              [(ngModel)]="draftPharmacist.name"
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="add-apt-facility">Fasilitas Praktik *</label>
+            <input
+              id="add-apt-facility"
+              type="text"
+              class="form-control"
+              placeholder="Contoh: Apotek Keluarga Medika"
+              [(ngModel)]="draftPharmacist.facility"
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="add-apt-spec">Spesialisasi / Bidang</label>
+            <select id="add-apt-spec" class="form-control" [(ngModel)]="draftPharmacist.specialty">
+              @for (spec of specialties; track spec) {
+                <option [value]="spec">{{ spec }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="add-apt-gender">Jenis Kelamin</label>
+            <select id="add-apt-gender" class="form-control" [(ngModel)]="draftPharmacist.gender">
+              <option value="male">Laki-laki</option>
+              <option value="female">Perempuan</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="add-apt-email">Email</label>
+            <input
+              id="add-apt-email"
+              type="email"
+              class="form-control"
+              placeholder="apoteker@healora.id"
+              [(ngModel)]="draftPharmacist.email"
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="add-apt-phone">No. Telepon / WhatsApp</label>
+            <input
+              id="add-apt-phone"
+              type="tel"
+              class="form-control"
+              placeholder="0812-xxxx-xxxx"
+              [(ngModel)]="draftPharmacist.phone"
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="add-apt-sip">Nomor SIPA</label>
+            <input
+              id="add-apt-sip"
+              type="text"
+              class="form-control"
+              placeholder="SIPA: 35.79/25/1235"
+              [(ngModel)]="draftPharmacist.sip"
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="add-apt-stra">Nomor STRA</label>
+            <input
+              id="add-apt-stra"
+              type="text"
+              class="form-control"
+              placeholder="STRA: 317129/25/1002"
+              [(ngModel)]="draftPharmacist.stra"
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="add-apt-status">Status</label>
+            <select id="add-apt-status" class="form-control" [(ngModel)]="draftPharmacist.status">
+              <option value="Aktif">Aktif</option>
+              <option value="Non-Aktif">Non-Aktif</option>
+              <option value="Suspended">Suspended</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="add-apt-verif">Verifikasi</label>
+            <select id="add-apt-verif" class="form-control" [(ngModel)]="draftPharmacist.verification">
+              <option value="Terverifikasi">Terverifikasi</option>
+              <option value="Menunggu Verifikasi">Menunggu Verifikasi</option>
+              <option value="Ditolak">Ditolak</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" (click)="closeModal()">Batal</button>
+        <button type="button" class="btn-primary" (click)="savePharmacist()">Simpan Data</button>
+      </div>
+    </div>
+  </div>
+}

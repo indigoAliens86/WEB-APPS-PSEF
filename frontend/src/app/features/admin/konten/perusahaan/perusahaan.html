@@ -1,0 +1,43 @@
+<div class="perusahaan-container">
+  <!-- Sub Navigation Tabs -->
+  <div class="sub-nav-wrapper">
+    <nav class="sub-tabs-nav" aria-label="Menu Perusahaan">
+      <button
+        type="button"
+        class="sub-tab-btn"
+        [class.active]="activeSubTab() === 'about'"
+        (click)="setSubTab('about')"
+      >
+        <i class="ri-building-line"></i>
+        <span>Tentang Perusahaan (About)</span>
+      </button>
+
+      <button
+        type="button"
+        class="sub-tab-btn"
+        [class.active]="activeSubTab() === 'karir'"
+        (click)="setSubTab('karir')"
+      >
+        <i class="ri-briefcase-line"></i>
+        <span>Karir & Rekrutmen</span>
+      </button>
+
+      <button
+        type="button"
+        class="sub-tab-btn"
+        [class.active]="activeSubTab() === 'mitra-apotek'"
+        (click)="setSubTab('mitra-apotek')"
+      >
+        <i class="ri-store-2-line"></i>
+        <span>Kemitraan Apotek PSEF</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Sub Content Area -->
+  <div class="sub-content-area">
+    <app-about *ngIf="activeSubTab() === 'about'"></app-about>
+    <app-karir *ngIf="activeSubTab() === 'karir'"></app-karir>
+    <app-mitra-apotek *ngIf="activeSubTab() === 'mitra-apotek'"></app-mitra-apotek>
+  </div>
+</div>

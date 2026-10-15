@@ -1,0 +1,430 @@
+<div class="banner-form-page">
+  <!-- Top Navigation & Action Header -->
+  <header class="form-header">
+    <div class="header-breadcrumb-area">
+      <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+        <a (click)="goBack()" class="breadcrumb-link"><i class="ri-home-4-line"></i> Konten & Regulasi</a>
+        <i class="ri-arrow-right-s-line separator"></i>
+        <a (click)="goBack()" class="breadcrumb-link">Banner Promosi</a>
+        <i class="ri-arrow-right-s-line separator"></i>
+        <span class="breadcrumb-current">Tambah Banner Baru</span>
+      </nav>
+      <div class="title-with-badge">
+        <div class="header-icon-box">
+          <i class="ri-image-add-line"></i>
+        </div>
+        <div>
+          <h1 class="page-title">Tambah Banner Promo Baru</h1>
+          <p class="page-subtitle">Rancang banner visual hero slider beranda, promo khusus telefarmasi, atau pop-up pengumuman aplikasi PSEF</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button type="button" class="btn btn-outline" (click)="goBack()">
+        <i class="ri-arrow-left-line"></i>
+        <span>Batal</span>
+      </button>
+      <button type="button" class="btn btn-primary" (click)="saveBanner()">
+        <i class="ri-save-line"></i>
+        <span>Simpan & Terbitkan</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Error Alert -->
+  <div *ngIf="errorMessage()" class="alert-error-box">
+    <i class="ri-error-warning-fill"></i>
+    <span>{{ errorMessage() }}</span>
+  </div>
+
+  <!-- Form Grid Container -->
+  <div class="form-grid">
+    <!-- Left Column: Primary Details & Settings -->
+    <div class="form-main-col">
+      <!-- Section 1: Detail Pesan & Navigasi -->
+      <section class="form-card">
+        <div class="card-header">
+          <div class="card-header-icon blue"><i class="ri-file-text-line"></i></div>
+          <div>
+            <h3 class="card-title">Informasi & Pesan Banner</h3>
+            <p class="card-desc">Tentukan teks headline, subjudul edukasi/promo, dan tujuan tautan navigasi aplikasi</p>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="form-group">
+            <label class="form-label" for="ban-judul">
+              Judul Utama Banner (Headline) <span class="text-danger">*</span>
+            </label>
+            <input
+              id="ban-judul"
+              type="text"
+              class="form-control"
+              placeholder="Contoh: Tebus Obat Resep Rantai Dingin & Bebas Ongkir"
+              [(ngModel)]="formData.judul"
+            />
+            <span class="field-hint">Dianjurkan maksimal 60 karakter agar tidak terpotong di perangkat ponsel.</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="ban-sub">Subjudul / Pesan Penjelas Singkat</label>
+            <textarea
+              id="ban-sub"
+              class="form-control"
+              rows="2"
+              placeholder="Contoh: Pengantaran aman sediaan farmasi dengan suhu terjaga 2-8°C se-Jabodetabek"
+              [(ngModel)]="formData.subjudul"
+            ></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group flex-2">
+              <label class="form-label" for="ban-posisi">Posisi Penayangan</label>
+              <select id="ban-posisi" class="form-control" [(ngModel)]="formData.posisi">
+                <option *ngFor="let opt of posisiOptions" [value]="opt">{{ opt }}</option>
+              </select>
+            </div>
+
+            <div class="form-group flex-1">
+              <label class="form-label" for="ban-urutan">Urutan Slot (#)</label>
+              <input
+                id="ban-urutan"
+                type="number"
+                class="form-control"
+                min="1"
+                max="20"
+                [(ngModel)]="formData.urutan"
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label class="form-label" for="ban-target">Target URL / Deep Link <span class="text-danger">*</span></label>
+              <div class="input-with-icon">
+                <i class="ri-link prefix-icon"></i>
+                <input
+                  id="ban-target"
+                  type="text"
+                  class="form-control font-mono has-prefix"
+                  placeholder="/admin/pesanan atau /promo/resep"
+                  [(ngModel)]="formData.targetUrl"
+                />
+              </div>
+            </div>
+
+            <div class="form-group flex-1">
+              <label class="form-label" for="ban-cta">Teks Tombol CTA</label>
+              <div class="input-with-icon">
+                <i class="ri-cursor-line prefix-icon"></i>
+                <input
+                  id="ban-cta"
+                  type="text"
+                  class="form-control has-prefix"
+                  placeholder="Contoh: Tebus Sekarang"
+                  [(ngModel)]="formData.ctaText"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: Periode & Visibilitas -->
+      <section class="form-card">
+        <div class="card-header">
+          <div class="card-header-icon emerald"><i class="ri-calendar-check-line"></i></div>
+          <div>
+            <h3 class="card-title">Jadwal Tayang & Status Visibilitas</h3>
+            <p class="card-desc">Atur masa berlaku penayangan otomatis dan status keterlihatan bagi pasien</p>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label class="form-label" for="ban-mulai">Tanggal Mulai Tayang</label>
+              <input
+                id="ban-mulai"
+                type="text"
+                class="form-control"
+                placeholder="Contoh: 15 Okt 2026"
+                [(ngModel)]="formData.tanggalMulai"
+              />
+            </div>
+
+            <div class="form-group flex-1">
+              <label class="form-label" for="ban-selesai">Tanggal Berakhir</label>
+              <input
+                id="ban-selesai"
+                type="text"
+                class="form-control"
+                placeholder="Contoh: 31 Des 2026"
+                [(ngModel)]="formData.tanggalSelesai"
+              />
+            </div>
+          </div>
+
+          <div class="form-group mt-3">
+            <label class="form-label">Status Visibilitas Banner</label>
+            <div class="status-radio-grid">
+              <label class="status-radio-card" [class.selected]="formData.status === 'Aktif'">
+                <input type="radio" name="banner-status" value="Aktif" [(ngModel)]="formData.status" />
+                <div class="radio-content">
+                  <div class="radio-title-row">
+                    <span class="status-indicator active"></span>
+                    <span class="radio-title">Aktif (Tayang Sekarang)</span>
+                  </div>
+                  <p class="radio-desc">Banner langsung ditampilkan di slot slider aplikasi pengguna</p>
+                </div>
+              </label>
+
+              <label class="status-radio-card" [class.selected]="formData.status === 'Nonaktif'">
+                <input type="radio" name="banner-status" value="Nonaktif" [(ngModel)]="formData.status" />
+                <div class="radio-content">
+                  <div class="radio-title-row">
+                    <span class="status-indicator inactive"></span>
+                    <span class="radio-title">Nonaktif (Arsip / Draf)</span>
+                  </div>
+                  <p class="radio-desc">Banner disimpan sebagai draf internal tanpa tayang ke publik</p>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3: Palet Tema Gradien Background -->
+      <section class="form-card">
+        <div class="card-header">
+          <div class="card-header-icon purple"><i class="ri-palette-line"></i></div>
+          <div>
+            <h3 class="card-title">Pilihan Tema Gradien Latar Belakang</h3>
+            <p class="card-desc">Pilih perpaduan warna gradien profesional yang melengkapi foto visual sediaan</p>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="gradient-presets-grid">
+            <div
+              *ngFor="let g of gradientPresets"
+              class="gradient-preset-item"
+              [class.active]="formData.gradientBg === g.value"
+              (click)="selectGradient(g)"
+            >
+              <div class="gradient-preview-chip" [style.background]="g.value">
+                <i *ngIf="formData.gradientBg === g.value" class="ri-check-line check-badge"></i>
+              </div>
+              <span class="gradient-preset-label">{{ g.name }}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Right Column: Image Upload & Live Realtime Preview Simulator -->
+    <div class="form-side-col">
+      <!-- Upload Card -->
+      <section class="form-card upload-card">
+        <div class="card-header">
+          <div class="card-header-icon blue"><i class="ri-image-line"></i></div>
+          <div>
+            <h3 class="card-title">Berkas Gambar Visual Banner <span class="text-danger">*</span></h3>
+            <p class="card-desc">Unggah foto produk, sediaan farmasi, atau grafis promosi</p>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <!-- Hidden File Input -->
+          <input
+            #fileInput
+            type="file"
+            accept="image/png,image/jpeg,image/webp,image/svg+xml"
+            class="d-none-file-input"
+            (change)="onFileSelected($event)"
+          />
+
+          <!-- Upload Dropzone (When Empty) -->
+          <div
+            *ngIf="!formData.imageUrl"
+            class="upload-dropzone"
+            [class.dragging]="isDragging()"
+            (dragover)="onDragOver($event)"
+            (dragleave)="onDragLeave($event)"
+            (drop)="onFileDropped($event)"
+            (click)="fileInput.click()"
+          >
+            <div class="dropzone-icon">
+              <i class="ri-upload-cloud-2-line"></i>
+            </div>
+            <div class="dropzone-text-group">
+              <p class="dropzone-title">
+                Tarik & lepas gambar banner di sini, atau <span class="browse-link">Pilih Berkas</span>
+              </p>
+              <p class="dropzone-hint">
+                Format: JPG, PNG, WEBP, SVG (Maks. 5MB. Rasio rekomendasi 16:9 / 21:9)
+              </p>
+            </div>
+          </div>
+
+          <!-- Error Alert if validation fails -->
+          <div *ngIf="uploadErrorMessage()" class="upload-error-alert">
+            <i class="ri-error-warning-fill"></i>
+            <span>{{ uploadErrorMessage() }}</span>
+          </div>
+
+          <!-- Live Image Preview Card (When Image Present) -->
+          <div
+            *ngIf="formData.imageUrl"
+            class="banner-upload-preview"
+            [class.dragging]="isDragging()"
+            (dragover)="onDragOver($event)"
+            (dragleave)="onDragLeave($event)"
+            (drop)="onFileDropped($event)"
+          >
+            <div class="preview-thumb-box">
+              <img
+                [src]="formData.imageUrl"
+                alt="Banner Visual"
+                class="preview-img"
+                (error)="onImageError()"
+              />
+              <div class="preview-overlay-actions">
+                <button
+                  type="button"
+                  class="btn-preview-action"
+                  (click)="$event.stopPropagation(); fileInput.click()"
+                  title="Ganti Berkas Gambar"
+                >
+                  <i class="ri-upload-2-line"></i>
+                  <span>Ganti Berkas</span>
+                </button>
+                <button
+                  type="button"
+                  class="btn-preview-action btn-danger-action"
+                  (click)="$event.stopPropagation(); removeImage()"
+                  title="Hapus Gambar"
+                >
+                  <i class="ri-delete-bin-line"></i>
+                  <span>Hapus</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="preview-meta-row">
+              <div class="preview-file-details">
+                <i class="ri-image-2-fill file-icon"></i>
+                <span class="file-name-text">{{ uploadedFileName() || 'Gambar Visual Terpilih' }}</span>
+                <span *ngIf="uploadedFileSize()" class="file-size-tag">{{ uploadedFileSize() }}</span>
+              </div>
+              <div class="preview-right-actions">
+                <button
+                  type="button"
+                  class="btn-change-file-link"
+                  (click)="fileInput.click()"
+                >
+                  <i class="ri-upload-cloud-line"></i> Ganti
+                </button>
+                <button
+                  type="button"
+                  class="btn-remove-file-link"
+                  (click)="removeImage()"
+                >
+                  <i class="ri-delete-bin-line"></i> Hapus
+                </button>
+                <span class="ready-badge"><i class="ri-checkbox-circle-fill"></i> Siap Tayang</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Optional URL Input Fallback -->
+          <div class="url-fallback-wrapper">
+            <button
+              type="button"
+              class="btn-toggle-url"
+              (click)="showUrlInput.set(!showUrlInput())"
+            >
+              <i class="ri-links-line"></i>
+              <span>{{ showUrlInput() ? 'Sembunyikan URL Gambar' : 'Atau gunakan tautan URL gambar eksternal' }}</span>
+              <i [class]="showUrlInput() ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line'"></i>
+            </button>
+
+            <div *ngIf="showUrlInput()" class="url-input-container">
+              <input
+                type="text"
+                class="form-control font-mono"
+                placeholder="https://images.unsplash.com/... atau URL CDN"
+                [(ngModel)]="formData.imageUrl"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Live Simulator Preview Card -->
+      <section class="form-card simulator-card">
+        <div class="card-header">
+          <div class="card-header-icon amber"><i class="ri-smartphone-line"></i></div>
+          <div class="flex-grow-1">
+            <h3 class="card-title">Simulasi Real-time Tampilan</h3>
+            <p class="card-desc">Pratinjau langsung bagaimana pasien melihat banner ini</p>
+          </div>
+          <div class="device-switcher">
+            <button
+              type="button"
+              class="btn-device-switch"
+              [class.active]="previewDevice() === 'desktop'"
+              (click)="previewDevice.set('desktop')"
+              title="Tampilan Desktop / Tablet"
+            >
+              <i class="ri-macbook-line"></i>
+            </button>
+            <button
+              type="button"
+              class="btn-device-switch"
+              [class.active]="previewDevice() === 'mobile'"
+              (click)="previewDevice.set('mobile')"
+              title="Tampilan Mobile Phone"
+            >
+              <i class="ri-smartphone-line"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div
+            class="simulator-frame"
+            [class.mobile-view]="previewDevice() === 'mobile'"
+          >
+            <div class="simulator-banner-content" [style.background]="formData.gradientBg">
+              <div class="simulator-text-zone">
+                <span class="simulator-slot-tag">{{ formData.posisi }} • Slot #{{ formData.urutan }}</span>
+                <h4 class="simulator-title">{{ formData.judul || 'Judul Utama Banner Promosi' }}</h4>
+                <p class="simulator-sub">{{ formData.subjudul || 'Pesan penjelasan promo dan aturan sediaan farmasi PSEF' }}</p>
+                <div class="simulator-btn-row">
+                  <span class="simulator-cta-btn">
+                    <span>{{ formData.ctaText || 'Tebus Sekarang' }}</span>
+                    <i class="ri-arrow-right-line"></i>
+                  </span>
+                  <span class="simulator-target-pill font-mono"><i class="ri-link"></i> {{ formData.targetUrl }}</span>
+                </div>
+              </div>
+              <img
+                *ngIf="formData.imageUrl"
+                [src]="formData.imageUrl"
+                alt="Simulasi"
+                class="simulator-bg-img"
+              />
+            </div>
+          </div>
+
+          <div class="simulator-tip">
+            <i class="ri-information-line"></i>
+            <span>Grafis latar kanan memudar secara transparan (*gradient masking*) agar teks promosi tetap terbaca jelas dengan rasio kontras tinggi.</span>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

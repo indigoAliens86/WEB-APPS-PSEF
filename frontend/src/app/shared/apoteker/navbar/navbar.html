@@ -1,0 +1,200 @@
+<header class="navbar">
+    <div class="navbar-left">
+        <!-- Sidebar Toggle -->
+        <button class="icon-button menu-toggle" type="button" aria-label="Buka atau tutup sidebar apoteker"
+            (click)="sidebarToggle.emit()">
+            <i class="ri-menu-2-line" aria-hidden="true"></i>
+        </button>
+
+        <!-- Pharmacist Duty Status Bar -->
+        <div class="practitioner-status-bar">
+            <button
+                type="button"
+                class="status-toggle-btn"
+                [class.is-active]="isDutyActive()"
+                [class.is-idle]="!isDutyActive()"
+                (click)="toggleDutyStatus()"
+                [title]="isDutyActive() ? 'Klik untuk ubah status ke Shift Istirahat' : 'Klik untuk Aktif Bertugas'"
+            >
+                <span class="status-pulse-dot" aria-hidden="true"></span>
+                <span class="status-label font-semibold">
+                    {{ isDutyActive() ? 'Apoteker Bertugas • Siap Skrining & Konseling' : 'Shift Istirahat • Jeda Praktik' }}
+                </span>
+                <i class="ri-arrow-down-s-line status-chevron" aria-hidden="true"></i>
+            </button>
+
+            <div class="compliance-chip">
+                <i class="ri-hospital-line text-emerald" aria-hidden="true"></i>
+                <span class="chip-text">Apotek Kimia Sehat PSEF</span>
+            </div>
+
+            <div class="sipa-chip">
+                <i class="ri-shield-check-fill text-teal" aria-hidden="true"></i>
+                <span class="chip-text font-mono">SIPA: 35.79/25/1235</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="navbar-actions">
+        <!-- Theme Mode Switch -->
+        <button class="icon-button" type="button"
+            [attr.aria-label]="isDarkTheme() ? 'Gunakan tema terang' : 'Gunakan tema gelap'"
+            (click)="toggleTheme()"
+            [title]="isDarkTheme() ? 'Beralih ke Tema Terang' : 'Beralih ke Tema Gelap'">
+            <i [class]="isDarkTheme() ? 'ri-sun-line text-amber' : 'ri-moon-line'" aria-hidden="true"></i>
+        </button>
+
+        <!-- Skrining Resep Dropdown -->
+        <div class="action-dropdown">
+            <button class="icon-button resep-btn" type="button" aria-label="Notifikasi Resep Masuk"
+                aria-haspopup="true" [attr.aria-expanded]="activeDropdown() === 'resep'"
+                (click)="toggleDropdown('resep')"
+                title="Resep Menunggu Skrining APJ">
+                <i class="ri-file-list-3-line" aria-hidden="true"></i>
+                <span *ngIf="pendingPrescriptions().length > 0" class="notification-badge" aria-hidden="true">
+                    {{ pendingPrescriptions().length }}
+                </span>
+            </button>
+
+            <section class="action-menu resep-menu" [attr.hidden]="activeDropdown() !== 'resep' ? '' : null"
+                aria-label="Daftar resep menunggu skrining">
+                <div class="action-menu-heading">
+                    <div class="heading-title-group">
+                        <i class="ri-medicine-bottle-line text-emerald"></i>
+                        <strong>Resep Perlu Skrining APJ</strong>
+                    </div>
+                    <span class="menu-badge badge-amber">{{ pendingPrescriptions().length }} Antrean</span>
+                </div>
+
+                <div class="resep-items-scroll">
+                    <a *ngFor="let rx of pendingPrescriptions()" routerLink="/apoteker/resep" (click)="closeDropdown()" class="resep-item-card">
+                        <div class="resep-card-top">
+                            <span class="resep-id font-mono">{{ rx.id }}</span>
+                            <span class="resep-time"><i class="ri-time-line"></i> {{ rx.waktu }}</span>
+                        </div>
+                        <div class="resep-patient font-semibold">{{ rx.pasien }}</div>
+                        <div class="resep-drugs">{{ rx.itemObat }}</div>
+                        <div class="resep-tag-row">
+                            <span class="rx-tag" [class.tag-urgent]="rx.isUrgent">{{ rx.status }}</span>
+                            <span *ngIf="rx.isUrgent" class="rx-urgent"><i class="ri-alarm-warning-line"></i> CITO / Segera</span>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="action-menu-footer">
+                    <a routerLink="/apoteker/resep" (click)="closeDropdown()" class="footer-link">
+                        <span>Buka Lembar Kerja Skrining Resep</span>
+                        <i class="ri-arrow-right-line"></i>
+                    </a>
+                </div>
+            </section>
+        </div>
+
+        <!-- Telefarmasi & PIO Dropdown -->
+        <div class="action-dropdown">
+            <button class="icon-button chat-btn" type="button" aria-label="Konseling Telefarmasi & Chat Pasien"
+                aria-haspopup="true" [attr.aria-expanded]="activeDropdown() === 'messages'"
+                (click)="toggleDropdown('messages')"
+                title="Konseling Telefarmasi (PIO)">
+                <i class="ri-customer-service-2-line" aria-hidden="true"></i>
+                <span *ngIf="incomingMessages().length > 0" class="notification-dot" aria-hidden="true"></span>
+            </button>
+
+            <section class="action-menu message-menu" [attr.hidden]="activeDropdown() !== 'messages' ? '' : null"
+                aria-label="Konseling pasien terbaru">
+                <div class="action-menu-heading">
+                    <div class="heading-title-group">
+                        <i class="ri-chat-voice-line text-teal"></i>
+                        <strong>Konseling Telefarmasi (PIO)</strong>
+                    </div>
+                    <span class="menu-badge badge-teal">{{ incomingMessages().length }} Pesan</span>
+                </div>
+
+                <div class="message-items-scroll">
+                    <a *ngFor="let msg of incomingMessages()" routerLink="/apoteker/telefarmasi" (click)="closeDropdown()" class="message-item-card">
+                        <div class="msg-avatar-col">
+                            <div class="msg-avatar"><i class="ri-user-line"></i></div>
+                        </div>
+                        <div class="msg-content-col">
+                            <div class="msg-header">
+                                <span class="patient-name font-semibold">{{ msg.namaPasien }}</span>
+                                <span class="msg-time">{{ msg.waktu }}</span>
+                            </div>
+                            <p class="msg-text">{{ msg.pertanyaan }}</p>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="action-menu-footer">
+                    <a routerLink="/apoteker/telefarmasi" (click)="closeDropdown()" class="footer-link">
+                        <span>Buka Ruang Konseling Telefarmasi</span>
+                        <i class="ri-arrow-right-line"></i>
+                    </a>
+                </div>
+            </section>
+        </div>
+
+        <!-- Apoteker Profile -->
+        <div class="profile">
+            <button class="profile-toggle" type="button" aria-haspopup="true"
+                [attr.aria-expanded]="activeDropdown() === 'profile'" (click)="toggleDropdown('profile')"
+                title="Menu Profil Apoteker">
+                <span class="avatar font-bold" aria-hidden="true">FP</span>
+                <span class="profile-details">
+                    <span class="profile-name">apt. Farhan Pratama</span>
+                    <span class="profile-role">Apoteker Penanggung Jawab</span>
+                </span>
+                <i class="ri-arrow-down-s-line profile-chevron" aria-hidden="true"></i>
+            </button>
+
+            <div class="profile-menu" [attr.hidden]="activeDropdown() !== 'profile' ? '' : null">
+                <div class="profile-menu-header">
+                    <div class="pm-avatar font-bold">FP</div>
+                    <div class="pm-info">
+                        <span class="pm-name">apt. Farhan Pratama, S.Farm</span>
+                        <span class="pm-sub font-mono">SIPA: 35.79/25/1235</span>
+                        <span class="pm-badge">APJ Aktif</span>
+                    </div>
+                </div>
+
+                <div class="menu-divider"></div>
+
+                <a routerLink="/apoteker/profil" (click)="closeDropdown()">
+                    <i class="ri-shield-user-line"></i>
+                    <span>Legalitas SIPA & STRA</span>
+                </a>
+                <a routerLink="/apoteker/dashboard" (click)="closeDropdown()">
+                    <i class="ri-dashboard-3-line"></i>
+                    <span>Dashboard Apoteker</span>
+                </a>
+                <a routerLink="/apoteker/laporan" (click)="closeDropdown()">
+                    <i class="ri-file-shield-line"></i>
+                    <span>Laporan SIPNAP</span>
+                </a>
+                <a routerLink="/apoteker/pengaturan" (click)="closeDropdown()">
+                    <i class="ri-settings-3-line"></i>
+                    <span>Pengaturan Akun</span>
+                </a>
+
+                <div class="menu-divider"></div>
+
+                <div class="menu-section-label">Akses Portal Lain</div>
+                <a routerLink="/fasilitas/dashboard" (click)="closeDropdown()" class="switch-link">
+                    <i class="ri-store-2-line"></i>
+                    <span>Portal Fasilitas Apotek</span>
+                </a>
+                <a routerLink="/admin/dashboard" (click)="closeDropdown()" class="switch-link">
+                    <i class="ri-admin-line"></i>
+                    <span>Portal PSEF Admin</span>
+                </a>
+
+                <div class="menu-divider"></div>
+
+                <button type="button" class="logout-button" (click)="closeDropdown()">
+                    <i class="ri-logout-box-r-line"></i>
+                    <span>Keluar / Selesai Shift</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</header>

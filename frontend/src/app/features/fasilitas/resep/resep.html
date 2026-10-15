@@ -1,0 +1,360 @@
+<div class="resep-container">
+  <!-- Child Router Outlet for Detail View -->
+  <router-outlet (activate)="showingDetails.set(true)" (deactivate)="showingDetails.set(false)"></router-outlet>
+
+  <!-- Main Resep List (hidden when viewing child detail-resep) -->
+  @if (!showingDetails()) {
+    <div class="resep-main-view">
+      <!-- Read-Only Notice Banner -->
+      <div class="readonly-facility-alert" role="status">
+        <div class="alert-icon-box">
+          <i class="ri-shield-check-line" aria-hidden="true"></i>
+        </div>
+        <div class="alert-text">
+          <div class="alert-title-row">
+            <strong>Hak Akses Fasilitas: Tinjauan & Telaah Kefarmasian (Read-Only)</strong>
+            <span class="badge-lock"><i class="ri-lock-line" aria-hidden="true"></i> Read Only</span>
+          </div>
+          <p class="alert-desc">
+            Sesuai regulasi Standar Pelayanan Kefarmasian (Permenkes No. 73/2016) dan PSEF, resep dokter bersifat <em>immutable</em> (tidak dapat diubah atau dibuat baru oleh pihak apotek). Fasilitas berwenang melakukan 3 tahapan telaah: <strong>Kajian Administratif</strong>, <strong>Kajian Farmasetis</strong>, dan <strong>Kajian Klinis</strong> sebelum obat disiapkan (dispensing).
+          </p>
+        </div>
+      </div>
+
+      <!-- Header Section -->
+      <header class="page-header">
+        <div class="header-left">
+          <div class="header-icon-box">
+            <i class="ri-medicine-bottle-line" aria-hidden="true"></i>
+          </div>
+          <div>
+            <div class="title-with-badge">
+              <h1 class="page-title">Telaah & Verifikasi Resep (Skrining Resep)</h1>
+              <span class="status-pill status-readonly">
+                <i class="ri-eye-line" aria-hidden="true"></i> Fasilitas Read Only
+              </span>
+            </div>
+            <p class="page-subtitle">
+              Pemeriksaan resep elektronik dokter, verifikasi keabsahan sediaan, dan dokumentasi kajian APJ di <strong>{{ resepService.currentFacilityName }}</strong> ({{ resepService.currentFacilitySia }})
+            </p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button type="button" class="btn btn-outline" (click)="exportData()" title="Ekspor data rekapitulasi telaah resep ke CSV">
+            <i class="ri-download-2-line" aria-hidden="true"></i>
+            <span>Ekspor Rekap (CSV)</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- 5 KPI Summary Cards -->
+      <section class="kpi-grid" aria-label="Statistik Telaah Resep">
+        @for (kpi of resepService.kpis(); track kpi.title) {
+          <div class="kpi-card" [ngClass]="kpi.colorClass">
+            <div class="kpi-header">
+              <span class="kpi-title">{{ kpi.title }}</span>
+              <div class="kpi-icon-wrapper">
+                <i [class]="kpi.icon" aria-hidden="true"></i>
+              </div>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-value">{{ kpi.value }}</span>
+              @if (kpi.percentage) {
+                <span class="kpi-badge" [class.badge-warning]="kpi.percentage === 'Prioritas'">
+                  {{ kpi.percentage }}
+                </span>
+              }
+            </div>
+            <p class="kpi-period">{{ kpi.period }}</p>
+          </div>
+        }
+      </section>
+
+      <!-- Main Navigation Tabs -->
+      <div class="main-tabs-wrapper">
+        <nav class="main-tabs-nav" aria-label="Kategori Resep">
+          @for (tab of mainTabs; track tab) {
+            <button
+              type="button"
+              class="main-tab-btn"
+              [class.active]="activeMainTab() === tab"
+              (click)="setMainTab(tab)"
+            >
+              <span class="tab-label">{{ tab }}</span>
+              @if (tab === 'Semua Resep') {
+                <span class="tab-counter">{{ resepService.resepList().length }}</span>
+              }
+              @if (tab === 'Perlu Telaah APJ') {
+                <span class="tab-counter counter-urgent">{{ perluTelaahCount() }}</span>
+              }
+              @if (tab === 'Lolos Skrining') {
+                <span class="tab-counter counter-success">{{ lolosCount() }}</span>
+              }
+              @if (tab === 'Resep Racikan') {
+                <span class="tab-counter">{{ racikanCount() }}</span>
+              }
+              @if (tab === 'Selesai Ditebus') {
+                <span class="tab-counter">{{ selesaiCount() }}</span>
+              }
+            </button>
+          }
+        </nav>
+      </div>
+
+      <!-- Toolbar Filters -->
+      <section class="toolbar-card">
+        <div class="toolbar-search">
+          <i class="ri-search-line search-icon" aria-hidden="true"></i>
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Cari ID resep (RX-...), nama pasien, dokter, diagnosis, atau nama obat..."
+            [ngModel]="searchQuery()"
+            (ngModelChange)="searchQuery.set($event)"
+            aria-label="Cari resep"
+          />
+          @if (searchQuery()) {
+            <button
+              type="button"
+              class="clear-search-btn"
+              (click)="searchQuery.set('')"
+              aria-label="Hapus pencarian"
+            >
+              <i class="ri-close-line" aria-hidden="true"></i>
+            </button>
+          }
+        </div>
+
+        <div class="toolbar-filters">
+          <div class="filter-group">
+            <label class="filter-label" for="filter-tipe">Tipe Resep:</label>
+            <select
+              id="filter-tipe"
+              class="filter-select"
+              [ngModel]="selectedTipe()"
+              (ngModelChange)="selectedTipe.set($event)"
+            >
+              <option value="Semua">Semua Tipe</option>
+              <option value="Reguler">Reguler</option>
+              <option value="Racikan">Racikan</option>
+              <option value="CITO / Segera">CITO / Segera</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label" for="filter-kategori">Kategori:</label>
+            <select
+              id="filter-kategori"
+              class="filter-select"
+              [ngModel]="selectedKategori()"
+              (ngModelChange)="selectedKategori.set($event)"
+            >
+              <option value="Semua">Semua Kategori</option>
+              <option value="Telemedisin">Telemedisin</option>
+              <option value="Rawat Jalan">Rawat Jalan</option>
+              <option value="Kronis / Rujuk Balik">Kronis / Rujuk Balik</option>
+            </select>
+          </div>
+
+          @if (searchQuery() || selectedTipe() !== 'Semua' || selectedKategori() !== 'Semua' || activeMainTab() !== 'Semua Resep') {
+            <button type="button" class="btn btn-ghost" (click)="resetFilters()">
+              <i class="ri-refresh-line" aria-hidden="true"></i>
+              <span>Reset Filter</span>
+            </button>
+          }
+        </div>
+      </section>
+
+      <!-- Table View -->
+      <div class="table-card">
+        <div class="table-responsive">
+          <table class="data-table" aria-label="Tabel Resep Masuk dan Status Telaah">
+            <thead>
+              <tr>
+                <th scope="col" class="th-id">No. Resep & Waktu</th>
+                <th scope="col">Pasien</th>
+                <th scope="col">Dokter Penulis</th>
+                <th scope="col">Ringkasan Obat (R/)</th>
+                <th scope="col" class="th-skrining">Skrining 3 Tahap</th>
+                <th scope="col" class="th-status">Status Resep</th>
+                <th scope="col" class="th-action text-right">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of filteredResepList(); track item.id) {
+                <tr class="table-row-hover" [class.row-urgent]="item.isUrgent">
+                  <!-- No Resep & Waktu -->
+                  <td class="td-id">
+                    <div class="id-wrapper">
+                      <div class="resep-id-row">
+                        <span class="font-mono resep-code">{{ item.id }}</span>
+                        @if (item.isUrgent) {
+                          <span class="badge-cito" title="Resep CITO / Segera">
+                            <i class="ri-alarm-warning-fill" aria-hidden="true"></i> CITO
+                          </span>
+                        }
+                      </div>
+                      <span class="meta-time">
+                        <i class="ri-time-line" aria-hidden="true"></i> {{ item.tanggal }}
+                      </span>
+                      <span class="type-pill" [class.type-racikan]="item.tipeResep === 'Racikan'">
+                        {{ item.tipeResep }}
+                      </span>
+                    </div>
+                  </td>
+
+                  <!-- Pasien -->
+                  <td>
+                    <div class="patient-cell">
+                      <span class="patient-name">{{ item.pasien.nama }}</span>
+                      <div class="patient-meta">
+                        <span>{{ item.pasien.usia }}</span>
+                        <span class="dot-separator">•</span>
+                        <span>{{ item.pasien.gender }}</span>
+                        <span class="dot-separator">•</span>
+                        <span class="font-mono">{{ item.pasien.noRm }}</span>
+                      </div>
+                      <span class="patient-diag" title="{{ item.pasien.diagnosis }}">
+                        <i class="ri-stethoscope-line" aria-hidden="true"></i> {{ item.pasien.diagnosis }}
+                      </span>
+                    </div>
+                  </td>
+
+                  <!-- Dokter Penulis -->
+                  <td>
+                    <div class="doctor-cell">
+                      <span class="doctor-name">{{ item.dokter.nama }}</span>
+                      <span class="doctor-spec">{{ item.dokter.spesialisasi }}</span>
+                      <span class="doctor-sip font-mono">SIP: {{ item.dokter.sip }}</span>
+                      <span class="doctor-origin">{{ item.dokter.faskesAsal }}</span>
+                    </div>
+                  </td>
+
+                  <!-- Ringkasan Obat -->
+                  <td>
+                    <div class="drugs-cell">
+                      <div class="drugs-count-badge">
+                        <i class="ri-capsule-line" aria-hidden="true"></i> {{ item.obatList.length }} Item Obat
+                      </div>
+                      <ul class="drugs-brief-list">
+                        @for (med of item.obatList; track med.no) {
+                          <li class="drug-brief-item">
+                            <strong class="r-symbol">{{ med.rCode }}</strong>
+                            <span class="med-name">{{ med.namaObat }}</span>
+                            <span class="med-qty">({{ med.jumlah }})</span>
+                          </li>
+                        }
+                      </ul>
+                      <span class="total-price-tag">
+                        Estimasi: <strong>{{ formatRupiah(item.totalBiayaObat + item.jasaPelayananResep) }}</strong>
+                      </span>
+                    </div>
+                  </td>
+
+                  <!-- Hasil Skrining 3 Tahap -->
+                  <td class="td-skrining">
+                    <div class="skrining-summary-box">
+                      <!-- 1. Administratif -->
+                      <div class="skrining-row-item">
+                        <span class="step-num">1</span>
+                        <span class="step-label">Administratif:</span>
+                        <span class="skrining-badge" [class.badge-pass]="item.skrining.kajianAdministratif.status === 'Memenuhi Syarat'">
+                          <i class="ri-checkbox-circle-fill" aria-hidden="true"></i> {{ item.skrining.kajianAdministratif.status }}
+                        </span>
+                      </div>
+
+                      <!-- 2. Farmasetis -->
+                      <div class="skrining-row-item">
+                        <span class="step-num">2</span>
+                        <span class="step-label">Farmasetis:</span>
+                        <span class="skrining-badge" [class.badge-pass]="item.skrining.kajianFarmasetis.status === 'Memenuhi Syarat'">
+                          <i class="ri-checkbox-circle-fill" aria-hidden="true"></i> {{ item.skrining.kajianFarmasetis.status }}
+                        </span>
+                      </div>
+
+                      <!-- 3. Klinis -->
+                      <div class="skrining-row-item">
+                        <span class="step-num">3</span>
+                        <span class="step-label">Klinis:</span>
+                        @if (item.skrining.kajianKlinis.status === 'Lolos') {
+                          <span class="skrining-badge badge-pass">
+                            <i class="ri-checkbox-circle-fill" aria-hidden="true"></i> Lolos
+                          </span>
+                        } @else if (item.skrining.kajianKlinis.status === 'Ada Catatan Klinis') {
+                          <span class="skrining-badge badge-attention">
+                            <i class="ri-alert-fill" aria-hidden="true"></i> Ada Catatan
+                          </span>
+                        } @else {
+                          <span class="skrining-badge badge-confirm">
+                            <i class="ri-information-fill" aria-hidden="true"></i> {{ item.skrining.kajianKlinis.status }}
+                          </span>
+                        }
+                      </div>
+                    </div>
+                  </td>
+
+                  <!-- Status Resep -->
+                  <td class="td-status">
+                    <span
+                      class="status-badge"
+                      [class.status-menunggu]="item.status === 'Menunggu Telaah'"
+                      [class.status-lolos]="item.status === 'Lolos Skrining'"
+                      [class.status-konfirmasi]="item.status === 'Perlu Konfirmasi'"
+                      [class.status-selesai]="item.status === 'Selesai Ditebus'"
+                      [class.status-ditolak]="item.status === 'Ditolak'"
+                    >
+                      <i
+                        [class]="
+                          item.status === 'Menunggu Telaah'
+                            ? 'ri-time-line'
+                            : item.status === 'Lolos Skrining'
+                            ? 'ri-checkbox-circle-line'
+                            : item.status === 'Perlu Konfirmasi'
+                            ? 'ri-alert-line'
+                            : 'ri-check-double-line'
+                        "
+                        aria-hidden="true"
+                      ></i>
+                      {{ item.status }}
+                    </span>
+                  </td>
+
+                  <!-- Aksi -->
+                  <td class="td-action text-right">
+                    <button
+                      type="button"
+                      class="btn btn-action-detail"
+                      (click)="viewDetail(item)"
+                      title="Lihat lembar telaah & kajian resep lengkap"
+                    >
+                      <i class="ri-file-search-line" aria-hidden="true"></i>
+                      <span>Kajian Resep</span>
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="7" class="empty-table-cell">
+                    <div class="empty-state">
+                      <div class="empty-icon-box">
+                        <i class="ri-file-forbid-line" aria-hidden="true"></i>
+                      </div>
+                      <h2 class="empty-title">Tidak ada resep yang sesuai</h2>
+                      <p class="empty-desc">
+                        Tidak ditemukan data resep dengan kriteria filter pencarian yang Anda pilih. Silakan sesuaikan kata kunci atau reset filter.
+                      </p>
+                      <button type="button" class="btn btn-outline" (click)="resetFilters()">
+                        <i class="ri-refresh-line" aria-hidden="true"></i>
+                        <span>Reset Filter</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  }
+</div>

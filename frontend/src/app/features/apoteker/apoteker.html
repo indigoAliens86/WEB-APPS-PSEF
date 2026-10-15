@@ -1,0 +1,16 @@
+<div class="apoteker-layout" [class.sidebar-collapsed]="isSidebarCollapsed()">
+    <button class="sidebar-backdrop" type="button" aria-label="Tutup sidebar apoteker"
+        (click)="toggleSidebar()" [attr.aria-hidden]="!isSidebarCollapsed()"></button>
+
+    <app-sidebar class="apoteker-sidebar" [class.sidebar-compact]="isSidebarCollapsed()"></app-sidebar>
+
+    <div class="apoteker-content">
+        <app-navbar class="apoteker-navbar" (sidebarToggle)="toggleSidebar()"></app-navbar>
+
+        <div class="apoteker-scroll-area">
+            <main class="apoteker-main">
+                <router-outlet></router-outlet>
+            </main>
+        </div>
+    </div>
+</div>

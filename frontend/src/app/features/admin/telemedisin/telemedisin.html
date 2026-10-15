@@ -1,0 +1,248 @@
+@if (!showingDetails()) {
+<div class="telemedisin-page-container">
+  <!-- Top 5 KPI Summary Cards -->
+  <section class="kpi-cards-grid" aria-label="Ringkasan Statistik Telemedicine">
+    @for (card of kpiCards; track card.title) {
+      <article class="kpi-card">
+        <div class="kpi-icon-box" [ngClass]="'kpi-icon-' + card.colorClass">
+          <i [class]="card.icon" aria-hidden="true"></i>
+        </div>
+        <div class="kpi-content">
+          <span class="kpi-label">{{ card.title }}</span>
+          <strong class="kpi-number">{{ card.value }}</strong>
+          <div class="kpi-trend-row">
+            <span class="trend-pill" [ngClass]="'trend-' + card.colorClass">
+              <i class="ri-arrow-up-line" aria-hidden="true"></i> {{ card.percentage }}
+            </span>
+            <span class="trend-sub">{{ card.period }}</span>
+          </div>
+        </div>
+      </article>
+    }
+  </section>
+
+  <!-- Main Directory Card: Daftar Telemedicine -->
+  <section class="telemedisin-main-card" aria-labelledby="telemedisin-heading">
+    <header class="card-top-header">
+      <h1 id="telemedisin-heading" class="card-main-title">Daftar Telemedicine</h1>
+    </header>
+
+    <!-- Sub-Nav Category Tabs & Search/Filter Controls -->
+    <div class="table-toolbar-row">
+      <!-- Category Tabs on the Left -->
+      <nav class="category-tabs-nav" aria-label="Filter Kategori Telemedicine">
+        @for (tab of categoryTabs; track tab) {
+          <button
+            type="button"
+            class="category-tab-btn"
+            [class.active]="activeCategory() === tab"
+            (click)="selectCategory(tab)"
+          >
+            {{ tab }}
+          </button>
+        }
+      </nav>
+
+      <!-- Search, Status Filter, & Export on the Right -->
+      <div class="toolbar-actions-group">
+        <div class="search-box-wrap">
+          <i class="ri-search-line search-icon" aria-hidden="true"></i>
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Cari Pasien..."
+            [value]="searchQuery()"
+            (input)="searchQuery.set($any($event.target).value)"
+            aria-label="Cari Pasien atau Dokter"
+          />
+        </div>
+
+        <div class="select-box-wrap">
+          <select
+            class="filter-select"
+            [value]="filterStatus()"
+            (change)="filterStatus.set($any($event.target).value)"
+            aria-label="Filter berdasarkan Status"
+          >
+            <option value="Pilih Status">Pilih Status</option>
+            <option value="Selesai">Selesai</option>
+            <option value="Menunggu">Menunggu</option>
+            <option value="Berlangsung">Berlangsung</option>
+            <option value="Dibatalkan">Dibatalkan</option>
+          </select>
+          <i class="ri-arrow-down-s-line select-arrow" aria-hidden="true"></i>
+        </div>
+
+        <button
+          type="button"
+          class="btn-export-square"
+          (click)="exportData()"
+          aria-label="Ekspor Data Telemedicine"
+          title="Ekspor Data"
+        >
+          <i class="ri-file-excel-2-line" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Telemedicine Data Table -->
+    <div class="table-responsive-wrapper">
+      <table class="telemed-data-table" aria-label="Tabel Konsultasi Telemedicine">
+        <thead>
+          <tr>
+            <th class="col-no">No</th>
+            <th class="col-id">ID Konsultasi</th>
+            <th class="col-patient">Pasien</th>
+            <th class="col-doctor">Dokter</th>
+            <th class="col-spec">Spesialisasi</th>
+            <th class="col-date">Tanggal & Waktu</th>
+            <th class="col-duration">Durasi</th>
+            <th class="col-status">Status</th>
+            <th class="col-action text-center">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of filteredConsultations(); track item.cleanId; let idx = $index) {
+            <tr class="table-data-row">
+              <td class="col-no text-muted">{{ idx + 1 }}</td>
+
+              <td class="col-id">
+                <div class="id-cell-group">
+                  <span class="trx-id-primary">{{ item.id }}</span>
+                  <span class="trx-id-sub">{{ item.tipe }}</span>
+                </div>
+              </td>
+
+              <td class="col-patient">
+                <div class="avatar-cell-group">
+                  <div class="avatar-thumb-wrapper">
+                    <img [src]="item.pasien.avatar" [alt]="item.pasien.nama" class="avatar-thumb-img" />
+                  </div>
+                  <div class="cell-meta-info">
+                    <strong class="patient-name-text">{{ item.pasien.nama }}</strong>
+                    <span class="cell-sub-text">{{ item.pasien.gender }}</span>
+                  </div>
+                </div>
+              </td>
+
+              <td class="col-doctor">
+                <div class="avatar-cell-group">
+                  <div class="avatar-thumb-wrapper doc-avatar">
+                    <img [src]="item.dokter.avatar" [alt]="item.dokter.nama" class="avatar-thumb-img" />
+                  </div>
+                  <div class="cell-meta-info">
+                    <strong class="doctor-name-text">{{ item.dokter.nama }}</strong>
+                    <span class="cell-sub-text">{{ item.dokter.sip }}</span>
+                  </div>
+                </div>
+              </td>
+
+              <td class="col-spec">
+                <span class="spec-text">{{ item.spesialisasi }}</span>
+              </td>
+
+              <td class="col-date">
+                <div class="datetime-cell-group">
+                  <span class="date-text">{{ item.tanggal }}</span>
+                  <span class="time-text">{{ item.waktu }}</span>
+                </div>
+              </td>
+
+              <td class="col-duration">
+                <span class="duration-text">{{ item.durasi }}</span>
+              </td>
+
+              <td class="col-status">
+                <span
+                  class="status-pill"
+                  [ngClass]="{
+                    'status-selesai': item.status === 'Selesai',
+                    'status-menunggu': item.status === 'Menunggu',
+                    'status-berlangsung': item.status === 'Berlangsung',
+                    'status-dibatalkan': item.status === 'Dibatalkan'
+                  }"
+                >
+                  {{ item.status }}
+                </span>
+              </td>
+
+              <td class="col-action text-center">
+                <button
+                  type="button"
+                  class="btn-action-eye"
+                  (click)="goToDetail(item)"
+                  [attr.aria-label]="'Lihat detail konsultasi ' + item.cleanId"
+                  title="Lihat Detail"
+                >
+                  <i class="ri-eye-line" aria-hidden="true"></i>
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="9" class="empty-table-cell">
+                <div class="empty-state-box">
+                  <i class="ri-inbox-line empty-icon" aria-hidden="true"></i>
+                  <p class="empty-title">Tidak ada data konsultasi ditemukan</p>
+                  <span class="empty-sub">Coba sesuaikan kata kunci pencarian atau filter status Anda.</span>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Table Footer: Pagination & Page Size -->
+    <footer class="table-pagination-footer">
+      <div class="pagination-summary">
+        Menampilkan 1-{{ filteredConsultations().length }} dari {{ totalItems() | number }} pasien
+      </div>
+
+      <div class="pagination-controls-group">
+        <button
+          type="button"
+          class="page-nav-btn"
+          [disabled]="page() <= 1"
+          (click)="page.set(page() - 1)"
+          aria-label="Halaman sebelumnya"
+        >
+          <i class="ri-arrow-left-s-line" aria-hidden="true"></i>
+        </button>
+
+        <button type="button" class="page-num-btn active" aria-current="page">1</button>
+        <button type="button" class="page-num-btn">2</button>
+        <button type="button" class="page-num-btn">3</button>
+        <button type="button" class="page-num-btn">4</button>
+        <span class="pagination-ellipsis">...</span>
+        <button type="button" class="page-num-btn">1.246</button>
+
+        <button
+          type="button"
+          class="page-nav-btn"
+          (click)="page.set(page() + 1)"
+          aria-label="Halaman berikutnya"
+        >
+          <i class="ri-arrow-right-s-line" aria-hidden="true"></i>
+        </button>
+
+        <div class="page-size-selector">
+          <select
+            class="select-per-page"
+            [value]="pageSize()"
+            (change)="pageSize.set(+$any($event.target).value)"
+            aria-label="Jumlah item per halaman"
+          >
+            <option value="10">10/halaman</option>
+            <option value="25">25/halaman</option>
+            <option value="50">50/halaman</option>
+          </select>
+          <i class="ri-arrow-down-s-line size-arrow" aria-hidden="true"></i>
+        </div>
+      </div>
+    </footer>
+  </section>
+</div>
+}
+
+<router-outlet (activate)="showingDetails.set(true)" (deactivate)="showingDetails.set(false)"></router-outlet>

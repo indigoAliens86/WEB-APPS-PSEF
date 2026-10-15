@@ -1,0 +1,184 @@
+<section class="directory-page" [class.directory-page-with-stats]="config().stats?.length">
+  @if (config().stats?.length) {
+    <section class="directory-stats" aria-label="Ringkasan dokter">
+      @for (stat of config().stats; track stat.label) {
+        <article class="directory-stat-card">
+          <span [class]="'directory-stat-icon ' + stat.color"><i [class]="stat.icon" aria-hidden="true"></i></span>
+          <div><span>{{ stat.label }}</span><strong>{{ statValue(stat) }}</strong><small><i class="ri-arrow-up-line" aria-hidden="true"></i> 12.5% <span>dari minggu lalu</span></small></div>
+        </article>
+      }
+    </section>
+  }
+  @if (!config().stats?.length) {
+    <header class="directory-heading">
+      <div><h1>{{ config().title }}</h1><p>{{ config().description }}</p></div>
+      <button class="directory-button primary" type="button" (click)="openAdd()">
+        <i class="ri-add-line" aria-hidden="true"></i> Tambah {{ config().entityLabel }}
+      </button>
+    </header>
+  }
+
+  <section class="directory-card" [attr.aria-label]="'Daftar ' + config().title">
+    @if (config().stats?.length) {
+      <header class="directory-card-heading">
+        <h2>{{ config().title }}</h2>
+        <button class="directory-button primary" type="button" (click)="openAdd()">
+          <i class="ri-add-line" aria-hidden="true"></i> Tambah {{ config().entityLabel }}
+        </button>
+      </header>
+    }
+    <div class="directory-toolbar">
+      <label class="directory-search">
+        <i class="ri-search-line" aria-hidden="true"></i>
+        <input type="search" [placeholder]="'Cari ' + config().entityLabel.toLocaleLowerCase() + '...'"
+          [attr.aria-label]="'Cari ' + config().entityLabel.toLocaleLowerCase()"
+          [ngModel]="search()" (ngModelChange)="onSearchChange($event)" [ngModelOptions]="{standalone: true}">
+      </label>
+      @for (filter of config().filters; track filter.key) {
+        <label class="directory-filter" [class.compact]="config().stats?.length">
+          @if (!config().stats?.length) { <span>{{ filter.label }}</span> }
+          <select [attr.aria-label]="'Filter ' + filter.label"
+            [ngModel]="filters()[filter.key] ?? ''" (ngModelChange)="setFilter(filter.key, $event)"
+            [ngModelOptions]="{standalone: true}">
+            <option value="">{{ config().stats?.length ? 'Pilih ' + filter.label : 'Semua' }}</option>
+            @for (option of filter.options; track option.value) {
+              <option [value]="option.value">{{ option.label }}</option>
+            }
+          </select>
+        </label>
+      }
+      @if (config().stats?.length) {
+        <div class="directory-toolbar-actions">
+          <button type="button" class="directory-icon-button" aria-label="Ekspor daftar dokter" title="Ekspor data" (click)="exportRecords()"><i class="ri-file-download-line" aria-hidden="true"></i></button>
+          <button type="button" class="directory-filter-button" (click)="clearFilters()"><i class="ri-equalizer-line" aria-hidden="true"></i> Filters</button>
+        </div>
+      }
+    </div>
+
+    <div class="directory-table-wrap">
+      <table class="directory-table">
+        <thead><tr>
+          @for (column of config().columns; track column.key) {
+            <th scope="col" [class]="column.kind ?? ''">{{ column.label }}</th>
+          }
+          <th scope="col">Aksi</th>
+        </tr></thead>
+        <tbody>
+          @for (record of paginatedRecords; track record['id']; let rowIndex = $index) {
+            <tr>
+              @for (column of config().columns; track column.key) {
+                <td [class]="column.kind ?? column.key">
+                  @if (column.key === 'rowNumber') {
+                    <span>{{ (page() - 1) * pageSize + rowIndex + 1 }}</span>
+                  } @else if (column.kind === 'person') {
+                    <span class="directory-person">
+                      <span class="directory-avatar" aria-hidden="true">{{ initials(record[column.key]) }}</span>
+                      <span class="directory-person-copy"><strong>{{ record[column.key] }}</strong><small>{{ record['facility'] }}</small></span>
+                    </span>
+                  } @else if (column.kind === 'contact') {
+                    <span class="directory-secondary-cell">{{ record[column.key] }}<small>{{ record[column.secondaryKey ?? 'phone'] }}</small></span>
+                  } @else if (column.kind === 'license') {
+                    <span class="directory-secondary-cell">SIP: {{ record[column.key] }}<small>STRA: {{ record[column.secondaryKey ?? 'stra'] }}</small></span>
+                  } @else if (column.kind === 'verification') {
+                    <span class="directory-status verification" [class.pending]="record[column.key] === 'Menunggu Verifikasi'" [class.rejected]="record[column.key] === 'Ditolak'">{{ record[column.key] }}</span>
+                  } @else if (column.key === 'status') {
+                    <span class="directory-status" [class.inactive]="record[column.key] === 'Non-Aktif' || record[column.key] === 'Suspended'" [class.suspended]="record[column.key] === 'Suspended'">{{ record[column.key] }}</span>
+                  } @else if (column.key === 'id') {
+                    <span class="directory-id">{{ record[column.key] }}</span>
+                  } @else {
+                    <span class="directory-cell">{{ record[column.key] || '—' }}</span>
+                  }
+                </td>
+              }
+              <td>
+                <div class="directory-actions">
+                  <button type="button" class="view" [attr.aria-label]="'Detail ' + record['name']" title="Detail" (click)="openDetails(record)"><i class="ri-eye-line" aria-hidden="true"></i></button>
+                  <button type="button" class="edit" [attr.aria-label]="'Edit ' + record['name']" title="Edit" (click)="openEdit(record)"><i class="ri-edit-line" aria-hidden="true"></i></button>
+                  <button type="button" class="delete" [attr.aria-label]="'Hapus ' + record['name']" title="Hapus" (click)="openDelete(record['id'])"><i class="ri-delete-bin-line" aria-hidden="true"></i></button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr><td class="directory-empty" [attr.colspan]="config().columns.length + 1">
+              <i class="ri-search-line" aria-hidden="true"></i>
+              <strong>Data tidak ditemukan</strong>
+              <span>Ubah pencarian atau filter yang dipilih.</span>
+            </td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <footer class="directory-pagination">
+      <span>Menampilkan {{ pageStart }}–{{ pageEnd }} dari {{ filteredRecords.length }} data</span>
+      <div>
+        <button type="button" aria-label="Halaman sebelumnya" [disabled]="page() <= 1" (click)="setPage(page() - 1)"><i class="ri-arrow-left-s-line" aria-hidden="true"></i></button>
+        @if (config().stats?.length) {
+          @for (pageNumber of pageNumbers; track pageNumber) {
+            <button type="button" [class.current]="page() === pageNumber" [attr.aria-label]="'Halaman ' + pageNumber" [attr.aria-current]="page() === pageNumber ? 'page' : null" (click)="setPage(pageNumber)">{{ pageNumber }}</button>
+          }
+          <span class="directory-page-size">{{ pageSize }}/halaman</span>
+        } @else {
+          <span>Halaman {{ page() }} dari {{ pageCount }}</span>
+        }
+        <button type="button" aria-label="Halaman berikutnya" [disabled]="page() >= pageCount" (click)="setPage(page() + 1)"><i class="ri-arrow-right-s-line" aria-hidden="true"></i></button>
+      </div>
+    </footer>
+  </section>
+</section>
+
+@if (modal() !== 'closed') {
+  <div class="directory-backdrop" (click)="closeModal()">
+    <section class="directory-modal" role="dialog" aria-modal="true" [attr.aria-labelledby]="'directory-modal-title'" (click)="$event.stopPropagation()">
+      @if (modal() === 'form') {
+        <header class="directory-modal-heading">
+          <div><h2 id="directory-modal-title">{{ editingId() ? 'Edit' : 'Tambah' }} {{ config().entityLabel }}</h2><p>Lengkapi informasi {{ config().entityLabel.toLocaleLowerCase() }} di bawah ini.</p></div>
+          <button type="button" class="close" aria-label="Tutup" (click)="closeModal()"><i class="ri-close-line" aria-hidden="true"></i></button>
+        </header>
+        <form (ngSubmit)="submit()">
+          <div class="directory-form-grid">
+            @for (field of config().fields; track field.key) {
+              <label class="directory-field">
+                <span>{{ field.label }} @if (field.required) {<b>*</b>}</span>
+                @if (field.type === 'select') {
+                  <select [name]="field.key" [(ngModel)]="draft[field.key]" [required]="!!field.required">
+                    <option value="">Pilih {{ field.label.toLocaleLowerCase() }}</option>
+                    @for (option of field.options; track option.value) {<option [value]="option.value">{{ option.label }}</option>}
+                  </select>
+                } @else {
+                  <input [name]="field.key" [type]="field.type ?? 'text'" [(ngModel)]="draft[field.key]" [required]="!!field.required">
+                }
+              </label>
+            }
+          </div>
+          @if (formError()) {<p class="directory-error" role="alert">{{ formError() }}</p>}
+          <footer class="directory-modal-actions">
+            <button type="button" class="directory-button secondary" (click)="closeModal()">Batal</button>
+            <button type="submit" class="directory-button primary">Simpan</button>
+          </footer>
+        </form>
+      } @else if (modal() === 'detail' && selectedRecord; as record) {
+        <header class="directory-modal-heading">
+          <div><h2 id="directory-modal-title">Detail {{ config().entityLabel }}</h2><p>{{ record['id'] }} · {{ record['name'] }}</p></div>
+          <button type="button" class="close" aria-label="Tutup" (click)="closeModal()"><i class="ri-close-line" aria-hidden="true"></i></button>
+        </header>
+        <dl class="directory-detail-grid">
+          @for (column of config().columns; track column.key) {
+            <div><dt>{{ column.label }}</dt><dd>{{ record[column.key] || '—' }}</dd></div>
+          }
+        </dl>
+        <footer class="directory-modal-actions"><button type="button" class="directory-button secondary" (click)="closeModal()">Tutup</button></footer>
+      } @else if (modal() === 'delete' && deletingRecord; as record) {
+        <header class="directory-modal-heading">
+          <div><h2 id="directory-modal-title">Hapus {{ config().entityLabel }}</h2><p>Konfirmasi penghapusan data ini.</p></div>
+          <button type="button" class="close" aria-label="Tutup" (click)="closeModal()"><i class="ri-close-line" aria-hidden="true"></i></button>
+        </header>
+        <p class="directory-delete-copy">Yakin ingin menghapus <strong>{{ record['name'] }}</strong> ({{ record['id'] }})?</p>
+        <footer class="directory-modal-actions">
+          <button type="button" class="directory-button secondary" (click)="closeModal()">Batal</button>
+          <button type="button" class="directory-button danger" (click)="deleteRecord()">Hapus</button>
+        </footer>
+      }
+    </section>
+  </div>
+}

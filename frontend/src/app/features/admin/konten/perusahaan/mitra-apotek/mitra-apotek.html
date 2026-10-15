@@ -1,0 +1,546 @@
+<div class="mitra-wrapper">
+  <!-- Sub Header -->
+  <div class="sub-header">
+    <div class="sub-header-info">
+      <h3 class="sub-title">Jaringan Kemitraan Apotek PSEF Berizin Resmi</h3>
+      <p class="sub-desc">
+        Kelola integrasi apotek fisik rekanan penyedia obat resep, verifikasi Surat Izin Apotek (SIA), SIPA apoteker penanggung jawab, serta kesiapan fasilitas cold-chain 2-8°C.
+      </p>
+    </div>
+    <button type="button" class="btn btn-primary" (click)="openAddModal()" id="btn-tambah-mitra">
+      <i class="ri-add-line"></i>
+      <span>Daftarkan Mitra Apotek Baru</span>
+    </button>
+  </div>
+
+  <!-- KPI Summary Cards -->
+  <div class="kpi-grid">
+    <div *ngFor="let stat of kpiStats" class="kpi-card" [class]="'kpi-' + stat.color">
+      <div class="kpi-icon-box">
+        <i [class]="stat.icon"></i>
+      </div>
+      <div class="kpi-info">
+        <span class="kpi-value font-mono">{{ stat.value }}</span>
+        <span class="kpi-label">{{ stat.label }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search & Filter Toolbar -->
+  <div class="mitra-toolbar">
+    <div class="search-box">
+      <i class="ri-search-line search-icon"></i>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Cari nama apotek, kota, nama apoteker APJ, atau nomor SIA..."
+        [ngModel]="searchQuery()"
+        (ngModelChange)="searchQuery.set($event)"
+      />
+    </div>
+
+    <div class="filter-actions">
+      <select class="filter-select" [ngModel]="filterStatus()" (ngModelChange)="filterStatus.set($event)">
+        <option value="Semua">Semua Status Audit</option>
+        <option value="Terverifikasi">Terverifikasi (Aktif)</option>
+        <option value="Menunggu Audit">Menunggu Audit</option>
+        <option value="Ditolak">Ditolak</option>
+        <option value="Nonaktif / Diberhentikan">Nonaktif (Beku)</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Pharmacy Partners Table Card -->
+  <div class="table-card">
+    <div class="table-responsive">
+      <table class="mitra-table">
+        <thead>
+          <tr>
+            <th>Identitas Apotek</th>
+            <th>Wilayah & Alamat</th>
+            <th>Legalitas SIA & APJ</th>
+            <th>Cold-Chain</th>
+            <th>Status Integrasi</th>
+            <th class="text-right">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of filteredMitraList()" [class.row-nonaktif]="item.status === 'Nonaktif / Diberhentikan'">
+            <td>
+              <div class="apotek-ident">
+                <div class="apotek-icon">
+                  <i class="ri-store-2-line"></i>
+                </div>
+                <div>
+                  <div class="apotek-name">{{ item.namaApotek }}</div>
+                  <div class="apotek-contact font-mono">{{ item.teleponKontak }}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="apotek-location">
+                <span class="city-name"><i class="ri-map-pin-line"></i> {{ item.kota }}</span>
+                <span class="address-text">{{ item.alamatLengkap }}</span>
+              </div>
+            </td>
+            <td>
+              <div class="legal-info">
+                <span class="sia-badge font-mono">{{ item.nomorSia }}</span>
+                <span class="apj-name"><i class="ri-nurse-line"></i> {{ item.namaApj }}</span>
+              </div>
+            </td>
+            <td>
+              <span *ngIf="item.fasilitasColdChain" class="coldchain-badge ready">
+                <i class="ri-temp-cold-line"></i> 2°C - 8°C Ready
+              </span>
+              <span *ngIf="!item.fasilitasColdChain" class="coldchain-badge none">
+                <i class="ri-close-circle-line"></i> Standar Ruang
+              </span>
+            </td>
+            <td>
+              <button
+                type="button"
+                class="status-pill-toggle"
+                [class.active]="item.status === 'Terverifikasi'"
+                [class.warning]="item.status === 'Menunggu Audit'"
+                [class.danger]="item.status === 'Ditolak'"
+                (click)="toggleStatus(item)"
+                [title]="item.status === 'Terverifikasi' ? 'Klik untuk nonaktifkan kemitraan' : 'Klik untuk aktifkan kemitraan'"
+              >
+                <span class="dot"></span>
+                <span>{{ item.status }}</span>
+              </button>
+            </td>
+            <td>
+              <div class="action-buttons-group">
+                <button type="button" class="btn-icon" (click)="viewDetail(item)" title="Detail Audit Berkas">
+                  <i class="ri-file-search-line"></i>
+                </button>
+                <button type="button" class="btn-icon" (click)="openEditModal(item)" title="Edit Data Mitra">
+                  <i class="ri-edit-line"></i>
+                </button>
+                <button type="button" class="btn-icon btn-danger-hover" (click)="openDeleteModal(item)" title="Bekukan / Hapus Mitra">
+                  <i class="ri-delete-bin-line"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+
+          <tr *ngIf="filteredMitraList().length === 0">
+            <td colspan="6" class="empty-cell">
+              <i class="ri-store-2-line"></i>
+              <p>Tidak ada data mitra apotek yang sesuai dengan kriteria filter.</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal Tambah / Edit Mitra Apotek (Static Backdrop) -->
+  <div *ngIf="showModal()" class="modal-backdrop">
+    <div class="modal-dialog modal-lg" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-header-icon" [class.edit-mode]="isEditing()">
+          <i [class]="isEditing() ? 'ri-edit-line' : 'ri-store-2-line'"></i>
+        </div>
+        <div>
+          <h4 class="modal-title">{{ isEditing() ? 'Edit Data Mitra #' + currentMitra.id : 'Daftarkan Mitra Apotek Baru' }}</h4>
+          <p class="modal-subtitle">Pastikan nomor SIA dan SIPA terdaftar sah di sistem SatuSehat Kemenkes RI</p>
+        </div>
+        <button type="button" class="btn-close" (click)="closeModal()">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group flex-2">
+            <label class="form-label" for="inp-nama-apotek">Nama Fasilitas Apotek <span class="text-danger">*</span></label>
+            <input
+              id="inp-nama-apotek"
+              type="text"
+              class="form-control"
+              placeholder="Contoh: Apotek Kimia Sehat Sentosa"
+              [(ngModel)]="currentMitra.namaApotek"
+              [class.is-invalid]="formSubmitted() && !currentMitra.namaApotek.trim()"
+            />
+            <span *ngIf="formSubmitted() && !currentMitra.namaApotek.trim()" class="form-error-msg">
+              <i class="ri-error-warning-fill"></i> Nama apotek wajib diisi
+            </span>
+          </div>
+          <div class="form-group flex-1">
+            <label class="form-label" for="inp-kota-apotek">Kota / Wilayah Layanan</label>
+            <input
+              id="inp-kota-apotek"
+              type="text"
+              class="form-control"
+              placeholder="Bandung, Jawa Barat"
+              [(ngModel)]="currentMitra.kota"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="inp-alamat-apotek">Alamat Lengkap Sarana Apotek</label>
+          <input
+            id="inp-alamat-apotek"
+            type="text"
+            class="form-control"
+            placeholder="Jl. Ir. H. Juanda No. 120, Dago, Coblong, Kota Bandung"
+            [(ngModel)]="currentMitra.alamatLengkap"
+          />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label class="form-label" for="inp-sia-apotek">Nomor Surat Izin Apotek (SIA) <span class="text-danger">*</span></label>
+            <input
+              id="inp-sia-apotek"
+              type="text"
+              class="form-control font-mono"
+              placeholder="SIA-32.73/DPMPTSP/2025/0812"
+              [(ngModel)]="currentMitra.nomorSia"
+              [class.is-invalid]="formSubmitted() && !currentMitra.nomorSia.trim()"
+            />
+            <span *ngIf="formSubmitted() && !currentMitra.nomorSia.trim()" class="form-error-msg">
+              <i class="ri-error-warning-fill"></i> Nomor SIA wajib diisi
+            </span>
+          </div>
+          <div class="form-group flex-1">
+            <label class="form-label" for="inp-telp-apotek">Telepon / WhatsApp PIC</label>
+            <input
+              id="inp-telp-apotek"
+              type="text"
+              class="form-control font-mono"
+              placeholder="0812-2233-4455"
+              [(ngModel)]="currentMitra.teleponKontak"
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label class="form-label" for="inp-apj-apotek">Apoteker Penanggung Jawab (APJ) <span class="text-danger">*</span></label>
+            <input
+              id="inp-apj-apotek"
+              type="text"
+              class="form-control"
+              placeholder="apt. Farhan Pratama, S.Farm"
+              [(ngModel)]="currentMitra.namaApj"
+              [class.is-invalid]="formSubmitted() && !currentMitra.namaApj.trim()"
+            />
+            <span *ngIf="formSubmitted() && !currentMitra.namaApj.trim()" class="form-error-msg">
+              <i class="ri-error-warning-fill"></i> Nama APJ wajib diisi
+            </span>
+          </div>
+          <div class="form-group flex-1">
+            <label class="form-label" for="inp-sipa-apotek">Nomor SIPA Aktif</label>
+            <input
+              id="inp-sipa-apotek"
+              type="text"
+              class="form-control font-mono"
+              placeholder="19930214/SIPA-32.73/2025/1.2"
+              [(ngModel)]="currentMitra.nomorSipa"
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label class="form-label">Kesiapan Cold-Chain (2-8°C)</label>
+            <label class="checkbox-card" [class.checked]="currentMitra.fasilitasColdChain">
+              <input type="checkbox" [(ngModel)]="currentMitra.fasilitasColdChain" />
+              <span>Tersedia chiller farmasi & logistik ice gel rantai dingin</span>
+            </label>
+          </div>
+          <div class="form-group flex-1">
+            <label class="form-label" for="inp-status-apotek">Status Verifikasi</label>
+            <select id="inp-status-apotek" class="form-control" [(ngModel)]="currentMitra.status">
+              <option value="Menunggu Audit">Menunggu Audit</option>
+              <option value="Terverifikasi">Terverifikasi</option>
+              <option value="Ditolak">Ditolak</option>
+              <option value="Nonaktif / Diberhentikan">Nonaktif / Diberhentikan</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="inp-catatan-apotek">Catatan Audit Kepatuhan</label>
+          <textarea
+            id="inp-catatan-apotek"
+            rows="2"
+            class="form-control"
+            placeholder="Catatan hasil verifikasi berkas atau evaluasi kesiapan sarana apotek..."
+            [(ngModel)]="currentMitra.catatanReview"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" (click)="closeModal()">Batal</button>
+        <button type="button" class="btn btn-primary" (click)="saveMitra()" id="btn-save-mitra">
+          <i [class]="isEditing() ? 'ri-save-line' : 'ri-check-line'"></i>
+          <span>{{ isEditing() ? 'Simpan Perubahan' : 'Daftarkan Mitra' }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Detail Audit Mitra (Static Backdrop) -->
+  <div *ngIf="showDetailModal() && selectedMitra() as target" class="modal-backdrop">
+    <div class="modal-dialog modal-lg" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-header-icon">
+          <i class="ri-file-search-line"></i>
+        </div>
+        <div>
+          <h4 class="modal-title">Lembar Audit Legalitas: {{ target.namaApotek }}</h4>
+          <p class="modal-subtitle">Verifikasi kepatuhan Surat Izin Apotek (SIA) dan Surat Izin Praktik Apoteker (SIPA)</p>
+        </div>
+        <button type="button" class="btn-close" (click)="closeDetailModal()">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="audit-summary-box">
+          <div class="audit-status-badge" [class.verified]="target.status === 'Terverifikasi'" [class.rejected]="target.status === 'Ditolak'">
+            <i [class]="target.status === 'Terverifikasi' ? 'ri-checkbox-circle-fill' : 'ri-time-fill'"></i>
+            <span>{{ target.status }}</span>
+          </div>
+
+          <div class="audit-date">
+            <span>Terdaftar Sejak: <strong>{{ target.tanggalDaftar }}</strong></span>
+          </div>
+        </div>
+
+        <div class="audit-grid-2col">
+          <div class="audit-col">
+            <span class="col-title"><i class="ri-building-line"></i> Sarana Apotek</span>
+            <div class="audit-item">
+              <span class="item-label">Nomor SIA:</span>
+              <span class="item-val font-mono">{{ target.nomorSia }}</span>
+            </div>
+            <div class="audit-item">
+              <span class="item-label">Kota / Lokasi:</span>
+              <span class="item-val">{{ target.kota }}</span>
+            </div>
+            <div class="audit-item">
+              <span class="item-label">Alamat Lengkap:</span>
+              <span class="item-val">{{ target.alamatLengkap }}</span>
+            </div>
+            <div class="audit-item">
+              <span class="item-label">Telepon Kontak:</span>
+              <span class="item-val font-mono">{{ target.teleponKontak }}</span>
+            </div>
+          </div>
+
+          <div class="audit-col">
+            <span class="col-title"><i class="ri-nurse-line"></i> Tenaga Apoteker (APJ)</span>
+            <div class="audit-item">
+              <span class="item-label">Nama APJ:</span>
+              <span class="item-val font-semibold">{{ target.namaApj }}</span>
+            </div>
+            <div class="audit-item">
+              <span class="item-label">Nomor SIPA:</span>
+              <span class="item-val font-mono">{{ target.nomorSipa }}</span>
+            </div>
+            <div class="audit-item">
+              <span class="item-label">Rantai Dingin:</span>
+              <span class="item-val" [class.text-emerald]="target.fasilitasColdChain">
+                {{ target.fasilitasColdChain ? 'Mendukung Chiller 2-8°C' : 'Tidak Mendukung' }}
+              </span>
+            </div>
+            <div class="audit-item">
+              <span class="item-label">Total Transaksi:</span>
+              <span class="item-val font-mono font-semibold">{{ (target.totalTransaksi || 0).toLocaleString('id-ID') }} Resep</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="review-notes-box">
+          <span class="notes-title"><i class="ri-chat-check-line"></i> Catatan Evaluasi Tim Kepatuhan:</span>
+          <p class="notes-text">{{ target.catatanReview || 'Belum ada catatan review audit.' }}</p>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" (click)="closeDetailModal()">Tutup</button>
+        <button
+          *ngIf="target.status !== 'Terverifikasi'"
+          type="button"
+          class="btn btn-primary"
+          (click)="setVerifikasi(target, 'Terverifikasi')"
+        >
+          <i class="ri-checkbox-circle-line"></i>
+          <span>Setujui Kemitraan (Verifikasi)</span>
+        </button>
+        <button
+          *ngIf="target.status !== 'Ditolak'"
+          type="button"
+          class="btn btn-danger-action"
+          (click)="setVerifikasi(target, 'Ditolak')"
+        >
+          <i class="ri-close-circle-line"></i>
+          <span>Tolak Kemitraan</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Konfirmasi Nonaktifkan / Hapus Mitra (Static Backdrop) -->
+  <div *ngIf="showDeleteModal() && selectedMitra() as targetMitra" class="modal-backdrop">
+    <div class="modal-dialog modal-delete-dialog" (click)="$event.stopPropagation()">
+      <div class="delete-modal-header">
+        <div class="delete-icon-pulse" [class.danger]="deleteMode() === 'permanent'">
+          <i [class]="deleteMode() === 'deactivate' ? 'ri-archive-line' : 'ri-delete-bin-line'"></i>
+        </div>
+        <div class="delete-header-titles">
+          <h4 class="modal-title" [class.text-amber]="deleteMode() === 'deactivate'" [class.text-danger]="deleteMode() === 'permanent'">
+            {{ deleteMode() === 'deactivate' ? 'Bekukan / Nonaktifkan Kemitraan Apotek?' : 'Hapus Mitra Apotek Permanen?' }}
+          </h4>
+          <p class="modal-subtitle">Pengelolaan status rekanan dengan perlindungan data transaksi tebus resep</p>
+        </div>
+        <button type="button" class="btn-close" (click)="closeDeleteModal()" [disabled]="isProcessing()">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <div class="delete-modal-body">
+        <!-- Target Pharmacy Preview Card -->
+        <div class="mitra-preview-card">
+          <div class="preview-header">
+            <span class="preview-cat-badge font-mono">{{ targetMitra.nomorSia }}</span>
+            <span class="preview-status-pill" [class.status-aktif]="targetMitra.status === 'Terverifikasi'">
+              {{ targetMitra.status }}
+            </span>
+          </div>
+          <h5 class="preview-title">{{ targetMitra.namaApotek }}</h5>
+          <p class="preview-desc">{{ targetMitra.alamatLengkap }}</p>
+
+          <div class="preview-stat-row">
+            <div class="stat-pill">
+              <i class="ri-nurse-line text-indigo"></i>
+              <span class="stat-lbl">APJ:</span>
+              <span class="stat-num">{{ targetMitra.namaApj }}</span>
+            </div>
+            <div class="stat-pill">
+              <i class="ri-file-check-line text-emerald"></i>
+              <span class="stat-lbl">Riwayat Transaksi:</span>
+              <span class="stat-num font-mono">{{ (targetMitra.totalTransaksi || 0).toLocaleString('id-ID') }} Resep</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Audit Protection Notice Box -->
+        <div class="analytics-notice-box" [class.warning-border]="deleteMode() === 'permanent'">
+          <div class="notice-icon-box" [class.danger-bg]="deleteMode() === 'permanent'">
+            <i [class]="deleteMode() === 'deactivate' ? 'ri-shield-star-line' : 'ri-error-warning-fill'"></i>
+          </div>
+          <div class="notice-text-content">
+            <h6 class="notice-title">
+              {{ deleteMode() === 'deactivate' ? 'Perlindungan Arsip Riwayat Transaksi & Klaim Obat' : 'Peringatan Penghapusan Fasilitas Rekanan' }}
+            </h6>
+            <p class="notice-desc" *ngIf="deleteMode() === 'deactivate'">
+              Dengan <strong>menonaktifkan / membekukan</strong>, apotek ini tidak lagi menerima alokasi pesanan resep baru, namun 
+              <strong>seluruh riwayat transaksi resep, telaah klinis, dan laporan pengeluaran obat tetap utuh tersimpan</strong> 
+              untuk keperluan pelaporan SIPNAP Kemenkes.
+            </p>
+            <p class="notice-desc text-danger-text" *ngIf="deleteMode() === 'permanent'">
+              Menghapus permanen akan <strong>menghilangkan data sarana dan histori resep apotek</strong> dari sistem. 
+              Tindakan ini tidak dapat dibatalkan!
+            </p>
+          </div>
+        </div>
+
+        <!-- Action Choice Cards -->
+        <div class="delete-options-group">
+          <div
+            class="action-choice-card"
+            role="button"
+            tabindex="0"
+            [class.selected]="deleteMode() === 'deactivate'"
+            (click)="setDeleteMode('deactivate')"
+            (keydown.enter)="setDeleteMode('deactivate')"
+          >
+            <div class="choice-indicator radio-amber"></div>
+            <div class="choice-content">
+              <div class="choice-header-row">
+                <span class="choice-title">Nonaktifkan / Bekukan Kemitraan</span>
+                <span class="recommend-badge"><i class="ri-star-fill"></i> Disarankan</span>
+              </div>
+              <p class="choice-desc">Hentikan penerimaan pesanan resep dengan menjaga riwayat transaksi obat terdahulu.</p>
+            </div>
+          </div>
+
+          <div
+            class="action-choice-card"
+            role="button"
+            tabindex="0"
+            [class.selected]="deleteMode() === 'permanent'"
+            (click)="setDeleteMode('permanent')"
+            (keydown.enter)="setDeleteMode('permanent')"
+          >
+            <div class="choice-indicator radio-danger"></div>
+            <div class="choice-content">
+              <div class="choice-header-row">
+                <span class="choice-title text-danger">Hapus Mitra Permanen</span>
+                <span class="danger-badge">Merusak Riwayat</span>
+              </div>
+              <p class="choice-desc">Hanya gunakan bila apotek merupakan data uji coba yang belum pernah melayani resep.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="delete-modal-footer">
+        <button
+          type="button"
+          class="btn btn-outline"
+          (click)="closeDeleteModal()"
+          [disabled]="isProcessing()"
+        >
+          Batal
+        </button>
+
+        <button
+          *ngIf="deleteMode() === 'deactivate'"
+          type="button"
+          class="btn btn-warning-action"
+          (click)="confirmDeleteAction()"
+          [disabled]="isProcessing()"
+          id="btn-confirm-deactivate-mitra"
+        >
+          <i [class]="isProcessing() ? 'ri-loader-4-line ri-spin' : 'ri-archive-line'"></i>
+          <span>{{ isProcessing() ? 'Memproses...' : 'Bekukan Kemitraan' }}</span>
+        </button>
+
+        <button
+          *ngIf="deleteMode() === 'permanent'"
+          type="button"
+          class="btn btn-danger-action"
+          (click)="confirmDeleteAction()"
+          [disabled]="isProcessing()"
+          id="btn-confirm-permanent-mitra"
+        >
+          <i [class]="isProcessing() ? 'ri-loader-4-line ri-spin' : 'ri-delete-bin-line'"></i>
+          <span>{{ isProcessing() ? 'Menghapus...' : 'Ya, Hapus Permanen' }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Feedback -->
+  <div *ngIf="toastMessage()" class="mitra-toast" [class]="'toast-' + toastType()">
+    <div class="toast-icon">
+      <i [class]="toastType() === 'success' ? 'ri-checkbox-circle-fill' : toastType() === 'danger' ? 'ri-error-warning-fill' : 'ri-information-fill'"></i>
+    </div>
+    <div class="toast-content">
+      <p class="toast-text">{{ toastMessage() }}</p>
+    </div>
+    <button type="button" class="toast-close" (click)="toastMessage.set('')">
+      <i class="ri-close-line"></i>
+    </button>
+  </div>
+</div>

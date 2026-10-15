@@ -1,0 +1,66 @@
+<header class="navbar">
+    <button class="icon-button menu-toggle" type="button" aria-label="Buka atau tutup sidebar"
+        (click)="sidebarToggle.emit()">
+        <i class="ri-menu-2-line" aria-hidden="true"></i>
+    </button>
+
+    <div class="navbar-actions">
+        <button class="icon-button" type="button" [attr.aria-label]="isDarkTheme() ? 'Gunakan tema terang' : 'Gunakan tema gelap'"
+            (click)="toggleTheme()">
+            <i [class]="isDarkTheme() ? 'ri-sun-line' : 'ri-moon-line'" aria-hidden="true"></i>
+        </button>
+
+        <div class="action-dropdown">
+            <button class="icon-button notification-button" type="button" aria-label="Notifikasi"
+                aria-haspopup="true" [attr.aria-expanded]="activeDropdown() === 'notifications'"
+                (click)="toggleDropdown('notifications')">
+                <i class="ri-notification-3-line" aria-hidden="true"></i>
+                <span class="notification-indicator" aria-hidden="true"></span>
+            </button>
+            <section class="action-menu notification-menu" [attr.hidden]="activeDropdown() !== 'notifications' ? '' : null"
+                aria-label="Notifikasi terbaru">
+                <div class="action-menu-heading">
+                    <strong>Notifikasi</strong>
+                    <span class="menu-badge">Terbaru</span>
+                </div>
+                <p class="empty-state">Belum ada notifikasi baru.</p>
+            </section>
+        </div>
+
+        <div class="action-dropdown">
+            <button class="icon-button" type="button" aria-label="Pesan" aria-haspopup="true"
+                [attr.aria-expanded]="activeDropdown() === 'messages'"
+                (click)="toggleDropdown('messages')">
+                <i class="ri-message-3-line" aria-hidden="true"></i>
+            </button>
+            <section class="action-menu message-menu" [attr.hidden]="activeDropdown() !== 'messages' ? '' : null"
+                aria-label="Pesan terbaru">
+                <div class="action-menu-heading">
+                    <strong>Pesan</strong>
+                    <a routerLink="/admin/telemedisin" (click)="closeDropdown()">Lihat semua</a>
+                </div>
+                <p class="empty-state">Belum ada pesan baru.</p>
+            </section>
+        </div>
+
+        <div class="profile">
+            <button class="profile-toggle" type="button" aria-haspopup="true"
+                [attr.aria-expanded]="activeDropdown() === 'profile'" (click)="toggleDropdown('profile')">
+                <span class="avatar" aria-hidden="true">AP</span>
+                <span class="profile-details">
+                    <span class="profile-name">Admin PSEF</span>
+                    <span class="profile-role">Administrator</span>
+                </span>
+                <i class="ri-arrow-down-s-line profile-chevron" aria-hidden="true"></i>
+            </button>
+
+            <div class="profile-menu" [attr.hidden]="activeDropdown() !== 'profile' ? '' : null">
+                <a routerLink="/admin/pengaturan" (click)="closeDropdown()">Profil admin</a>
+                <a routerLink="/admin/transaksi" (click)="closeDropdown()">Transaksi</a>
+                <a routerLink="/admin/pengaturan" (click)="closeDropdown()">Pengaturan</a>
+                <div class="menu-divider" role="separator"></div>
+                <button type="button" (click)="closeDropdown()">Logout</button>
+            </div>
+        </div>
+    </div>
+</header>

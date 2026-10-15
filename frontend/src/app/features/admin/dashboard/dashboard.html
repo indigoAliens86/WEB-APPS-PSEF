@@ -1,0 +1,136 @@
+<section class="dashboard">
+    <div class="page-heading">
+        <div>
+            <p class="eyebrow">Ringkasan layanan kesehatan</p>
+            <h1>Dashboard</h1>
+        </div>
+        <span class="updated-label"><i class="ri-time-line" aria-hidden="true"></i> Data diperbarui hari ini</span>
+    </div>
+
+    <div class="stats-grid">
+        @for (stat of stats; track stat.label) {
+            <article class="stat-card">
+                <div class="stat-icon" [class]="stat.iconClass"><i [class]="stat.icon" aria-hidden="true"></i></div>
+                <div class="stat-content">
+                    <p>{{ stat.label }}</p>
+                    <strong>{{ stat.value }}</strong>
+                    <span class="stat-change"><i class="ri-arrow-up-line" aria-hidden="true"></i>{{ stat.change }} <span>dari bulan lalu</span></span>
+                </div>
+            </article>
+        }
+    </div>
+
+    <div class="dashboard-grid primary-grid">
+        <article class="panel revenue-panel">
+            <div class="panel-heading">
+                <div><h2>Grafik Pendapatan</h2><p>Pendapatan bulanan</p></div>
+                <button class="period-button" type="button">Tahun ini <i class="ri-arrow-down-s-line" aria-hidden="true"></i></button>
+            </div>
+            <apx-chart [series]="revenueSeries" [chart]="revenueChart" [colors]="revenueColors"
+                [dataLabels]="revenueDataLabels" [stroke]="revenueStroke" [fill]="revenueFill"
+                [grid]="chartGrid" [xaxis]="revenueXAxis" [yaxis]="revenueYAxis"
+                [tooltip]="chartTooltip"></apx-chart>
+        </article>
+
+        <article class="panel order-panel">
+            <div class="panel-heading"><div><h2>Status Pesanan</h2><p>Ringkasan seluruh pesanan</p></div></div>
+            <div class="order-total"><strong>2.372</strong><span>Total Pesanan</span></div>
+            <apx-chart [series]="orderStatusSeries" [chart]="donutChart" [labels]="orderStatusLabels"
+                [colors]="orderStatusColors" [dataLabels]="donutDataLabels"
+                [legend]="hiddenLegend" [plotOptions]="donutPlotOptions"
+                [stroke]="donutStroke" [tooltip]="chartTooltip"></apx-chart>
+            <div class="legend-list">
+                @for (status of orderStatuses; track status.label) {
+                    <div class="legend-row"><span class="legend-name"><i [style.background]="status.color"></i>{{ status.label }}</span><strong>{{ status.value }}</strong></div>
+                }
+            </div>
+        </article>
+
+        <article class="panel activity-panel">
+            <div class="panel-heading"><div><h2>Aktivitas Terbaru</h2><p>Aktivitas di platform</p></div><a class="text-link" routerLink="/admin/laporan">Lihat semua</a></div>
+            <div class="activity-list">
+                @for (activity of activities; track activity.title) {
+                    <div class="activity-row">
+                        <span class="activity-icon" [class]="activity.iconClass"><i [class]="activity.icon" aria-hidden="true"></i></span>
+                        <div class="activity-copy"><strong>{{ activity.title }}</strong><span>{{ activity.detail }}</span></div>
+                        <time>{{ activity.time }}</time>
+                    </div>
+                }
+            </div>
+        </article>
+    </div>
+
+    <div class="dashboard-grid detail-grid">
+        <article class="panel table-panel">
+            <div class="panel-heading"><div><h2>Produk Terlaris</h2><p>Produk dengan penjualan tertinggi</p></div><a class="text-link" routerLink="/admin/telefarmasi">Lihat semua</a></div>
+            <div class="table-scroll">
+                <table>
+                    <thead><tr><th>#</th><th>Produk</th><th>Terjual</th><th>Pendapatan</th></tr></thead>
+                    <tbody>
+                        @for (product of products; track product.name; let i = $index) {
+                            <tr><td>{{ i + 1 }}</td><td><span class="product-mark"><i class="ri-capsule-line" aria-hidden="true"></i></span><span class="product-name">{{ product.name }}<small>{{ product.type }}</small></span></td><td>{{ product.sold }}</td><td>{{ product.revenue }}</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </article>
+
+        <article class="panel table-panel">
+            <div class="panel-heading"><div><h2>Pesanan Terbaru</h2><p>Transaksi terakhir</p></div><a class="text-link" routerLink="/admin/pesanan">Lihat semua</a></div>
+            <div class="table-scroll">
+                <table>
+                    <thead><tr><th>No. Pesanan</th><th>Pelanggan</th><th>Total</th><th>Status</th></tr></thead>
+                    <tbody>
+                        @for (order of orders; track order.id) {
+                            <tr><td class="order-id">{{ order.id }}</td><td>{{ order.customer }}</td><td>{{ order.total }}</td><td><span class="status-pill" [class]="order.statusClass">{{ order.status }}</span></td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </article>
+
+        <article class="panel user-panel">
+            <div class="panel-heading"><div><h2>Ringkasan Pengguna</h2><p>Data tenaga dan pengguna</p></div></div>
+            @for (user of userGroups; track user.label) {
+                <div class="user-row">
+                    <span class="user-icon" [class]="user.iconClass"><i [class]="user.icon" aria-hidden="true"></i></span>
+                    <div class="user-copy"><strong>{{ user.label }}</strong><span>{{ user.detail }}</span></div>
+                    <b>{{ user.count }}</b>
+                </div>
+            }
+        </article>
+    </div>
+
+    <div class="dashboard-grid bottom-grid">
+        <article class="panel prescription-panel">
+            <div class="panel-heading"><div><h2>Resep Berdasarkan Status</h2><p>Distribusi resep bulan ini</p></div></div>
+            <div class="prescription-table">
+                <div class="prescription-head"><span>Status resep</span><span>Jumlah</span><span>Distribusi</span></div>
+                @for (prescription of prescriptions; track prescription.label) {
+                    <div class="prescription-row">
+                        <span>{{ prescription.label }}</span><strong>{{ prescription.count }}</strong>
+                        <span class="progress-cell"><span class="progress-track"><span [style.width.%]="prescription.percent"></span></span><small>{{ prescription.percent }}%</small></span>
+                    </div>
+                }
+            </div>
+        </article>
+
+        <article class="panel payment-panel">
+            <div class="panel-heading"><div><h2>Pendapatan Berdasarkan Metode Pembayaran</h2><p>Komposisi transaksi</p></div><a class="text-link" routerLink="/admin/transaksi">Detail</a></div>
+            <div class="payment-content">
+                <apx-chart [series]="paymentSeries" [chart]="paymentChart" [labels]="paymentLabels"
+                    [colors]="paymentColors" [dataLabels]="donutDataLabels" [legend]="hiddenLegend"
+                    [plotOptions]="donutPlotOptions" [stroke]="donutStroke"
+                    [tooltip]="chartTooltip"></apx-chart>
+                <div class="payment-summary">
+                    <span>Total Transaksi</span><strong>2.372</strong><small class="stat-change"><i class="ri-arrow-up-line" aria-hidden="true"></i>12,5% <span>dari bulan lalu</span></small>
+                    <div class="legend-list">
+                        @for (method of paymentMethods; track method.label) {
+                            <div class="legend-row"><span class="legend-name"><i [style.background]="method.color"></i>{{ method.label }}</span><strong>{{ method.value }}</strong></div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+</section>

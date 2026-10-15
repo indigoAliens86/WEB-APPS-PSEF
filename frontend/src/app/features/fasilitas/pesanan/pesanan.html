@@ -1,0 +1,409 @@
+<div class="pesanan-container">
+  @if (!showingDetails()) {
+    <!-- TOP 6 KPI SUMMARY CARDS -->
+    <div class="kpi-grid">
+      @for (card of kpiCards; track card.title) {
+        <div class="kpi-card">
+          <div class="kpi-icon-wrapper" [ngClass]="card.colorClass">
+            <i [class]="card.icon"></i>
+          </div>
+          <div class="kpi-info">
+            <span class="kpi-label">{{ card.title }}</span>
+            <div class="kpi-value-row">
+              <h2 class="kpi-value">{{ card.value }}</h2>
+            </div>
+            <div class="kpi-trend">
+              <span class="trend-badge" [ngClass]="card.colorClass === 'red' ? 'trend-down' : 'trend-up'">
+                <i [class]="card.colorClass === 'red' ? 'ri-arrow-down-line' : 'ri-arrow-up-line'"></i>
+                {{ card.percentage }}
+              </span>
+              <span class="trend-period">{{ card.period }}</span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- MAIN CARD: DAFTAR PESANAN -->
+    <div class="table-card">
+      <div class="table-card-header">
+        <div class="header-title-box">
+          <h3 class="table-card-title">Daftar Pesanan Apotek Fasilitas</h3>
+          <span class="header-subtitle">Pondasi Alur: Penebusan Resep Konsultasi & Marketplace Obat</span>
+        </div>
+
+        <!-- TIPE PESANAN FOUNDATION SWITCHER -->
+        <div class="tipe-pesanan-switcher" role="tablist" aria-label="Filter Tipe Pesanan">
+          <button
+            type="button"
+            class="type-switch-btn"
+            [class.active]="selectedTipeFilter() === 'Semua'"
+            (click)="setTipeFilter('Semua')"
+          >
+            <i class="ri-apps-2-line"></i>
+            <span>Semua Pesanan</span>
+            <span class="count-pill">{{ totalOrdersCount() }}</span>
+          </button>
+
+          <button
+            type="button"
+            class="type-switch-btn btn-resep"
+            [class.active]="selectedTipeFilter() === 'Obat Resep'"
+            (click)="setTipeFilter('Obat Resep')"
+            title="Pesanan dari Layanan Konsultasi Dokter / Apoteker"
+          >
+            <i class="ri-stethoscope-line"></i>
+            <span>Obat Resep (Konsultasi)</span>
+            <span class="count-pill badge-count-resep">{{ resepOrdersCount() }}</span>
+          </button>
+
+          <button
+            type="button"
+            class="type-switch-btn btn-nonresep"
+            [class.active]="selectedTipeFilter() === 'Obat Non-Resep'"
+            (click)="setTipeFilter('Obat Non-Resep')"
+            title="Pesanan dari Marketplace Obat Bebas / OTC"
+          >
+            <i class="ri-shopping-cart-2-line"></i>
+            <span>Obat Non-Resep (Marketplace)</span>
+            <span class="count-pill badge-count-nonresep">{{ nonResepOrdersCount() }}</span>
+            <span class="pill-not-available">Belum Tersedia</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- INFORMATIVE NOTICE BANNER FOR MARKETPLACE (NON-RESEP) -->
+      @if (selectedTipeFilter() === 'Obat Non-Resep') {
+        <div class="marketplace-notice-banner">
+          <div class="notice-left">
+            <div class="notice-icon-box">
+              <i class="ri-store-2-line"></i>
+            </div>
+            <div class="notice-text">
+              <h4 class="notice-title">Kanal Marketplace Obat Non-Resep (Tahap Pengembangan)</h4>
+              <p class="notice-desc">
+                <strong>Pesanan Obat Non-Resep</strong> dialokasikan untuk alur pembelian obat bebas & suplemen mandiri (OTC) dari Marketplace Obat PSEF. 
+                Saat ini modul Marketplace Obat <strong>belum tersedia secara publik</strong> (sedang disiapkan). 
+                Seluruh pesanan aktif apotek saat ini berasal dari penebusan resep layanan Konsultasi Dokter (Telemedisin) atau Telefarmasi Apoteker.
+              </p>
+            </div>
+          </div>
+          <div class="notice-right">
+            <span class="badge-status-dev">
+              <i class="ri-time-line"></i>
+              Segera Hadir
+            </span>
+          </div>
+        </div>
+      }
+
+      <!-- FILTER TABS & SEARCH CONTROLS -->
+      <div class="filter-toolbar">
+        <div class="category-tabs">
+          @for (tab of categoryTabs; track tab) {
+            <button
+              type="button"
+              class="tab-btn"
+              [class.active]="activeCategory() === tab"
+              (click)="setCategory(tab)"
+            >
+              {{ tab }}
+            </button>
+          }
+        </div>
+
+        <div class="search-filter-controls">
+          <div class="search-input-box">
+            <i class="ri-search-line search-icon"></i>
+            <input
+              type="text"
+              class="search-input"
+              placeholder="Cari Pesanan, Dokter, Pelanggan..."
+              [ngModel]="searchQuery()"
+              (ngModelChange)="searchQuery.set($event)"
+            />
+          </div>
+
+          <div class="select-dropdown-box">
+            <select
+              class="status-select"
+              [ngModel]="filterStatus()"
+              (ngModelChange)="filterStatus.set($event)"
+            >
+              <option value="Pilih Status">Pilih Status</option>
+              <option value="Menunggu Pembayaran">Menunggu Pembayaran</option>
+              <option value="Diproses">Diproses</option>
+              <option value="Dikirim">Dikirim</option>
+              <option value="Selesai">Selesai</option>
+              <option value="Dibatalkan">Dibatalkan</option>
+            </select>
+          </div>
+
+          <button type="button" class="btn-filter-icon" title="Filter Lanjutan" aria-label="Filter Lanjutan">
+            <i class="ri-equalizer-line"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- TABLE LIST -->
+      <div class="table-responsive">
+        <table class="pesanan-table">
+          <thead>
+            <tr>
+              <th class="th-no">No</th>
+              <th class="th-id">No.Pesanan</th>
+              <th class="th-pelanggan">Pelanggan</th>
+              <th class="th-tanggal">Tanggal</th>
+              <th class="th-tipe">Tipe & Sumber</th>
+              <th class="th-resep">Resep</th>
+              <th class="th-status">Status Pesanan</th>
+              <th class="th-item">Total Item</th>
+              <th class="th-total">Total Pembayaran</th>
+              <th class="th-metode">Metode Pembayaran</th>
+              <th class="th-aksi">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of filteredOrders(); track item.cleanId) {
+              <tr class="table-row">
+                <td class="td-no">{{ item.no }}</td>
+                <td class="td-id">
+                  <span class="order-id">{{ item.id }}</span>
+                </td>
+                <td class="td-pelanggan">
+                  <div class="client-meta">
+                    <span class="client-name">{{ item.pelanggan.nama }}</span>
+                    <span class="client-phone">{{ item.pelanggan.telepon }}</span>
+                  </div>
+                </td>
+                <td class="td-tanggal">
+                  <span class="order-date-text">{{ item.tanggal }}</span>
+                </td>
+                <td class="td-tipe">
+                  <div class="type-cell-wrapper">
+                    <span
+                      class="type-badge"
+                      [ngClass]="item.tipePesanan === 'Obat Resep' ? 'type-resep' : 'type-nonresep'"
+                    >
+                      {{ item.tipePesanan }}
+                    </span>
+                    <span
+                      class="source-indicator"
+                      [ngClass]="{
+                        'source-doctor': item.sumberPesanan === 'Konsultasi Dokter',
+                        'source-pharmacist': item.sumberPesanan === 'Konsultasi Apoteker',
+                        'source-marketplace': item.sumberPesanan === 'Marketplace Obat'
+                      }"
+                    >
+                      @if (item.sumberPesanan === 'Konsultasi Dokter') {
+                        <i class="ri-stethoscope-line"></i>
+                        <span>Konsultasi Dokter</span>
+                      } @else if (item.sumberPesanan === 'Konsultasi Apoteker') {
+                        <i class="ri-capsule-line"></i>
+                        <span>Telefarmasi</span>
+                      } @else {
+                        <i class="ri-store-2-line"></i>
+                        <span>Marketplace (Belum Ada)</span>
+                      }
+                    </span>
+                  </div>
+                </td>
+                <td class="td-resep">
+                  @if (item.tipePesanan === 'Obat Resep' && item.resep) {
+                    <div class="resep-meta">
+                      <span class="resep-doc">{{ item.resep.dokter }}</span>
+                      <span class="resep-date">{{ item.resep.tanggal }}</span>
+                      <a class="resep-link" (click)="openResepModal(item)">
+                        Lihat Resep
+                        <i class="ri-eye-line"></i>
+                      </a>
+                    </div>
+                  } @else {
+                    <div class="no-resep-box">
+                      <span class="badge-otc">
+                        <i class="ri-forbid-line"></i>
+                        Tanpa Resep
+                      </span>
+                      <span class="otc-subtext">Marketplace Belum Tersedia</span>
+                    </div>
+                  }
+                </td>
+                <td class="td-status">
+                  <div class="status-cell">
+                    <span class="status-badge" [ngClass]="getStatusClass(item.status)">
+                      {{ item.status }}
+                    </span>
+                    <span class="status-time">{{ item.statusWaktu }}</span>
+                  </div>
+                </td>
+                <td class="td-item">
+                  <span class="item-count">{{ item.totalItem }}</span>
+                </td>
+                <td class="td-total">
+                  <span class="total-text">{{ item.totalPembayaran }}</span>
+                </td>
+                <td class="td-metode">
+                  <div class="payment-method-cell">
+                    <span class="method-title">{{ item.metodePembayaran.nama }}</span>
+                    <span class="method-sub">{{ item.metodePembayaran.detail }}</span>
+                  </div>
+                </td>
+                <td class="td-aksi">
+                  <button
+                    type="button"
+                    class="btn-action-view"
+                    title="Lihat Detail Pesanan"
+                    aria-label="Lihat Detail Pesanan"
+                    (click)="viewDetail(item)"
+                  >
+                    <i class="ri-eye-line"></i>
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="11" class="empty-state-cell">
+                  <div class="empty-state">
+                    <i class="ri-inbox-line"></i>
+                    <p>Tidak ada data pesanan yang cocok.</p>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- PAGINATION FOOTER -->
+      <div class="pagination-footer">
+        <span class="pagination-info">Menampilkan 1-{{ filteredOrders().length }} dari {{ totalItems() | number }} Pesanan</span>
+
+        <div class="pagination-controls">
+          <button type="button" class="page-nav-btn" disabled>
+            <i class="ri-arrow-left-s-line"></i>
+          </button>
+          <button type="button" class="page-num-btn active">1</button>
+          <button type="button" class="page-num-btn">2</button>
+          <button type="button" class="page-num-btn">3</button>
+          <button type="button" class="page-num-btn">4</button>
+          <span class="page-ellipsis">...</span>
+          <button type="button" class="page-num-btn">125</button>
+          <button type="button" class="page-nav-btn">
+            <i class="ri-arrow-right-s-line"></i>
+          </button>
+        </div>
+
+        <div class="per-page-selector">
+          <select class="per-page-select">
+            <option value="10">10/halaman</option>
+            <option value="25">25/halaman</option>
+            <option value="50">50/halaman</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- DETAIL ROUTER OUTLET -->
+  <router-outlet (activate)="showingDetails.set(true)" (deactivate)="showingDetails.set(false)"></router-outlet>
+
+  <!-- MODAL OUTPUT RESEP DOKTER DIGITAL -->
+  @if (showResepModal() && activeResep()) {
+    <div class="modal-backdrop" (click)="closeResepModal()">
+      <div class="modal-dialog modal-resep-dialog" (click)="$event.stopPropagation()">
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <div class="modal-badge-icon">
+              <i class="ri-file-list-3-line"></i>
+            </div>
+            <div>
+              <h3 class="modal-title">Salinan Resep Dokter Digital</h3>
+              <p class="modal-subtitle">PSEF Healthcare Services • {{ activeResep()?.noResep }}</p>
+            </div>
+          </div>
+          <button type="button" class="btn-modal-close" (click)="closeResepModal()" aria-label="Tutup">
+            <i class="ri-close-line"></i>
+          </button>
+        </div>
+
+        <!-- Modal Body (Official Prescription Paper layout) -->
+        <div class="modal-body resep-paper">
+          <!-- Clinic & Doctor Header -->
+          <div class="prescription-header">
+            <div class="doc-header-info">
+              <h4 class="doc-name">{{ activeResep()?.dokter }}</h4>
+              <span class="doc-sip">{{ activeResep()?.sip }}</span>
+              <span class="clinic-name">{{ activeResep()?.klinik }}</span>
+            </div>
+            <div class="doc-date-info">
+              <span class="resep-number-tag">{{ activeResep()?.noResep }}</span>
+              <span class="resep-date-label">Tanggal: {{ activeResep()?.tanggal }}</span>
+            </div>
+          </div>
+
+          <div class="paper-divider-double"></div>
+
+          <!-- Patient Info Row -->
+          <div class="patient-rx-row">
+            <div class="rx-patient-cell">
+              <span class="rx-label">Nama Pasien:</span>
+              <strong class="rx-value">{{ activeResep()?.pasien?.nama }}</strong>
+            </div>
+            <div class="rx-patient-cell">
+              <span class="rx-label">Telepon:</span>
+              <span class="rx-value">{{ activeResep()?.pasien?.telepon }}</span>
+            </div>
+            <div class="rx-patient-cell">
+              <span class="rx-label">Usia:</span>
+              <span class="rx-value">{{ activeResep()?.pasien?.usia }}</span>
+            </div>
+          </div>
+
+          <div class="paper-divider"></div>
+
+          <!-- R/ Items List -->
+          <div class="rx-items-container">
+            @for (r of activeResep()?.items; track r.rNum) {
+              <div class="rx-item-card">
+                <div class="rx-symbol">R/</div>
+                <div class="rx-details">
+                  <div class="rx-medicine-line">
+                    <span class="rx-med-name">{{ r.namaObat }}</span>
+                    <span class="rx-med-qty">No. {{ r.jumlah }}</span>
+                  </div>
+                  <div class="rx-signa-line">
+                    <span class="rx-signa-text">{{ r.aturanPakai }}</span>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- Verification Badge / Stamp -->
+          <div class="rx-footer-stamp-box">
+            <div class="stamp-verified">
+              <i class="ri-shield-check-fill"></i>
+              <div class="stamp-text">
+                <span class="stamp-title">TERVERIFIKASI SISTEM ELEKTRONIK APOTEK PSEF</span>
+                <span class="stamp-sub">{{ activeResep()?.apoteker?.nama }}</span>
+                <span class="stamp-date">STRA: {{ activeResep()?.apoteker?.stra }} | {{ activeResep()?.apoteker?.tanggalVerifikasi }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn-modal-secondary" (click)="closeResepModal()">
+            Tutup
+          </button>
+          <button type="button" class="btn-modal-primary" (click)="printResep()">
+            <i class="ri-printer-line"></i>
+            Cetak / Unduh Resep
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

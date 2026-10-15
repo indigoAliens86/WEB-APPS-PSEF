@@ -1,0 +1,550 @@
+<div class="detail-sipnap-container">
+  <!-- Print Header Only (Official Berita Acara Pelaporan SIPNAP) -->
+  <div class="print-header-only">
+    <div class="print-kop-surat">
+      <div class="kop-left">
+        <h1 class="kop-title">BERITA ACARA PELAPORAN MUTASI NARKOTIKA & PSIKOTROPIKA (SIPNAP)</h1>
+        <p class="kop-sub">KEMENTERIAN KESEHATAN REPUBLIK INDONESIA - BADAN PENGAWAS OBAT DAN MAKANAN</p>
+        <p class="kop-address">{{ laporan().fasilitas.nama }} | SIA: {{ laporan().fasilitas.sia }} | No. Reg SIPNAP: {{ laporan().fasilitas.noRegistrasiSipnap }}</p>
+      </div>
+      <div class="kop-right">
+        <div class="bpo-stamp-box">
+          <span class="stamp-lbl">BUKTI PELAPORAN (BPO)</span>
+          <strong class="stamp-val">{{ laporan().nomorTandaTerima || 'DRAFT-BELUM-TERKIRIM' }}</strong>
+          <span class="stamp-date">{{ laporan().tanggalKirim || laporan().tanggalGenerate }}</span>
+        </div>
+      </div>
+    </div>
+    <hr class="kop-divider" />
+  </div>
+
+  <!-- Navigation Bar -->
+  <nav class="detail-nav-bar no-print" aria-label="Navigasi Detail Laporan">
+    <div class="nav-left">
+      <button type="button" class="btn-back" (click)="goBack()" title="Kembali ke Daftar Laporan SIPNAP">
+        <i class="ri-arrow-left-line"></i>
+        <span>Kembali ke Laporan SIPNAP</span>
+      </button>
+
+      <div class="breadcrumb-trail">
+        <span class="crumb-link" (click)="goBack()">Laporan SIPNAP</span>
+        <i class="ri-arrow-right-s-line crumb-sep"></i>
+        <span class="crumb-current font-mono">{{ laporan().id }}</span>
+      </div>
+    </div>
+
+    <div class="nav-right">
+      <button type="button" class="btn btn-outline" (click)="exportExcel()" title="Unduh mutasi resmi format SIPNAP Excel/CSV">
+        <i class="ri-file-excel-2-line text-emerald"></i>
+        <span>Ekspor Excel/CSV</span>
+      </button>
+
+      <button type="button" class="btn btn-outline" (click)="printBeritaAcara()" title="Cetak Berita Acara & Lembar Verifikasi SIPNAP">
+        <i class="ri-printer-line"></i>
+        <span>Cetak Berita Acara</span>
+      </button>
+
+      @if (isApoteker() && laporan().status !== 'Terverifikasi Kemenkes') {
+        <button type="button" class="btn btn-primary" (click)="openKirimModal()" title="Kirim data langsung ke server SIPNAP Kemenkes">
+          <i class="ri-send-plane-fill"></i>
+          <span>Kirim ke Kemenkes</span>
+        </button>
+      } @else if (isReadOnly() && laporan().status !== 'Terverifikasi Kemenkes') {
+        <div class="nav-readonly-pill" title="Pengiriman laporan ke Kemenkes RI merupakan wewenang eksklusif APJ">
+          <i class="ri-lock-2-line"></i>
+          <span>Pengiriman: Wewenang APJ</span>
+        </div>
+      }
+    </div>
+  </nav>
+
+  <!-- Hero Period Banner -->
+  <section class="hero-period-card no-print" aria-label="Ringkasan Periode Laporan">
+    <div class="hero-left-content">
+      <div class="hero-icon-box">
+        <i class="ri-shield-cross-fill"></i>
+      </div>
+      <div class="hero-title-group">
+        <div class="hero-badges-row">
+          <span class="period-code-badge font-mono">{{ laporan().id }}</span>
+
+          @if (isApoteker()) {
+            <span class="role-mode-pill pill-apj" title="Otoritas Penuh Apoteker Penanggung Jawab">
+              <i class="ri-user-star-fill"></i> Akses APJ
+            </span>
+          } @else {
+            <span class="role-mode-pill pill-fasilitas" title="Mode Tinjauan Fasilitas (Read Only)">
+              <i class="ri-eye-line"></i> Tinjauan Fasilitas (Read Only)
+            </span>
+          }
+
+          <span
+            class="status-pill"
+            [class.status-verified]="laporan().status === 'Terverifikasi Kemenkes'"
+            [class.status-waiting]="laporan().status === 'Menunggu Validasi APJ'"
+            [class.status-draft]="laporan().status === 'Draft Rekonsiliasi'"
+          >
+            <i
+              [class]="
+                laporan().status === 'Terverifikasi Kemenkes'
+                  ? 'ri-checkbox-circle-fill'
+                  : laporan().status === 'Menunggu Validasi APJ'
+                  ? 'ri-time-fill'
+                  : 'ri-draft-fill'
+              "
+            ></i>
+            {{ laporan().status }}
+          </span>
+
+          @if (laporan().nomorTandaTerima) {
+            <span class="bpo-tag font-mono">
+              <i class="ri-barcode-line"></i> {{ laporan().nomorTandaTerima }}
+              <button type="button" class="btn-copy-mini" (click)="copyBpo()" title="Salin nomor BPO">
+                <i [class]="copiedBpo() ? 'ri-check-line text-emerald' : 'ri-file-copy-line'"></i>
+              </button>
+            </span>
+          }
+        </div>
+
+        <h1 class="hero-main-title">
+          Pelaporan Mutasi N/P/P/OOT — Periode <strong>{{ laporan().periodeBulan }}</strong>
+        </h1>
+
+        <div class="hero-meta-row">
+          <span>
+            <i class="ri-calendar-event-line"></i> Batas Akhir: <strong>{{ laporan().tanggalBatasLapor }}</strong>
+          </span>
+          @if (laporan().tanggalKirim) {
+            <span>
+              <i class="ri-check-double-line text-emerald"></i> Waktu Kirim: <strong>{{ laporan().tanggalKirim }}</strong>
+            </span>
+          }
+          <span>
+            <i class="ri-user-star-line"></i> APJ: <strong>{{ laporan().apotekerPengkaji.nama }}</strong> ({{ laporan().apotekerPengkaji.sipa }})
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Facility Lock Card -->
+    <div class="facility-context-box">
+      <div class="facility-context-icon">
+        <i class="ri-hospital-line"></i>
+      </div>
+      <div class="facility-context-texts">
+        <span class="fc-lbl">Sarana Pelapor Resmi:</span>
+        <strong class="fc-name">{{ laporan().fasilitas.nama }}</strong>
+        <span class="fc-sia font-mono">{{ laporan().fasilitas.sia }}</span>
+        <span class="fc-reg">Reg SIPNAP: <strong>{{ laporan().fasilitas.noRegistrasiSipnap }}</strong></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 Summary Stats Cards -->
+  <section class="summary-stats-grid no-print" aria-label="Statistik Mutasi Periode Ini">
+    <div class="stat-box red">
+      <div class="stat-head">
+        <span class="stat-lbl">Golongan Narkotika</span>
+        <div class="stat-icon red"><i class="ri-capsule-fill"></i></div>
+      </div>
+      <strong class="stat-val">{{ laporan().totalNarkotika }} Sediaan</strong>
+      <span class="stat-sub">Kodein, Morfin Sulfat (Pengawasan Ketat)</span>
+    </div>
+
+    <div class="stat-box purple">
+      <div class="stat-head">
+        <span class="stat-lbl">Golongan Psikotropika</span>
+        <div class="stat-icon purple"><i class="ri-medicine-bottle-fill"></i></div>
+      </div>
+      <strong class="stat-val">{{ laporan().totalPsikotropika }} Sediaan</strong>
+      <span class="stat-sub">Alprazolam, Diazepam, Clobazam, Braxidin</span>
+    </div>
+
+    <div class="stat-box blue">
+      <div class="stat-head">
+        <span class="stat-lbl">Prekursor & OOT</span>
+        <div class="stat-icon blue"><i class="ri-flask-fill"></i></div>
+      </div>
+      <strong class="stat-val">{{ laporan().totalPrekursor + laporan().totalOot }} Sediaan</strong>
+      <span class="stat-sub">Pseudoefedrin, Tramadol, Trihexyphenidyl</span>
+    </div>
+
+    <div class="stat-box emerald">
+      <div class="stat-head">
+        <span class="stat-lbl">Rekonsiliasi Stok Fisik</span>
+        <div class="stat-icon emerald"><i class="ri-checkbox-circle-fill"></i></div>
+      </div>
+      <strong class="stat-val">100% Sesuai</strong>
+      <span class="stat-sub">Selisih Opname Fisik: 0 (Nihil)</span>
+    </div>
+  </section>
+
+  <!-- Main Sediaan Mutation Card -->
+  <section class="pane-card-mutation" aria-label="Tabel Rincian Mutasi Sediaan">
+    <div class="mutation-header-panel no-print">
+      <div class="mutation-title-group">
+        <div class="mutation-icon-box">
+          <i class="ri-table-line"></i>
+        </div>
+        <div>
+          <h2 class="mutation-title">Rincian Buku Register Mutasi SIPNAP</h2>
+          <p class="mutation-desc">
+            Pencatatan saldo awal, pemasukan faktur PBF resmi, dan penyerahan resep dokter pasien sesuai regulasi Kemenkes RI
+          </p>
+        </div>
+      </div>
+
+      <div class="mutation-search-box">
+        <i class="ri-search-line"></i>
+        <input
+          type="text"
+          class="med-search-input"
+          placeholder="Cari nama obat, zat aktif, nomor batch..."
+          [ngModel]="searchMedQuery()"
+          (ngModelChange)="searchMedQuery.set($event)"
+        />
+      </div>
+    </div>
+
+    <!-- Segmented Tabs for Golongan Obat -->
+    <div class="golongan-tabs-deck no-print" role="tablist">
+      @for (tab of golonganTabs; track tab) {
+        <button
+          type="button"
+          class="golongan-tab-btn"
+          [class.active]="activeGolonganTab() === tab"
+          (click)="setGolonganTab(tab)"
+          role="tab"
+          [attr.aria-selected]="activeGolonganTab() === tab"
+        >
+          <span>{{ tab }}</span>
+        </button>
+      }
+    </div>
+
+    <!-- Table of Mutation Items -->
+    <div class="table-responsive">
+      <table class="mutation-table">
+        <thead>
+          <tr>
+            <th scope="col" style="width: 50px;">No</th>
+            <th scope="col">Nama Sediaan Obat & Zat Aktif</th>
+            <th scope="col" style="width: 130px;">Golongan</th>
+            <th scope="col" style="width: 90px; text-align: center;">Satuan</th>
+            <th scope="col" style="width: 90px; text-align: right;">Awal</th>
+            <th scope="col" style="width: 100px; text-align: right;">PBF (+)</th>
+            <th scope="col" style="width: 100px; text-align: right;">Resep (-)</th>
+            <th scope="col" style="width: 90px; text-align: right;">Akhir</th>
+            <th scope="col" style="width: 90px; text-align: right;">Fisik</th>
+            <th scope="col" style="width: 80px; text-align: center;">Selisih</th>
+            <th scope="col" style="width: 120px;">Batch / ED</th>
+            <th scope="col" style="width: 100px; text-align: center;" class="no-print">Rincian</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of filteredItems(); track item.id; let idx = $index) {
+            <!-- Main Row -->
+            <tr class="med-row" [class.row-expanded]="expandedItemId() === item.id">
+              <td class="cell-num">{{ idx + 1 }}</td>
+
+              <!-- Nama Obat -->
+              <td>
+                <div class="med-name-cell">
+                  <strong class="med-name">{{ item.namaObat }}</strong>
+                  <span class="med-comp">{{ item.komposisi }}</span>
+                  <span class="med-code font-mono">{{ item.kodeObat }}</span>
+                </div>
+              </td>
+
+              <!-- Golongan -->
+              <td>
+                <span
+                  class="pill-golongan"
+                  [class.gol-nark]="item.golongan === 'Narkotika'"
+                  [class.gol-psik]="item.golongan === 'Psikotropika'"
+                  [class.gol-prek]="item.golongan === 'Prekursor'"
+                  [class.gol-oot]="item.golongan === 'Obat-Obat Tertentu (OOT)'"
+                >
+                  {{ item.golongan }}
+                </span>
+              </td>
+
+              <!-- Satuan -->
+              <td style="text-align: center;">
+                <span class="satuan-badge">{{ item.satuan }}</span>
+              </td>
+
+              <!-- Saldo Awal -->
+              <td class="num-cell">{{ item.saldoAwal }}</td>
+
+              <!-- Pemasukan PBF -->
+              <td class="num-cell text-emerald font-semibold">
+                +{{ item.pemasukan }}
+              </td>
+
+              <!-- Pengeluaran Resep -->
+              <td class="num-cell text-amber font-semibold">
+                -{{ item.pengeluaran }}
+              </td>
+
+              <!-- Saldo Akhir -->
+              <td class="num-cell font-bold text-main">{{ item.saldoAkhir }}</td>
+
+              <!-- Fisik -->
+              <td class="num-cell font-bold text-primary">{{ item.stokFisik }}</td>
+
+              <!-- Selisih -->
+              <td style="text-align: center;">
+                <span class="selisih-chip" [class.chip-zero]="item.selisih === 0">
+                  {{ item.selisih === 0 ? '0' : item.selisih }}
+                </span>
+              </td>
+
+              <!-- Batch / ED -->
+              <td>
+                <div class="batch-cell font-mono">
+                  <span class="batch-no">{{ item.noBatch }}</span>
+                  <span class="batch-ed">ED: {{ item.expiredDate }}</span>
+                </div>
+              </td>
+
+              <!-- Expand Trigger -->
+              <td style="text-align: center;" class="no-print">
+                <button
+                  type="button"
+                  class="btn-expand"
+                  (click)="toggleExpandItem(item.id)"
+                  [title]="expandedItemId() === item.id ? 'Tutup rincian' : 'Buka rincian faktur PBF & resep'"
+                >
+                  <i [class]="expandedItemId() === item.id ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line'"></i>
+                  <span>{{ expandedItemId() === item.id ? 'Tutup' : 'Lihat' }}</span>
+                </button>
+              </td>
+            </tr>
+
+            <!-- Expanded Row: Detail Faktur PBF & Resep Dokter -->
+            @if (expandedItemId() === item.id) {
+              <tr class="drawer-expanded-row no-print">
+                <td colspan="12">
+                  <div class="drawer-content-box">
+                    <!-- Drawer Left: Faktur PBF (Pemasukan) -->
+                    <div class="drawer-pane">
+                      <div class="pane-title-tag text-emerald">
+                        <i class="ri-truck-line"></i>
+                        <span>Penerimaan Resmi PBF (Total: {{ item.pemasukan }} {{ item.satuan }})</span>
+                      </div>
+
+                      @if (item.detailPemasukan.length > 0) {
+                        <div class="sub-records-list">
+                          @for (pbf of item.detailPemasukan; track pbf.noFaktur) {
+                            <div class="record-card pbf-card">
+                              <div class="rc-header">
+                                <strong class="rc-title font-mono">{{ pbf.noFaktur }}</strong>
+                                <span class="rc-qty text-emerald font-bold">+{{ pbf.jumlah }} {{ item.satuan }}</span>
+                              </div>
+                              <div class="rc-meta">
+                                <span><i class="ri-building-line"></i> {{ pbf.namaPbf }}</span>
+                                <span><i class="ri-calendar-line"></i> Tgl: {{ pbf.tanggalFaktur }}</span>
+                                <span class="font-mono"><i class="ri-qr-code-line"></i> Batch: {{ pbf.noBatch }} (ED: {{ pbf.expiredDate }})</span>
+                              </div>
+                            </div>
+                          }
+                        </div>
+                      } @else {
+                        <div class="no-mutation-placeholder">
+                          <i class="ri-inbox-line"></i>
+                          <span>Tidak ada penerimaan PBF pada bulan ini. Mutasi murni dari saldo awal.</span>
+                        </div>
+                      }
+                    </div>
+
+                    <!-- Drawer Right: Resep Dokter Pasien (Pengeluaran) -->
+                    <div class="drawer-pane">
+                      <div class="pane-title-tag text-amber">
+                        <i class="ri-file-user-line"></i>
+                        <span>Penyerahan Resep Pasien (Total: {{ item.pengeluaran }} {{ item.satuan }})</span>
+                      </div>
+
+                      @if (item.detailPengeluaran.length > 0) {
+                        <div class="sub-records-list">
+                          @for (rx of item.detailPengeluaran; track rx.noResep) {
+                            <div class="record-card rx-card">
+                              <div class="rc-header">
+                                <strong class="rc-title font-mono text-primary">{{ rx.noResep }}</strong>
+                                <span class="rc-qty text-amber font-bold">-{{ rx.jumlah }} {{ item.satuan }}</span>
+                              </div>
+                              <div class="rc-meta">
+                                <span><i class="ri-user-line"></i> Pasien: <strong>{{ rx.namaPasien }}</strong> (NIK: {{ rx.nikPasien }})</span>
+                                <span><i class="ri-nurse-line"></i> Dokter: <strong>{{ rx.namaDokter }}</strong> ({{ rx.sipDokter }})</span>
+                                <span><i class="ri-hospital-line"></i> Faskes: {{ rx.faskesDokter }}</span>
+                                <span><i class="ri-calendar-line"></i> Tgl: {{ rx.tanggalResep }}</span>
+                                <span class="rc-signa"><i class="ri-capsule-line"></i> Aturan: {{ rx.aturanPakai }}</span>
+                              </div>
+                            </div>
+                          }
+                        </div>
+                      } @else {
+                        <div class="no-mutation-placeholder">
+                          <i class="ri-inbox-line"></i>
+                          <span>Tidak ada penyerahan resep pada periode bulan ini.</span>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+
+        <!-- Totals Footer -->
+        <tfoot>
+          <tr class="table-total-row">
+            <td colspan="4" style="text-align: right; font-weight: 800;">TOTAL REKAPITULASI ({{ filteredItems().length }} Sediaan):</td>
+            <td class="num-cell font-bold">{{ totals().saldoAwal }}</td>
+            <td class="num-cell font-bold text-emerald">+{{ totals().pemasukan }}</td>
+            <td class="num-cell font-bold text-amber">-{{ totals().pengeluaran }}</td>
+            <td class="num-cell font-bold">{{ totals().saldoAkhir }}</td>
+            <td class="num-cell font-bold text-primary">{{ totals().stokFisik }}</td>
+            <td style="text-align: center;" class="font-bold">0</td>
+            <td colspan="2"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </section>
+
+  <!-- APJ Validation Seal Stamp Box -->
+  <section class="apj-seal-panel" aria-label="Tanda Tangan Elektronik APJ">
+    <div class="apj-left-box">
+      <div class="apj-avatar-wrapper">
+        <i class="ri-user-star-line"></i>
+      </div>
+      <div class="apj-details">
+        <span class="apj-tag">PENGESAHAN APOTEKER PENANGGUNG JAWAB (APJ)</span>
+        <h3 class="apj-name-heading">{{ laporan().apotekerPengkaji.nama }}</h3>
+        <span class="apj-sipa-stra font-mono">
+          SIPA: {{ laporan().apotekerPengkaji.sipa }} • STRA: {{ laporan().apotekerPengkaji.stra }}
+        </span>
+        @if (isApoteker() && laporan().status !== 'Terverifikasi Kemenkes') {
+          <div class="apj-edit-container">
+            <label class="apj-edit-label" for="apj-notes-text">
+              <i class="ri-edit-line"></i> Catatan Telaah & Rekonsiliasi APJ:
+            </label>
+            <textarea
+              id="apj-notes-text"
+              class="apj-notes-input"
+              rows="3"
+              [ngModel]="apjNotes()"
+              (ngModelChange)="apjNotes.set($event)"
+              placeholder="Masukkan telaah dan catatan pengesahan sediaan khusus oleh APJ..."
+            ></textarea>
+            <div class="apj-edit-actions">
+              <button type="button" class="btn-save-notes" (click)="simpanValidasiApj()">
+                <i class="ri-save-line"></i>
+                <span>Simpan Catatan Telaah</span>
+              </button>
+              @if (isSavedApjNotes()) {
+                <span class="save-toast-tag">
+                  <i class="ri-checkbox-circle-fill"></i> Catatan APJ berhasil diperbarui
+                </span>
+              }
+            </div>
+          </div>
+        } @else {
+          <p class="apj-notes-text">
+            "{{ laporan().catatanApj }}"
+          </p>
+          @if (isReadOnly()) {
+            <div class="apj-review-tag">
+              <i class="ri-shield-check-line"></i> Status: Ditinjau oleh Fasilitas • Pengesahan Resmi oleh APJ
+            </div>
+          }
+        }
+      </div>
+    </div>
+
+    <div class="apj-seal-right">
+      <div class="qr-seal-box">
+        <div class="qr-visual">
+          <i class="ri-qr-code-line"></i>
+        </div>
+        <div class="seal-meta">
+          <strong class="seal-title">TERVALIDASI RESMI SIPNAP</strong>
+          <span class="seal-hash font-mono">SHA256: 8a7c...3f90-KEMKES</span>
+          <span class="seal-time">{{ laporan().tanggalKirim || 'Siap Kirim Kemenkes' }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MODAL: Kirim ke Kemenkes -->
+  @if (showKirimModal()) {
+    <div class="modal-backdrop" (click)="closeKirimModal()">
+      <div class="modal-dialog" (click)="$event.stopPropagation()">
+        <header class="modal-header">
+          <div class="modal-title-group">
+            <div class="modal-icon-circle emerald">
+              <i class="ri-send-plane-fill"></i>
+            </div>
+            <div>
+              <h2 class="modal-title">Kirim Laporan ke Kemenkes RI</h2>
+              <span class="modal-subtitle">Sinkronisasi data bridging API SIPNAP Kemenkes resmi</span>
+            </div>
+          </div>
+          <button type="button" class="btn-close" (click)="closeKirimModal()" aria-label="Tutup modal">
+            <i class="ri-close-line"></i>
+          </button>
+        </header>
+
+        <div class="modal-body">
+          <div class="cert-alert-box">
+            <i class="ri-shield-check-fill text-emerald"></i>
+            <div>
+              <strong>Validasi APJ Terpenuhi</strong>
+              <p>Laporan periode <strong>{{ laporan().periodeBulan }}</strong> siap dikirim secara elektronik. Tanda Terima Resmi (BPO) akan diterbitkan seketika oleh server Kemenkes RI.</p>
+            </div>
+          </div>
+
+          <div class="summary-check-card">
+            <div class="check-item">
+              <span>Periode Laporan:</span>
+              <strong>{{ laporan().periodeBulan }}</strong>
+            </div>
+            <div class="check-item">
+              <span>Total Sediaan Khusus:</span>
+              <strong>{{ laporan().totalSediaan }} Item (100% Cocok)</strong>
+            </div>
+            <div class="check-item">
+              <span>Pengeluaran Resep Farmasi:</span>
+              <strong>{{ laporan().totalPengeluaranResep }} Lembar Resep</strong>
+            </div>
+            <div class="check-item">
+              <span>Apoteker Penanggung Jawab:</span>
+              <strong>{{ laporan().apotekerPengkaji.nama }}</strong>
+            </div>
+            <div class="check-item">
+              <span>SIPA APJ:</span>
+              <strong class="font-mono text-primary">{{ laporan().apotekerPengkaji.sipa }}</strong>
+            </div>
+          </div>
+        </div>
+
+        <footer class="modal-footer">
+          <button type="button" class="btn btn-outline" (click)="closeKirimModal()" [disabled]="isSubmitting()">
+            Batal
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="confirmKirimSipnap()"
+            [disabled]="isSubmitting()"
+          >
+            <i [class]="isSubmitting() ? 'ri-loader-4-line spin' : 'ri-check-double-line'"></i>
+            <span>{{ isSubmitting() ? 'Mengirim ke Kemenkes...' : 'Kirim Sekarang' }}</span>
+          </button>
+        </footer>
+      </div>
+    </div>
+  }
+</div>

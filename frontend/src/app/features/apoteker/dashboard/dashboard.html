@@ -1,0 +1,220 @@
+<div class="dashboard-container">
+  <!-- Welcome Practitioner Banner -->
+  <header class="practitioner-banner">
+    <div class="banner-left">
+      <div class="banner-avatar">
+        <i class="ri-nurse-line"></i>
+      </div>
+      <div class="banner-text">
+        <div class="banner-title-row">
+          <h1 class="banner-title">Selamat Bertugas, apt. Farhan Pratama, S.Farm</h1>
+          <span class="badge-role">Apoteker Penanggung Jawab (APJ)</span>
+        </div>
+        <p class="banner-sub">
+          {{ currentDate() }} &bull; {{ currentTimeShift() }} &bull; 
+          <span class="facility-name-text">Apotek Kimia Sehat PSEF</span>
+        </p>
+      </div>
+    </div>
+    <div class="banner-actions">
+      <a routerLink="/apoteker/resep" class="btn btn-primary">
+        <i class="ri-file-list-3-line"></i>
+        <span>Mulai Skrining Resep (14)</span>
+      </a>
+      <a routerLink="/apoteker/telefarmasi" class="btn btn-outline">
+        <i class="ri-customer-service-2-line"></i>
+        <span>Buka Konseling PIO</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- 4 Clinical & Workload Metric Cards -->
+  <section class="kpi-grid" aria-label="Ringkasan Beban Kerja Apoteker">
+    @for (kpi of kpis(); track kpi.title) {
+      <article class="kpi-card" [ngClass]="kpi.colorClass">
+        <div class="kpi-icon-wrap">
+          <i [class]="kpi.icon" aria-hidden="true"></i>
+        </div>
+        <div class="kpi-info">
+          <span class="kpi-title">{{ kpi.title }}</span>
+          <div class="kpi-val-row">
+            <strong class="kpi-number">{{ kpi.value }}</strong>
+            <span class="kpi-trend-pill" [ngClass]="'trend-' + kpi.trendType">{{ kpi.trend }}</span>
+          </div>
+          <span class="kpi-subtext">{{ kpi.subtext }}</span>
+        </div>
+      </article>
+    }
+  </section>
+
+  <!-- Main Split Layout -->
+  <div class="dashboard-split-grid">
+    <!-- LEFT: Urgent Skrining Resep Table Card -->
+    <section class="panel-card worklist-panel">
+      <header class="panel-header">
+        <div class="panel-title-group">
+          <div class="panel-icon-circle amber">
+            <i class="ri-stethoscope-line"></i>
+          </div>
+          <div>
+            <h2 class="panel-title">Antrean Skrining Resep Masuk</h2>
+            <p class="panel-sub">Pemeriksaan telaah administratif, farmasetis, dan klinis oleh Apoteker</p>
+          </div>
+        </div>
+        <a routerLink="/apoteker/resep" class="panel-view-all">
+          <span>Lihat Semua Resep</span>
+          <i class="ri-arrow-right-line"></i>
+        </a>
+      </header>
+
+      <div class="table-responsive">
+        <table class="clinical-table">
+          <thead>
+            <tr>
+              <th>No. Resep & Waktu</th>
+              <th>Pasien & RM</th>
+              <th>Dokter & Faskes</th>
+              <th>Item Obat</th>
+              <th>Tipe</th>
+              <th>Status Kajian</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of urgentSkriningList(); track item.id) {
+              <tr class="table-row" [class.row-urgent]="item.urgency === 'high'">
+                <td>
+                  <span class="rx-code font-mono">{{ item.noResep }}</span>
+                  <span class="rx-time"><i class="ri-time-line"></i> {{ item.waktuMasuk }}</span>
+                </td>
+                <td>
+                  <strong class="patient-name">{{ item.pasien.nama }}</strong>
+                  <span class="patient-meta">{{ item.pasien.usia }} &bull; {{ item.pasien.gender }} &bull; {{ item.pasien.noRm }}</span>
+                </td>
+                <td>
+                  <span class="doctor-name font-semibold">{{ item.dokter }}</span>
+                  <span class="clinic-sub">{{ item.klinik }}</span>
+                </td>
+                <td>
+                  <span class="meds-summary" [title]="item.itemObat">{{ item.itemObat }}</span>
+                </td>
+                <td>
+                  <span class="tipe-badge" [class.badge-cito]="item.tipeResep === 'CITO'" [class.badge-racik]="item.tipeResep === 'Racikan'">
+                    {{ item.tipeResep }}
+                  </span>
+                </td>
+                <td>
+                  <span class="status-pill" [class.status-waiting]="item.statusKajian === 'Menunggu Skrining'" [class.status-ongoing]="item.statusKajian === 'Kajian Sedang Berjalan'">
+                    <i class="ri-record-circle-line"></i>
+                    {{ item.statusKajian }}
+                  </span>
+                </td>
+                <td>
+                  <a [routerLink]="['/apoteker/resep/detail-resep', item.id]" class="btn-action-skrining" title="Buka Formulir Skrining Resep">
+                    <i class="ri-shield-check-line"></i>
+                    <span>Telaah</span>
+                  </a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- RIGHT: Telecounseling Queue & Legal Compliance -->
+    <aside class="sidebar-panels-col">
+      <!-- Card 1: Antrean Konseling Telefarmasi (PIO) -->
+      <section class="panel-card counseling-panel">
+        <header class="panel-header">
+          <div class="panel-title-group">
+            <div class="panel-icon-circle teal">
+              <i class="ri-customer-service-2-line"></i>
+            </div>
+            <div>
+              <h2 class="panel-title">Sesi Konseling Telefarmasi (PIO)</h2>
+              <p class="panel-sub">Pelayanan Informasi Obat real-time</p>
+            </div>
+          </div>
+          <span class="live-pulse-badge">
+            <span class="pulse-dot"></span> 2 Sesi Aktif
+          </span>
+        </header>
+
+        <div class="counseling-list">
+          @for (c of counselingQueue(); track c.id) {
+            <article class="counseling-item-card">
+              <div class="counseling-top">
+                <div class="counseling-user">
+                  <div class="user-avatar-circle">{{ c.avatarInitials }}</div>
+                  <div>
+                    <h3 class="counseling-patient-name">{{ c.namaPasien }}</h3>
+                    <span class="counseling-time-ref"><i class="ri-time-line"></i> {{ c.waktuBooking }}</span>
+                  </div>
+                </div>
+                <span class="session-status-tag" [class.status-active]="c.status === 'Konseling Berlangsung'">
+                  {{ c.status }}
+                </span>
+              </div>
+              <p class="counseling-topic">
+                <i class="ri-question-answer-line"></i>
+                <span>{{ c.topikKonseling }}</span>
+              </p>
+              <div class="counseling-action-row">
+                <span class="ref-rx font-mono">Ref: {{ c.resepRef }}</span>
+                <a routerLink="/apoteker/telefarmasi" class="btn-join-session">
+                  <i class="ri-chat-voice-line"></i>
+                  <span>Buka Konseling</span>
+                </a>
+              </div>
+            </article>
+          }
+        </div>
+      </section>
+
+      <!-- Card 2: Legalitas & Kepatuhan SIPNAP Kemenkes -->
+      <section class="panel-card compliance-summary-panel">
+        <header class="panel-header">
+          <div class="panel-title-group">
+            <div class="panel-icon-circle emerald">
+              <i class="ri-shield-check-fill"></i>
+            </div>
+            <div>
+              <h2 class="panel-title">Legalitas & Kepatuhan APJ</h2>
+              <p class="panel-sub">SIPA, STRA & Pelaporan SIPNAP</p>
+            </div>
+          </div>
+        </header>
+
+        <div class="compliance-items-grid">
+          <div class="compliance-metric-box">
+            <div class="cm-left">
+              <span class="cm-label">SIPA Apoteker</span>
+              <strong class="cm-val font-mono">35.79/25/1235</strong>
+              <span class="cm-expiry text-safe"><i class="ri-check-line"></i> Aktif s/d 14 Okt 2028</span>
+            </div>
+            <div class="cm-icon"><i class="ri-file-user-line text-emerald"></i></div>
+          </div>
+
+          <div class="compliance-metric-box">
+            <div class="cm-left">
+              <span class="cm-label">Laporan SIPNAP Kemenkes</span>
+              <strong class="cm-val">Periode Oktober 2026</strong>
+              <span class="cm-expiry text-safe"><i class="ri-check-double-line"></i> Terkirim & Tervalidasi</span>
+            </div>
+            <div class="cm-icon"><i class="ri-file-shield-line text-teal"></i></div>
+          </div>
+
+          <div class="compliance-metric-box">
+            <div class="cm-left">
+              <span class="cm-label">Monitoring Suhu Cold Chain</span>
+              <strong class="cm-val font-mono">4.2°C <small class="text-safe">(Normal)</small></strong>
+              <span class="cm-expiry">Chiller Utama &bull; IoT Realtime</span>
+            </div>
+            <div class="cm-icon"><i class="ri-temp-cold-line text-sky"></i></div>
+          </div>
+        </div>
+      </section>
+    </aside>
+  </div>
+</div>

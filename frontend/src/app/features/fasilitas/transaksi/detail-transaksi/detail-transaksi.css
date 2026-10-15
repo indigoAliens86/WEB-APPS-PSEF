@@ -1,0 +1,994 @@
+/* ============================================================
+   DETAIL TRANSAKSI COMPONENT STYLES
+   ============================================================ */
+:host {
+  display: block;
+  width: 100%;
+}
+
+.detail-transaksi-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ============================================================
+   1. TOP HEADER & ACTIONS
+   ============================================================ */
+.detail-header-card {
+  background-color: var(--surface-card, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 12px;
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.header-left-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.breadcrumb-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.bc-link {
+  color: #0ab39c;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.bc-link:hover {
+  text-decoration: underline;
+}
+
+.bc-sep {
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.bc-current {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.title-status-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.tx-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  margin: 0;
+}
+
+.status-badge-lg {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.status-badge-lg.badge-selesai {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.tx-time-label {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.header-right-col {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.origin-preview-switcher {
+  display: flex;
+  align-items: center;
+  background-color: #f1f5f9;
+  border-radius: 8px;
+  padding: 3px;
+  gap: 3px;
+}
+
+.switch-btn {
+  border: none;
+  background: transparent;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.switch-btn:hover {
+  color: #0f172a;
+}
+
+.switch-btn.active {
+  background-color: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.btn-print {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  background-color: #f0fdf9;
+  border: 1px solid #99f6e4;
+  color: #0ab39c;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-print:hover {
+  background-color: #0ab39c;
+  color: #ffffff;
+}
+
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  background-color: var(--surface-card, #ffffff);
+  border: 1px solid var(--border-color, #cbd5e1);
+  color: var(--text-primary, #334155);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-back:hover {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+}
+
+/* ============================================================
+   2. MAIN 2-COLUMN DETAIL GRID
+   ============================================================ */
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1.8fr 1.1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.detail-left-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.detail-right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ============================================================
+   3. SOURCE INFO CARD
+   ============================================================ */
+.source-info-card {
+  background-color: var(--surface-card, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.source-icon-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.source-icon-circle.resep {
+  background-color: #ffedd5;
+  color: #ea580c;
+}
+
+.source-icon-circle.telemed {
+  background-color: #dcfce7;
+  color: #16a34a;
+}
+
+.source-icon-circle.telefarm {
+  background-color: #ecfeff;
+  color: #0891b2;
+}
+
+.source-icon-circle.market {
+  background-color: #e0f2fe;
+  color: #0284c7;
+}
+
+.source-text-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.source-tag-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.source-pill {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background-color: #e2e8f0;
+  color: #334155;
+}
+
+.ref-id-pill {
+  font-size: 11px;
+  font-weight: 600;
+  color: #0284c7;
+  background-color: #e0f2fe;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.source-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  margin: 2px 0 0 0;
+}
+
+.source-desc {
+  font-size: 12.5px;
+  color: var(--text-secondary, #64748b);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.doctor-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+  padding: 8px 12px;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  width: fit-content;
+}
+
+.doc-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.doc-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.doc-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary, #1e293b);
+}
+
+.doc-role {
+  font-size: 11px;
+  color: #64748b;
+}
+
+/* ============================================================
+   4. CONTENT CARDS (ITEMS TABLE & PATIENT INFO)
+   ============================================================ */
+.content-card {
+  background-color: var(--surface-card, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 12px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.card-header-clean {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+  padding-bottom: 12px;
+}
+
+.card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  margin: 0;
+}
+
+/* Items Table */
+.items-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+
+.items-table thead {
+  background-color: #f8fafc;
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+}
+
+.items-table th {
+  padding: 10px 10px;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-secondary, #475569);
+  white-space: nowrap;
+}
+
+.items-table tbody tr {
+  border-bottom: 1px solid var(--border-color, #f1f5f9);
+}
+
+.items-table td {
+  padding: 12px 10px;
+  vertical-align: middle;
+  color: var(--text-primary, #334155);
+}
+
+.kat-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+/* Pricing Breakdown */
+.pricing-breakdown-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  padding-top: 10px;
+}
+
+.pricing-box {
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12.5px;
+}
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.price-label {
+  color: var(--text-secondary, #64748b);
+}
+
+.price-val {
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+}
+
+.text-red {
+  color: #dc2626 !important;
+}
+
+.total-highlight-row {
+  border-top: 1px dashed var(--border-color, #cbd5e1);
+  padding-top: 10px;
+  margin-top: 4px;
+}
+
+.total-amount-teal {
+  font-size: 17px;
+  font-weight: 800;
+  color: #0ab39c;
+}
+
+/* Patient Info Body */
+.patient-info-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.patient-main-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.patient-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #0ab39c;
+}
+
+.patient-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.patient-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  margin: 0;
+}
+
+.patient-nik {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.patient-contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.contact-card-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.contact-card-item.full-width {
+  grid-column: span 2;
+}
+
+.contact-card-item i {
+  color: #0ab39c;
+  font-size: 18px;
+  margin-top: 2px;
+}
+
+.contact-lbl {
+  display: block;
+  font-size: 11px;
+  color: #64748b;
+}
+
+.contact-val {
+  display: block;
+  font-size: 12.5px;
+  color: var(--text-primary, #1e293b);
+  font-weight: 600;
+  margin-top: 1px;
+}
+
+/* ============================================================
+   5. RIGHT SIDEBAR PAYMENT & GATEWAY CARD
+   ============================================================ */
+.sidebar-payment-card {
+  background-color: var(--surface-card, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 12px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.card-top-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.status-indicator-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #15803d;
+  background-color: #dcfce7;
+  padding: 3px 10px;
+  border-radius: 16px;
+}
+
+.settle-label {
+  font-size: 11px;
+  color: #0284c7;
+  font-weight: 600;
+}
+
+.total-big-display {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.total-caption {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.total-headline {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text-primary, #0f172a);
+  margin: 0;
+  line-height: 1.1;
+}
+
+.divider-line {
+  height: 1px;
+  background-color: var(--border-color, #e2e8f0);
+}
+
+.payment-method-details-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.method-header-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.provider-logo-box {
+  width: 48px;
+  height: 26px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.provider-img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.provider-name {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+}
+
+.provider-cat {
+  display: block;
+  font-size: 11px;
+  color: #64748b;
+}
+
+.account-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+
+.info-lbl {
+  color: #64748b;
+}
+
+.info-val {
+  color: var(--text-primary, #1e293b);
+  font-weight: 600;
+}
+
+.gateway-ref-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.ref-text-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ref-lbl {
+  font-size: 10.5px;
+  color: #64748b;
+}
+
+.ref-code {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #0284c7;
+  font-family: monospace;
+}
+
+.btn-copy-ref {
+  border: none;
+  background: transparent;
+  color: #0ab39c;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.btn-copy-ref:hover {
+  background-color: #e0f2fe;
+}
+
+.text-emerald {
+  color: #059669 !important;
+}
+
+.completion-time-box {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  color: #94a3b8;
+}
+
+/* ============================================================
+   6. SIDEBAR TIMELINE CARD
+   ============================================================ */
+.sidebar-timeline-card {
+  background-color: var(--surface-card, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.timeline-card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  margin: 0;
+}
+
+.timeline-stepper-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.timeline-step-item {
+  display: flex;
+  gap: 12px;
+  min-height: 52px;
+}
+
+.timeline-step-item.is-last {
+  min-height: auto;
+}
+
+.step-indicator-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 22px;
+}
+
+.step-circle {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.step-circle.completed {
+  background-color: #059669;
+  color: #ffffff;
+}
+
+.step-line {
+  width: 2px;
+  flex: 1;
+  background-color: #cbd5e1;
+  margin: 4px 0;
+}
+
+.step-content-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: 14px;
+  flex: 1;
+}
+
+.step-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.step-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-primary, #0f172a);
+  margin: 0;
+}
+
+.step-time {
+  font-size: 11px;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+.step-desc {
+  font-size: 11.5px;
+  color: var(--text-secondary, #64748b);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* ============================================================
+   7. RESPONSIVE MEDIA QUERIES
+   ============================================================ */
+@media (max-width: 1024px) {
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .detail-header-card {
+    padding: 16px;
+  }
+
+  .header-right-col {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .patient-contact-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-card-item.full-width {
+    grid-column: span 1;
+  }
+}
+
+/* ============================================================
+   8. DARK THEME OVERRIDES
+   ============================================================ */
+:host-context(html.dark-theme) .detail-header-card,
+:host-context([data-theme='dark']) .detail-header-card,
+:host-context(.dark) .detail-header-card,
+:host-context(html.dark-theme) .source-info-card,
+:host-context([data-theme='dark']) .source-info-card,
+:host-context(.dark) .source-info-card,
+:host-context(html.dark-theme) .content-card,
+:host-context([data-theme='dark']) .content-card,
+:host-context(.dark) .content-card,
+:host-context(html.dark-theme) .sidebar-payment-card,
+:host-context([data-theme='dark']) .sidebar-payment-card,
+:host-context(.dark) .sidebar-payment-card,
+:host-context(html.dark-theme) .sidebar-timeline-card,
+:host-context([data-theme='dark']) .sidebar-timeline-card,
+:host-context(.dark) .sidebar-timeline-card,
+:host-context(html.dark-theme) .btn-back,
+:host-context([data-theme='dark']) .btn-back,
+:host-context(.dark) .btn-back {
+  background-color: #1e293b;
+  border-color: #334155;
+}
+
+:host-context(html.dark-theme) .tx-title,
+:host-context([data-theme='dark']) .tx-title,
+:host-context(.dark) .tx-title,
+:host-context(html.dark-theme) .source-title,
+:host-context([data-theme='dark']) .source-title,
+:host-context(.dark) .source-title,
+:host-context(html.dark-theme) .card-title,
+:host-context([data-theme='dark']) .card-title,
+:host-context(.dark) .card-title,
+:host-context(html.dark-theme) .total-headline,
+:host-context([data-theme='dark']) .total-headline,
+:host-context(.dark) .total-headline,
+:host-context(html.dark-theme) .provider-name,
+:host-context([data-theme='dark']) .provider-name,
+:host-context(.dark) .provider-name,
+:host-context(html.dark-theme) .patient-name,
+:host-context([data-theme='dark']) .patient-name,
+:host-context(.dark) .patient-name,
+:host-context(html.dark-theme) .contact-val,
+:host-context([data-theme='dark']) .contact-val,
+:host-context(.dark) .contact-val,
+:host-context(html.dark-theme) .info-val,
+:host-context([data-theme='dark']) .info-val,
+:host-context(.dark) .info-val,
+:host-context(html.dark-theme) .item-name,
+:host-context([data-theme='dark']) .item-name,
+:host-context(.dark) .item-name,
+:host-context(html.dark-theme) .step-title,
+:host-context([data-theme='dark']) .step-title,
+:host-context(.dark) .step-title,
+:host-context(html.dark-theme) .timeline-card-title,
+:host-context([data-theme='dark']) .timeline-card-title,
+:host-context(.dark) .timeline-card-title,
+:host-context(html.dark-theme) .doc-name,
+:host-context([data-theme='dark']) .doc-name,
+:host-context(.dark) .doc-name {
+  color: #f1f5f9;
+}
+
+:host-context(html.dark-theme) .source-desc,
+:host-context([data-theme='dark']) .source-desc,
+:host-context(.dark) .source-desc,
+:host-context(html.dark-theme) .bc-current,
+:host-context([data-theme='dark']) .bc-current,
+:host-context(.dark) .bc-current,
+:host-context(html.dark-theme) .price-label,
+:host-context([data-theme='dark']) .price-label,
+:host-context(.dark) .price-label,
+:host-context(html.dark-theme) .info-lbl,
+:host-context([data-theme='dark']) .info-lbl,
+:host-context(.dark) .info-lbl,
+:host-context(html.dark-theme) .ref-lbl,
+:host-context([data-theme='dark']) .ref-lbl,
+:host-context(.dark) .ref-lbl,
+:host-context(html.dark-theme) .contact-lbl,
+:host-context([data-theme='dark']) .contact-lbl,
+:host-context(.dark) .contact-lbl,
+:host-context(html.dark-theme) .doc-role,
+:host-context([data-theme='dark']) .doc-role,
+:host-context(.dark) .doc-role,
+:host-context(html.dark-theme) .step-desc,
+:host-context([data-theme='dark']) .step-desc,
+:host-context(.dark) .step-desc,
+:host-context(html.dark-theme) .items-table th,
+:host-context([data-theme='dark']) .items-table th,
+:host-context(.dark) .items-table th {
+  color: #94a3b8;
+}
+
+:host-context(html.dark-theme) .origin-preview-switcher,
+:host-context([data-theme='dark']) .origin-preview-switcher,
+:host-context(.dark) .origin-preview-switcher {
+  background-color: #0f172a;
+}
+
+:host-context(html.dark-theme) .switch-btn,
+:host-context([data-theme='dark']) .switch-btn,
+:host-context(.dark) .switch-btn {
+  color: #94a3b8;
+}
+
+:host-context(html.dark-theme) .switch-btn.active,
+:host-context([data-theme='dark']) .switch-btn.active,
+:host-context(.dark) .switch-btn.active {
+  background-color: #1e293b;
+  color: #f1f5f9;
+}
+
+:host-context(html.dark-theme) .doctor-badge-row,
+:host-context([data-theme='dark']) .doctor-badge-row,
+:host-context(.dark) .doctor-badge-row,
+:host-context(html.dark-theme) .contact-card-item,
+:host-context([data-theme='dark']) .contact-card-item,
+:host-context(.dark) .contact-card-item,
+:host-context(html.dark-theme) .gateway-ref-box,
+:host-context([data-theme='dark']) .gateway-ref-box,
+:host-context(.dark) .gateway-ref-box {
+  background-color: #0f172a;
+  border-color: #334155;
+}
+
+:host-context(html.dark-theme) .items-table thead,
+:host-context([data-theme='dark']) .items-table thead,
+:host-context(.dark) .items-table thead {
+  background-color: #0f172a;
+  border-bottom-color: #334155;
+}
+
+:host-context(html.dark-theme) .items-table tbody tr,
+:host-context([data-theme='dark']) .items-table tbody tr,
+:host-context(.dark) .items-table tbody tr {
+  border-bottom-color: #334155;
+}
+
+:host-context(html.dark-theme) .divider-line,
+:host-context([data-theme='dark']) .divider-line,
+:host-context(.dark) .divider-line {
+  background-color: #334155;
+}
+
+:host-context(html.dark-theme) .step-line,
+:host-context([data-theme='dark']) .step-line,
+:host-context(.dark) .step-line {
+  background-color: #334155;
+}
+
+:host-context(html.dark-theme) .kat-badge,
+:host-context([data-theme='dark']) .kat-badge,
+:host-context(.dark) .kat-badge {
+  background-color: #334155;
+  color: #cbd5e1;
+}
+
+:host-context(html.dark-theme) .source-pill,
+:host-context([data-theme='dark']) .source-pill,
+:host-context(.dark) .source-pill {
+  background-color: #334155;
+  color: #e2e8f0;
+}

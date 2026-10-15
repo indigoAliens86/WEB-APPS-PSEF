@@ -1,0 +1,997 @@
+<section class="settings-page">
+    <header class="page-heading">
+        <div>
+            <h1>Pengaturan</h1>
+            <p>Pastikan konfigurasi dilakukan secara optimal untuk memaksimalkan sistem aplikasi.</p>
+        </div>
+    </header>
+
+    <nav class="settings-tabs" role="tablist" aria-label="Kategori pengaturan">
+        <button type="button" role="tab" id="tab-aplikasi" [attr.aria-selected]="activeTab() === 'aplikasi'"
+            [class.active]="activeTab() === 'aplikasi'" (click)="selectTab('aplikasi')">Aplikasi</button>
+        <button type="button" role="tab" id="tab-layanan" [attr.aria-selected]="activeTab() === 'layanan'"
+            [class.active]="activeTab() === 'layanan'" (click)="selectTab('layanan')">Layanan</button>
+        <button type="button" role="tab" id="tab-produk" [attr.aria-selected]="activeTab() === 'produk'"
+            [class.active]="activeTab() === 'produk'" (click)="selectTab('produk')">Produk</button>
+        <button type="button" role="tab" id="tab-hak-akses" [attr.aria-selected]="activeTab() === 'hak-akses'"
+            [class.active]="activeTab() === 'hak-akses'" (click)="selectTab('hak-akses')">Hak Akses</button>
+        <button type="button" role="tab" id="tab-master-katalog" [attr.aria-selected]="activeTab() === 'master-katalog'"
+            [class.active]="activeTab() === 'master-katalog'" (click)="selectTab('master-katalog')">Master Katalog Produk</button>
+    </nav>
+
+    @if (savedMessage()) {
+        <p class="saved-message" role="status"><i class="ri-checkbox-circle-line" aria-hidden="true"></i>{{ savedMessage() }}</p>
+    }
+
+    @if (activeTab() === 'aplikasi') {
+        <div class="settings-layout" role="tabpanel" aria-labelledby="tab-aplikasi">
+            <div class="settings-main-column">
+                <article class="settings-card profile-card">
+                    <header class="card-heading">
+                        <div><h2>Profil Aplikasi</h2><p>Informasi dasar aplikasi yang ditampilkan di platform</p></div>
+                    </header>
+                    <div class="profile-form">
+                        <div class="logo-field">
+                            <label>Logo Aplikasi</label>
+                            <div class="logo-preview"><span class="logo-mark"><i class="ri-heart-pulse-line" aria-hidden="true"></i></span><span class="logo-name">Healora</span></div>
+                            <label class="upload-button" for="app-logo">Ubah Logo</label>
+                            <input class="visually-hidden" id="app-logo" type="file" accept=".png,.jpg,.jpeg">
+                            <small>Format PNG/JPG, maks 2 MB</small>
+                        </div>
+                        <div class="form-fields">
+                            <label class="field"><span>Nama Aplikasi</span><input value="Healora"></label>
+                            <label class="field"><span>Tagline</span><input value="Kesehatan Terjangkau, Layanan Berkualitas"></label>
+                            <label class="field"><span>Email Utama</span><input type="email" value="info@healora.co.id"></label>
+                            <label class="field"><span>No. Telepon</span><input type="tel" value="+62 8123 4567-890"></label>
+                            <label class="field field-wide"><span>Alamat</span><textarea rows="2">Jalan Campermik Indah, Komplek Perkantoran Blok B27 No. 1A</textarea></label>
+                        </div>
+                    </div>
+                    <footer class="card-actions"><button class="button button-secondary" type="button" (click)="resetMessage()">Batal</button><button class="button button-primary" type="button" (click)="saveSettings()">Simpan Perubahan</button></footer>
+                </article>
+
+                <div class="settings-subgrid">
+                    <article class="settings-card">
+                        <header class="card-heading"><div><h2>Pengaturan Umum</h2><p>Atur konfigurasi dasar aplikasi</p></div></header>
+                        <div class="general-fields">
+                            <label class="field"><span>Bahasa</span><select><option>Bahasa Indonesia</option><option>English</option></select></label>
+                            <label class="field"><span>Zona Waktu</span><select><option>Asia/Jakarta GMT +7</option><option>Asia/Makassar GMT +8</option><option>Asia/Jayapura GMT +9</option></select></label>
+                            <label class="field"><span>Format Tanggal</span><select><option>DD MMMM YYYY</option><option>DD/MM/YYYY</option><option>MM/DD/YYYY</option></select></label>
+                            <label class="field"><span>Format Waktu</span><select><option>24 Jam</option><option>12 Jam</option></select></label>
+                            <label class="field"><span>Mata Uang</span><select><option>Rupiah (Rp)</option><option>US Dollar ($)</option></select></label>
+                            <label class="switch-row"><input type="checkbox"><span class="switch-control"></span><span>Aktifkan Mode Maintenance</span></label>
+                        </div>
+                        <footer class="card-actions"><button class="button button-primary" type="button" (click)="saveSettings()">Simpan Perubahan</button></footer>
+                    </article>
+
+                    <article class="settings-card">
+                        <header class="card-heading"><div><h2>Notifikasi</h2><p>Atur preferensi pengiriman notifikasi</p></div></header>
+                        <div class="preference-list">
+                            @for (notification of notifications; track notification.label) {
+                                <label class="preference-row">
+                                    <span class="preference-icon" [class]="notification.color"><i [class]="notification.icon" aria-hidden="true"></i></span>
+                                    <span class="preference-copy"><strong>{{ notification.label }}</strong><small>{{ notification.description }}</small></span>
+                                    <span class="switch-wrap"><input type="checkbox" [checked]="notification.enabled" [attr.aria-label]="'Aktifkan notifikasi ' + notification.label"><span class="switch-control"></span></span>
+                                </label>
+                            }
+                        </div>
+                        <footer class="card-actions"><button class="button button-primary" type="button" (click)="saveSettings()">Simpan Perubahan</button></footer>
+                    </article>
+                </div>
+            </div>
+
+            <aside class="settings-side-column">
+                <article class="settings-card">
+                    <header class="card-heading"><div><h2>Informasi Sistem</h2><p>Status lingkungan aplikasi</p></div></header>
+                    <dl class="system-info">
+                        @for (info of systemInfo; track info.label) {
+                            <div><dt>{{ info.label }}</dt><dd [class.production]="info.isStatus">{{ info.value }}</dd></div>
+                        }
+                    </dl>
+                </article>
+
+                <article class="settings-card payments-card">
+                    <header class="card-heading"><div><h2>Pembayaran</h2><p>Metode pembayaran aktif</p></div></header>
+                    <div class="payment-methods">
+                        @for (payment of paymentMethods; track payment.brand) {
+                            <label class="payment-row">
+                                <span class="payment-logo" [class]="payment.brandClass">{{ payment.brand }}</span>
+                                <span class="payment-copy"><strong>{{ payment.name }}</strong><small>{{ payment.account }}</small></span>
+                                <span class="switch-wrap"><input type="checkbox" [checked]="true" [attr.aria-label]="'Aktifkan ' + payment.name"><span class="switch-control"></span></span>
+                            </label>
+                        }
+                    </div>
+                    <button class="button button-outline add-payment" type="button" (click)="saveSettings()">Tambah Metode Pembayaran</button>
+                </article>
+            </aside>
+        </div>
+    }
+
+    @if (activeTab() === 'layanan') {
+        <div class="section-layout" role="tabpanel" aria-labelledby="tab-layanan">
+            <nav class="section-menu" aria-label="Layanan">
+                @for (service of services; track service.name) {
+                    <button class="section-menu-item" type="button" [class.active]="selectedService() === service.name"
+                        (click)="selectService(service.name)">
+                        <span class="section-menu-icon" [class]="service.color"><i [class]="service.icon" aria-hidden="true"></i></span>
+                        <span><strong>{{ service.name }}</strong><small>{{ service.description }}</small></span>
+                    </button>
+                }
+            </nav>
+
+            @for (service of services; track service.name) {
+                @if (selectedService() === service.name) {
+                    <article class="settings-card section-detail">
+                        <header class="selected-section-heading">
+                            <span class="section-menu-icon" [class]="service.color"><i [class]="service.icon" aria-hidden="true"></i></span>
+                            <span class="selected-section-copy"><strong>{{ service.name }}</strong><small>{{ service.description }}</small></span>
+                            <label class="enabled-toggle"><span>Aktif</span><span class="switch-wrap"><input type="checkbox" [checked]="service.enabled" [attr.aria-label]="'Aktifkan layanan ' + service.name"><span class="switch-control"></span></span></label>
+                        </header>
+
+                        <nav class="detail-tabs" aria-label="Kategori pengaturan layanan">
+                            @for (tab of serviceTabs; track tab) {
+                                <button type="button" [class.active]="activeServiceTab() === tab" (click)="activeServiceTab.set(tab)">{{ tab }}</button>
+                            }
+                        </nav>
+
+                        @if (activeServiceTab() === 'Umum') {
+                            <div class="detail-content">
+                                <section class="detail-section">
+                                    <h2>Informasi Layanan</h2>
+                                    <div class="service-form-grid">
+                                        <label class="field"><span>Nama Layanan</span><input [value]="service.name"></label>
+                                        <label class="field"><span>Kode Layanan</span><input [value]="service.code"></label>
+                                        <label class="field field-wide"><span>Deskripsi Layanan</span><textarea rows="2">{{ service.longDescription }}</textarea></label>
+                                    </div>
+                                </section>
+                                <section class="detail-section">
+                                    <h2>Pengaturan Dasar</h2>
+                                    <div class="service-form-grid three-columns">
+                                        @for (field of service.fields; track field.label) {
+                                            <label class="field"><span>{{ field.label }}</span><input [value]="field.value"></label>
+                                        }
+                                    </div>
+                                </section>
+                                <div class="service-feature-grid">
+                                    <label class="service-feature"><input type="checkbox" checked><span><strong>Izinkan Chat</strong><small>Pasien dapat konsultasi via chat</small></span></label>
+                                    <label class="service-feature"><input type="checkbox" checked><span><strong>Simpan Riwayat Konsultasi</strong><small>Riwayat konsultasi tersimpan otomatis</small></span></label>
+                                    <label class="service-feature"><input type="checkbox" checked><span><strong>Izinkan Voice Call</strong><small>Pasien dapat konsultasi via panggilan suara</small></span></label>
+                                    <label class="service-feature"><input type="checkbox" checked><span><strong>Izinkan Upload File</strong><small>Pasien dapat mengunggah file hasil pemeriksaan</small></span></label>
+                                    <label class="service-feature"><input type="checkbox" checked><span><strong>Izinkan Video Call</strong><small>Pasien dapat konsultasi via panggilan video</small></span></label>
+                                    <label class="service-feature"><input type="checkbox" checked><span><strong>Kirim ringkasan via email</strong><small>Ringkasan konsultasi dikirim ke email pasien</small></span></label>
+                                </div>
+                            </div>
+                        } @else if (activeServiceTab() === 'Jadwal dan Ketersediaan' && isScheduledService()) {
+                            <div class="schedule-layout">
+                                <div class="schedule-main">
+                                    <article class="schedule-card">
+                                        <header class="schedule-card-heading">
+                                            <div><h2>Jadwal Operasional</h2><p>Atur hari dan jam operasional layanan {{ service.name }}</p></div>
+                                            <label class="field timezone-field"><span>Zona Waktu</span><select><option>Asia/Jakarta GMT +7</option><option>Asia/Makassar GMT +8</option><option>Asia/Jayapura GMT +9</option></select></label>
+                                        </header>
+                                        <div class="schedule-table-wrap">
+                                            <table class="schedule-table">
+                                                <thead><tr><th>Hari</th><th>Status</th><th>Jam Operasional</th><th>Jam Istirahat</th></tr></thead>
+                                                <tbody>
+                                                    @for (day of scheduleDays; track day.name) {
+                                                        <tr [class.day-inactive]="!day.active">
+                                                            <td>{{ day.name }}</td>
+                                                            <td><label class="day-status"><span [class.off]="!day.active">{{ day.active ? 'Aktif' : 'Non-Aktif' }}</span><span class="switch-wrap"><input type="checkbox" [(ngModel)]="day.active" [ngModelOptions]="{standalone: true}" [attr.aria-label]="'Aktifkan ' + day.name"><span class="switch-control"></span></span></label></td>
+                                                            <td><div class="time-range"><input type="time" [(ngModel)]="day.start" [ngModelOptions]="{standalone: true}" [disabled]="!day.active" [attr.aria-label]="'Jam mulai ' + day.name"><span>-</span><input type="time" [(ngModel)]="day.end" [ngModelOptions]="{standalone: true}" [disabled]="!day.active" [attr.aria-label]="'Jam selesai ' + day.name"></div></td>
+                                                            <td><div class="time-range"><input type="time" [(ngModel)]="day.breakStart" [ngModelOptions]="{standalone: true}" [disabled]="!day.active" [attr.aria-label]="'Mulai istirahat ' + day.name"><span>-</span><input type="time" [(ngModel)]="day.breakEnd" [ngModelOptions]="{standalone: true}" [disabled]="!day.active" [attr.aria-label]="'Selesai istirahat ' + day.name"></div></td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <p class="schedule-note"><i class="ri-information-line" aria-hidden="true"></i> Perubahan jadwal akan otomatis diterapkan pada ketersediaan layanan dan dapat dilihat oleh pasien.</p>
+                                    </article>
+
+                                    <article class="schedule-card override-card">
+                                        <header class="schedule-card-heading"><div><h2>Override Jadwal (Opsional)</h2><p>Atur perubahan jadwal sementara untuk tanggal tertentu</p></div></header>
+                                        <div class="schedule-table-wrap">
+                                            <table class="schedule-table override-table">
+                                                <thead><tr><th>Tanggal</th><th>Hari</th><th>Jam Operasional</th><th>Keterangan</th><th>Aksi</th></tr></thead>
+                                                <tbody>
+                                                    @for (override of scheduleOverrides; track override.date) {
+                                                        <tr><td><span class="table-cell-clamp">{{ override.date }}</span></td><td>{{ override.day }}</td><td>{{ override.hours }}</td><td><span class="table-cell-clamp">{{ override.note }}</span></td><td><button class="row-action edit" type="button" [attr.aria-label]="'Edit override ' + override.date"><i class="ri-edit-line" aria-hidden="true"></i></button><button class="row-action delete" type="button" [attr.aria-label]="'Hapus override ' + override.date"><i class="ri-delete-bin-line" aria-hidden="true"></i></button></td></tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <button class="button button-outline add-schedule-button" type="button"><i class="ri-add-line" aria-hidden="true"></i> Tambah Override Jadwal</button>
+                                    </article>
+                                </div>
+
+                                <aside class="schedule-side">
+                                    <article class="schedule-card availability-card">
+                                        <header class="schedule-card-heading"><div><h2>Pengaturan Ketersediaan</h2><p>Atur slot ketersediaan untuk pasien</p></div></header>
+                                        <div class="availability-fields">
+                                            <label class="field"><span>Durasi konsultasi per sesi</span><select><option>30 menit</option><option>45 menit</option><option>60 menit</option></select></label>
+                                            <label class="field"><span>Jeda antar sesi</span><select><option>10 menit</option><option>15 menit</option><option>20 menit</option></select></label>
+                                            <label class="field"><span>Maksimal Booking per hari per Dokter</span><select><option>20</option><option>25</option><option>Tidak ada batas</option></select><small>0 Tidak ada batas</small></label>
+                                        </div>
+                                        <div class="availability-toggles">
+                                            <label class="availability-toggle"><span class="switch-wrap"><input type="checkbox" checked aria-label="Izinkan booking di hari yang sama"><span class="switch-control"></span></span><span><strong>Izinkan booking di hari yang sama</strong><small>Pasien dapat booking di hari yang sama</small></span></label>
+                                            <label class="availability-toggle"><span class="switch-wrap"><input type="checkbox" aria-label="Tampilkan slot penuh"><span class="switch-control"></span></span><span><strong>Tampilkan slot penuh</strong><small>Tampilkan slot yang sudah penuh ke pasien</small></span></label>
+                                        </div>
+                                    </article>
+
+                                    <article class="schedule-card holiday-card">
+                                        <header class="schedule-card-heading"><div><h2>Hari Libur Nasional</h2><p>Kelola hari libur yang memengaruhi jadwal layanan</p></div></header>
+                                        <div class="holiday-list">
+                                            @for (holiday of nationalHolidays; track holiday.date) {
+                                                <div class="holiday-row"><span><strong>{{ holiday.date }}</strong><small>{{ holiday.name }}</small></span><button class="row-action delete" type="button" [attr.aria-label]="'Hapus hari libur ' + holiday.name"><i class="ri-delete-bin-line" aria-hidden="true"></i></button></div>
+                                            }
+                                        </div>
+                                        <button class="button button-outline add-schedule-button" type="button"><i class="ri-add-line" aria-hidden="true"></i> Tambah Hari Libur</button>
+                                    </article>
+                                </aside>
+                            </div>
+                        } @else if (activeServiceTab() === 'Biaya dan Pembayaran') {
+                            <div class="service-settings-layout">
+                                <div class="service-settings-main">
+                                    <article class="schedule-card">
+                                        <header class="schedule-card-heading"><div><h2>Komponen Biaya</h2><p>Atur rincian biaya untuk {{ service.name }}</p></div><button class="button button-outline" type="button"><i class="ri-add-line" aria-hidden="true"></i> Tambah Biaya</button></header>
+                                        <div class="schedule-table-wrap">
+                                            <table class="schedule-table service-table">
+                                                <thead><tr><th>Komponen</th><th>Jenis</th><th>Nominal</th><th>Status</th><th>Aksi</th></tr></thead>
+                                                <tbody>
+                                                    @for (fee of serviceFees; track fee.name) {
+                                                        <tr><td><strong class="table-cell-clamp">{{ fee.name }}</strong><small class="table-cell-clamp">{{ fee.description }}</small></td><td>{{ fee.type }}</td><td>{{ fee.amount }}</td><td><span class="settings-status status-active">Aktif</span></td><td><button class="row-action edit" type="button" [attr.aria-label]="'Edit ' + fee.name"><i class="ri-edit-line" aria-hidden="true"></i></button></td></tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </article>
+                                    <article class="schedule-card">
+                                        <header class="schedule-card-heading"><div><h2>Contoh Perhitungan</h2><p>Estimasi biaya yang ditampilkan kepada pasien</p></div></header>
+                                        <div class="fee-calculation"><div><span>{{ service.name === 'Telefarmasi' ? 'Konsultasi apoteker' : 'Konsultasi dokter' }}</span><strong>Rp 75.000</strong></div><div><span>Biaya platform</span><strong>Rp 5.000</strong></div><div class="fee-total"><span>Total pembayaran</span><strong>Rp 80.000</strong></div></div>
+                                    </article>
+                                </div>
+                                <aside class="service-settings-side">
+                                    <article class="schedule-card">
+                                        <header class="schedule-card-heading"><div><h2>Metode Pembayaran</h2><p>Pilih metode yang tersedia untuk pasien</p></div></header>
+                                        <div class="service-payment-list">
+                                            @for (payment of paymentMethods.slice(0, 5); track payment.brand) {
+                                                <label class="payment-row"><span class="payment-logo" [class]="payment.brandClass">{{ payment.brand }}</span><span class="payment-copy"><strong>{{ payment.brand === 'BCA' || payment.brand === 'BRI' || payment.brand === 'BNI' ? 'Transfer ' + payment.brand : payment.brand }}</strong><small>Pembayaran instan</small></span><span class="switch-wrap"><input type="checkbox" checked [attr.aria-label]="'Aktifkan ' + payment.brand"><span class="switch-control"></span></span></label>
+                                            }
+                                        </div>
+                                    </article>
+                                    <article class="schedule-card">
+                                        <header class="schedule-card-heading"><div><h2>Kebijakan Pembayaran</h2><p>Ketentuan pembayaran layanan</p></div></header>
+                                        <div class="service-policy-fields">
+                                            <label class="field"><span>Batas waktu pembayaran</span><select><option>15 menit</option><option>30 menit</option><option>60 menit</option></select></label>
+                                            <label class="field"><span>Kebijakan pembatalan</span><select><option>Pengembalian dana penuh</option><option>Pengembalian dana sebagian</option><option>Tidak dapat dikembalikan</option></select></label>
+                                            <label class="availability-toggle"><span class="switch-wrap"><input type="checkbox" checked aria-label="Aktifkan pengembalian dana otomatis"><span class="switch-control"></span></span><span><strong>Pengembalian dana otomatis</strong><small>Proses refund sesuai kebijakan</small></span></label>
+                                        </div>
+                                    </article>
+                                </aside>
+                            </div>
+                        } @else if (activeServiceTab() === 'Fitur') {
+                            <div class="service-settings-layout">
+                                <article class="schedule-card">
+                                    <header class="schedule-card-heading"><div><h2>Fitur {{ service.name }}</h2><p>Kelola fitur yang tersedia pada layanan ini</p></div><button class="button button-outline" type="button"><i class="ri-add-line" aria-hidden="true"></i> Tambah Fitur</button></header>
+                                    <div class="schedule-table-wrap">
+                                        <table class="schedule-table service-table">
+                                            <thead><tr><th>Fitur</th><th>Keterangan</th><th>Status</th><th>Aksi</th></tr></thead>
+                                            <tbody>
+                                                @for (feature of serviceFeatures; track feature.name) {
+                                                    <tr><td><strong class="table-cell-clamp">{{ feature.name }}</strong></td><td><span class="table-cell-clamp">{{ feature.description }}</span></td><td><span class="settings-status" [class.status-active]="feature.enabled" [class.status-inactive]="!feature.enabled">{{ feature.enabled ? 'Aktif' : 'Nonaktif' }}</span></td><td><label class="switch-wrap"><input type="checkbox" [(ngModel)]="feature.enabled" [ngModelOptions]="{standalone: true}" [attr.aria-label]="'Aktifkan fitur ' + feature.name"><span class="switch-control"></span></label></td></tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </article>
+                                <aside class="service-settings-side">
+                                    <article class="schedule-card service-info-card"><span class="service-info-icon"><i class="ri-information-line" aria-hidden="true"></i></span><div><h2>Informasi Fitur</h2><p>Fitur aktif dapat digunakan pasien saat mengakses {{ service.name }}. Nonaktifkan fitur yang belum tersedia agar tidak muncul pada aplikasi.</p></div></article>
+                                    <article class="schedule-card">
+                                        <header class="schedule-card-heading"><div><h2>Rekomendasi Fitur</h2><p>Fitur untuk meningkatkan pengalaman layanan</p></div></header>
+                                        <div class="recommendation-list"><div><i class="ri-file-list-3-line" aria-hidden="true"></i><span><strong>Ringkasan layanan</strong><small>Kirim ringkasan sesi kepada pasien</small></span><button type="button" aria-label="Tambahkan fitur Ringkasan layanan"><i class="ri-add-line" aria-hidden="true"></i></button></div><div><i class="ri-star-line" aria-hidden="true"></i><span><strong>Ulasan layanan</strong><small>Minta penilaian setelah sesi selesai</small></span><button type="button" aria-label="Tambahkan fitur Ulasan layanan"><i class="ri-add-line" aria-hidden="true"></i></button></div></div>
+                                    </article>
+                                </aside>
+                            </div>
+                        } @else if (activeServiceTab() === 'Notifikasi') {
+                            <div class="service-settings-layout">
+                                <div class="service-settings-main">
+                                    <article class="schedule-card">
+                                        <header class="schedule-card-heading"><div><h2>Pengaturan Notifikasi</h2><p>Pilih kanal notifikasi untuk setiap aktivitas {{ service.name }}</p></div></header>
+                                        <div class="schedule-table-wrap">
+                                            <table class="schedule-table notification-table">
+                                                <thead><tr><th>Jenis Notifikasi</th><th>In-App</th><th>Email</th><th>SMS</th><th>WhatsApp</th><th>Push</th></tr></thead>
+                                                <tbody>
+                                                    @for (notification of notificationTypes; track notification.name) {
+                                                        <tr><td><span class="table-cell-clamp">{{ notification.name }}</span></td><td><input type="checkbox" [(ngModel)]="notification.inApp" [ngModelOptions]="{standalone: true}" [attr.aria-label]="notification.name + ' - In-App'"></td><td><input type="checkbox" [(ngModel)]="notification.email" [ngModelOptions]="{standalone: true}" [attr.aria-label]="notification.name + ' - Email'"></td><td><input type="checkbox" [(ngModel)]="notification.sms" [ngModelOptions]="{standalone: true}" [attr.aria-label]="notification.name + ' - SMS'"></td><td><input type="checkbox" [(ngModel)]="notification.whatsapp" [ngModelOptions]="{standalone: true}" [attr.aria-label]="notification.name + ' - WhatsApp'"></td><td><input type="checkbox" [(ngModel)]="notification.push" [ngModelOptions]="{standalone: true}" [attr.aria-label]="notification.name + ' - Push'"></td></tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <p class="schedule-note"><i class="ri-information-line" aria-hidden="true"></i> Pastikan kanal notifikasi sudah dikonfigurasi sebelum diaktifkan.</p>
+                                    </article>
+                                    <article class="schedule-card">
+                                        <header class="schedule-card-heading"><div><h2>Pengaturan Umum</h2><p>Atur waktu dan frekuensi pengiriman notifikasi</p></div></header>
+                                        <div class="service-policy-fields notification-settings">
+                                            <label class="field"><span>Bahasa notifikasi</span><select><option>Bahasa Indonesia</option><option>English</option></select></label>
+                                            <label class="field"><span>Waktu pengingat sebelum jadwal</span><select><option>30 menit</option><option>1 jam</option><option>24 jam</option></select></label>
+                                            <label class="availability-toggle"><span class="switch-wrap"><input type="checkbox" checked aria-label="Aktifkan notifikasi otomatis"><span class="switch-control"></span></span><span><strong>Notifikasi otomatis</strong><small>Kirim notifikasi saat status layanan berubah</small></span></label>
+                                        </div>
+                                    </article>
+                                </div>
+                                <aside class="service-settings-side">
+                                    <article class="schedule-card">
+                                        <header class="schedule-card-heading"><div><h2>Preview Notifikasi</h2><p>Contoh pesan kepada pasien</p></div></header>
+                                        <div class="notification-preview"><span class="preview-brand"><i class="ri-heart-pulse-line" aria-hidden="true"></i> PSEF</span><strong>Jadwal {{ service.name }} Anda telah dikonfirmasi</strong><p>Halo, jadwal layanan Anda telah berhasil dikonfirmasi. Silakan masuk ke aplikasi sesuai waktu yang telah ditentukan.</p><small>Hari ini, 09:41</small></div>
+                                    </article>
+                                </aside>
+                            </div>
+                        } @else if (activeServiceTab() === 'SLA dan Batasan') {
+                            <div class="service-settings-layout">
+                                <div class="service-settings-main">
+                                    <article class="schedule-card">
+                                        <header class="schedule-card-heading"><div><h2>Target SLA {{ service.name }}</h2><p>Pantau target waktu dan pencapaian layanan</p></div></header>
+                                        <div class="schedule-table-wrap">
+                                            <table class="schedule-table service-table">
+                                                <thead><tr><th>Indikator</th><th>Target</th><th>Rata-rata aktual</th><th>Status</th></tr></thead>
+                                                <tbody>@for (sla of slaTargets; track sla.metric) {<tr><td><span class="table-cell-clamp">{{ sla.metric }}</span></td><td>{{ sla.target }}</td><td>{{ sla.actual }}</td><td><span class="settings-status" [class.status-active]="sla.status === 'Memenuhi'" [class.status-warning]="sla.status !== 'Memenuhi'">{{ sla.status }}</span></td></tr>}</tbody>
+                                            </table>
+                                        </div>
+                                    </article>
+                                    <article class="schedule-card">
+                                        <header class="schedule-card-heading"><div><h2>Riwayat Perubahan</h2><p>Aktivitas perubahan pengaturan layanan</p></div></header>
+                                        <div class="sla-history">@for (item of slaHistory; track item.date) {<div><span class="history-dot"></span><span><strong>{{ item.change }}</strong><small>{{ item.date }} · {{ item.by }}</small></span></div>}</div>
+                                    </article>
+                                </div>
+                                <aside class="service-settings-side">
+                                    <article class="schedule-card">
+                                        <header class="schedule-card-heading"><div><h2>Batas Layanan</h2><p>Atur batasan pemesanan dan penggunaan</p></div></header>
+                                        <div class="service-policy-fields">
+                                            <label class="field"><span>Maksimal pemesanan per hari</span><input type="number" value="20" min="0"></label>
+                                            <label class="field"><span>Batas reschedule</span><select><option>2 kali</option><option>1 kali</option><option>Tidak dibatasi</option></select></label>
+                                            <label class="field"><span>Batas pembatalan sebelum jadwal</span><select><option>2 jam</option><option>6 jam</option><option>24 jam</option></select></label>
+                                            <label class="field"><span>Waktu toleransi keterlambatan</span><select><option>15 menit</option><option>10 menit</option><option>30 menit</option></select></label>
+                                            <label class="availability-toggle"><span class="switch-wrap"><input type="checkbox" checked aria-label="Aktifkan batas booking"><span class="switch-control"></span></span><span><strong>Terapkan batas booking</strong><small>Batasi pemesanan sesuai aturan di atas</small></span></label>
+                                        </div>
+                                    </article>
+                                </aside>
+                            </div>
+                        } @else {
+                            <section class="detail-section detail-placeholder">
+                                <h2>{{ activeServiceTab() }}</h2>
+                                <p>Atur {{ activeServiceTab().toLowerCase() }} untuk layanan {{ service.name }}.</p>
+                            </section>
+                        }
+                        <footer class="detail-actions"><button class="button button-secondary" type="button" (click)="resetMessage()">Batal</button><button class="button button-primary" type="button" (click)="saveSettings()">Simpan Perubahan</button></footer>
+                    </article>
+                }
+            }
+        </div>
+    }
+
+    @if (activeTab() === 'produk') {
+        <div class="section-layout product-layout" role="tabpanel" aria-labelledby="tab-produk">
+            <nav class="section-menu product-menu" aria-label="Pengaturan produk">
+                @for (section of productSections; track section.name) {
+                    <button class="section-menu-item" type="button" [class.active]="selectedProductSection() === section.name"
+                        (click)="selectedProductSection.set(section.name)">
+                        <span class="section-menu-icon" [class]="section.color"><i [class]="section.icon" aria-hidden="true"></i></span>
+                        <span><strong>{{ section.name }}</strong><small>{{ section.description }}</small></span>
+                    </button>
+                }
+            </nav>
+
+            <div class="product-content">
+                <article class="settings-card product-title-card">
+                    <div><h2>{{ selectedProductSection() }}</h2><p>{{ getSelectedProductDescription() }}</p></div>
+                    @if (selectedProductSection() === 'Kategori Produk') {
+                        <button class="button button-primary" type="button" (click)="openAddCategory()"><i class="ri-add-line" aria-hidden="true"></i> Tambah Kategori</button>
+                    } @else if (selectedProductSection() === 'Golongan Obat') {
+                        <button class="button button-primary" type="button" (click)="openAddDrugClass()"><i class="ri-add-line" aria-hidden="true"></i> Tambah Golongan Obat</button>
+                    } @else {
+                        <button class="button button-primary" type="button" (click)="saveSettings()"><i class="ri-add-line" aria-hidden="true"></i> Tambah Data</button>
+                    }
+                </article>
+
+                @if (selectedProductSection() === 'Kategori Produk') {
+                    <div class="product-list-toolbar">
+                        <label class="product-list-search"><i class="ri-search-line" aria-hidden="true"></i><input type="search" placeholder="Cari kode, kategori, slug, atau deskripsi..." aria-label="Cari kategori produk" [ngModel]="categorySearch()" (ngModelChange)="categorySearch.set($event)" [ngModelOptions]="{standalone: true}"></label>
+                        <label class="product-list-filter"><span>Status</span><select aria-label="Filter status kategori produk" [ngModel]="categoryStatusFilter()" (ngModelChange)="categoryStatusFilter.set($event)" [ngModelOptions]="{standalone: true}"><option value="">Semua status</option><option value="Aktif">Aktif</option><option value="Nonaktif">Nonaktif</option></select></label>
+                    </div>
+                    <article class="settings-card category-card">
+                        <header class="card-heading"><div><h2>Daftar Kategori Produk</h2><p>Kelola kategori yang digunakan untuk mengelompokkan produk</p></div></header>
+                        <div class="table-scroll category-table-scroll">
+                            <table class="category-table category-list-table">
+                                <thead><tr><th scope="col">No</th><th scope="col">Kode</th><th scope="col">Nama Kategori</th><th scope="col">Slug</th><th scope="col">Deskripsi</th><th scope="col">Dibuat oleh</th><th scope="col">Tanggal Update</th><th scope="col">Status</th><th scope="col">Aksi</th></tr></thead>
+                                <tbody>
+                                    @for (category of filteredCategories; track category.code; let i = $index) {
+                                        <tr><td class="category-number">{{ i + 1 }}</td><td><span class="category-code">{{ category.code }}</span></td><td class="category-name"><span class="table-cell-clamp">{{ category.name }}</span></td><td><span class="category-slug">{{ category.slug }}</span></td><td class="category-description" [title]="category.description"><span class="table-cell-clamp">{{ category.description }}</span></td><td><span class="table-cell-clamp">{{ category.createdBy }}</span></td><td><span class="table-cell-clamp">{{ category.updatedAt }}</span></td><td><span class="category-state" [class.category-inactive]="category.status !== 'Aktif'"><span></span>{{ category.status }}</span></td><td><div class="category-actions"><button class="row-action edit" type="button" [attr.aria-label]="'Edit ' + category.name" (click)="openEditCategory(category)"><i class="ri-edit-line" aria-hidden="true"></i></button><button class="row-action delete" type="button" [attr.aria-label]="'Hapus ' + category.name" (click)="openDeleteCategory(category.code)"><i class="ri-delete-bin-line" aria-hidden="true"></i></button></div></td></tr>
+                                    } @empty {
+                                        <tr><td class="product-empty-state" colspan="9">Kategori produk tidak ditemukan. Ubah kata kunci atau filter.</td></tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <footer class="table-footer"><span>Menampilkan {{ filteredCategories.length }} dari {{ categories().length }} kategori produk</span><span class="table-demo-note"><i class="ri-information-line" aria-hidden="true"></i> Data contoh pengaturan produk</span></footer>
+                    </article>
+                } @else if (selectedProductSection() === 'Golongan Obat') {
+                    <div class="product-list-toolbar">
+                        <label class="product-list-search"><i class="ri-search-line" aria-hidden="true"></i><input type="search" placeholder="Cari kode, golongan, simbol, atau peringatan..." aria-label="Cari golongan obat" [ngModel]="drugClassSearch()" (ngModelChange)="drugClassSearch.set($event)" [ngModelOptions]="{standalone: true}"></label>
+                        <label class="product-list-filter"><span>Status</span><select aria-label="Filter status golongan obat" [ngModel]="drugClassStatusFilter()" (ngModelChange)="drugClassStatusFilter.set($event)" [ngModelOptions]="{standalone: true}"><option value="">Semua status</option><option value="Aktif">Aktif</option><option value="Nonaktif">Nonaktif</option></select></label>
+                        <label class="product-list-filter"><span>Resep</span><select aria-label="Filter kebutuhan resep" [ngModel]="drugClassPrescriptionFilter()" (ngModelChange)="drugClassPrescriptionFilter.set($event)" [ngModelOptions]="{standalone: true}"><option value="">Semua</option><option value="true">Butuh resep</option><option value="false">Tanpa resep</option></select></label>
+                    </div>
+                    <article class="settings-card category-card">
+                        <header class="card-heading"><div><h2>Daftar Golongan Obat</h2><p>Kelola klasifikasi obat berdasarkan regulasi dan ketentuan resep</p></div><span class="drug-class-count">{{ filteredDrugClasses.length }} golongan</span></header>
+                        <div class="table-scroll category-table-scroll">
+                            <table class="category-table category-list-table drug-class-table">
+                                <thead><tr><th scope="col">Kode</th><th scope="col">Nama Golongan</th><th scope="col">Simbol</th><th scope="col">Butuh Resep</th><th scope="col">Peringatan</th><th scope="col">Penandaan Kemasan</th><th scope="col">Dibuat oleh</th><th scope="col">Tanggal Update</th><th scope="col">Status</th><th scope="col">Aksi</th></tr></thead>
+                                <tbody>
+                                    @for (drugClass of filteredDrugClasses; track drugClass.code) {
+                                        <tr><td><span class="category-code">{{ drugClass.code }}</span></td><td class="category-name"><span class="table-cell-clamp">{{ drugClass.name }}</span></td><td class="drug-symbol"><span class="table-cell-clamp">{{ drugClass.symbol }}</span></td><td><span class="prescription-badge" [class.prescription-required]="drugClass.prescriptionRequired"><i [class]="drugClass.prescriptionRequired ? 'ri-file-shield-2-line' : 'ri-checkbox-circle-line'" aria-hidden="true"></i>{{ drugClass.prescriptionRequired ? 'Ya' : 'Tidak' }}</span></td><td class="drug-warning" [title]="drugClass.warning"><span class="table-cell-clamp">{{ drugClass.warning || '—' }}</span></td><td class="drug-packaging" [title]="drugClass.packagingMark"><span class="table-cell-clamp">{{ drugClass.packagingMark || '—' }}</span></td><td><span class="table-cell-clamp">{{ drugClass.createdBy }}</span></td><td><span class="table-cell-clamp">{{ drugClass.updatedAt }}</span></td><td><span class="category-state" [class.category-inactive]="drugClass.status !== 'Aktif'"><span></span>{{ drugClass.status }}</span></td><td><div class="category-actions"><button class="row-action edit" type="button" [attr.aria-label]="'Edit ' + drugClass.name" (click)="openEditDrugClass(drugClass)"><i class="ri-edit-line" aria-hidden="true"></i></button><button class="row-action delete" type="button" [attr.aria-label]="'Hapus ' + drugClass.name" (click)="openDeleteDrugClass(drugClass.code)"><i class="ri-delete-bin-line" aria-hidden="true"></i></button></div></td></tr>
+                                    } @empty {
+                                        <tr><td class="product-empty-state" colspan="10">Golongan obat tidak ditemukan. Ubah kata kunci atau filter.</td></tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <footer class="table-footer"><span>Menampilkan {{ filteredDrugClasses.length }} dari {{ drugClasses().length }} golongan obat</span><span class="table-demo-note"><i class="ri-information-line" aria-hidden="true"></i> Data contoh pengaturan produk</span></footer>
+                    </article>
+                } @else if (selectedProductSection() === 'Kategori Farmakologi') {
+                    <div class="product-list-toolbar">
+                        <label class="product-list-search"><i class="ri-search-line" aria-hidden="true"></i><input type="search" placeholder="Cari kategori, kode ATC, atau deskripsi..." aria-label="Cari kategori farmakologi" [ngModel]="pharmacologySearch()" (ngModelChange)="pharmacologySearch.set($event)" [ngModelOptions]="{standalone: true}"></label>
+                        <label class="product-list-filter"><span>Status</span><select aria-label="Filter status kategori farmakologi" [ngModel]="pharmacologyStatusFilter()" (ngModelChange)="pharmacologyStatusFilter.set($event)" [ngModelOptions]="{standalone: true}"><option value="">Semua status</option><option value="Aktif">Aktif</option><option value="Nonaktif">Nonaktif</option></select></label>
+                    </div>
+                    <article class="settings-card category-card pharmacology-card">
+                        <header class="card-heading">
+                            <div><h2>Daftar Kategori Farmakologi</h2><p>Kelola kelompok obat berdasarkan fungsi dan klasifikasi ATC</p></div>
+                            <span class="drug-class-count">{{ filteredPharmacologyCategories.length }} kategori</span>
+                        </header>
+                        <div class="table-scroll category-table-scroll pharmacology-table-scroll">
+                            <table class="category-table category-list-table pharmacology-table">
+                                <thead>
+                                    <tr><th scope="col">Kode</th><th scope="col">Nama Kategori</th><th scope="col">Deskripsi</th><th scope="col">Kode ATC</th><th scope="col">Dibuat oleh</th><th scope="col">Tanggal Update</th><th scope="col">Status</th><th scope="col">Aksi</th></tr>
+                                </thead>
+                                <tbody>
+                                    @for (category of filteredPharmacologyCategories; track category.code) {
+                                        <tr>
+                                            <td><span class="category-code">{{ category.code }}</span></td>
+                                            <td class="category-name"><span class="table-cell-clamp">{{ category.name }}</span></td>
+                                            <td class="pharmacology-description" [title]="category.description"><span class="table-cell-clamp">{{ category.description }}</span></td>
+                                            <td><span class="atc-code">{{ category.atcCode }}</span></td>
+                                            <td><span class="table-cell-clamp">{{ category.createdBy }}</span></td>
+                                            <td><span class="table-cell-clamp">{{ category.updatedAt }}</span></td>
+                                            <td><span class="category-state" [class.category-inactive]="category.status !== 'Aktif'"><span></span>{{ category.status }}</span></td>
+                                            <td><div class="category-actions"><button class="row-action edit" type="button" [attr.aria-label]="'Edit ' + category.name"><i class="ri-edit-line" aria-hidden="true"></i></button><button class="row-action delete" type="button" [attr.aria-label]="'Hapus ' + category.name"><i class="ri-delete-bin-line" aria-hidden="true"></i></button></div></td>
+                                        </tr>
+                                    } @empty {
+                                        <tr><td class="product-empty-state" colspan="8">Kategori farmakologi tidak ditemukan. Ubah kata kunci atau filter.</td></tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <footer class="table-footer"><span>Menampilkan {{ filteredPharmacologyCategories.length }} dari {{ pharmacologyCategories.length }} kategori farmakologi</span><span class="table-demo-note"><i class="ri-information-line" aria-hidden="true"></i> Data contoh pengaturan produk</span></footer>
+                    </article>
+                } @else if (selectedProductSection() === 'Farmakologi') {
+                    <div class="product-list-toolbar">
+                        <label class="product-list-search"><i class="ri-search-line" aria-hidden="true"></i><input type="search" placeholder="Cari kode, nama mekanisme, atau mekanisme kerja..." aria-label="Cari mekanisme farmakologi" [ngModel]="productDataSearch()" (ngModelChange)="productDataSearch.set($event)" [ngModelOptions]="{standalone: true}"></label>
+                        <label class="product-list-filter"><span>Status</span><select aria-label="Filter status mekanisme farmakologi" [ngModel]="productDataStatusFilter()" (ngModelChange)="productDataStatusFilter.set($event)" [ngModelOptions]="{standalone: true}"><option value="">Semua status</option><option value="Aktif">Aktif</option><option value="Nonaktif">Nonaktif</option></select></label>
+                    </div>
+                    <article class="settings-card category-card pharmacology-mechanism-card">
+                        <header class="card-heading">
+                            <div><h2>Daftar Farmakologi</h2><p>Kelola mekanisme kerja berdasarkan kategori farmakologi</p></div>
+                            <span class="drug-class-count">{{ filteredPharmacologyMechanisms.length }} mekanisme</span>
+                        </header>
+                        <div class="table-scroll category-table-scroll">
+                            <table class="category-table category-list-table pharmacology-mechanism-table">
+                                <thead><tr><th scope="col">Kode Kategori Farmakologi</th><th scope="col">Kode</th><th scope="col">Nama Mekanisme</th><th scope="col">Mekanisme Kerja</th><th scope="col">Dibuat oleh</th><th scope="col">Tanggal Update</th><th scope="col">Status</th><th scope="col">Aksi</th></tr></thead>
+                                <tbody>
+                                    @for (mechanism of filteredPharmacologyMechanisms; track mechanism.code) {
+                                        <tr>
+                                            <td><span class="category-code">{{ mechanism.categoryCode }}</span></td>
+                                            <td><span class="category-code">{{ mechanism.code }}</span></td>
+                                            <td class="category-name"><span class="table-cell-clamp">{{ mechanism.name }}</span></td>
+                                            <td class="mechanism-description" [title]="mechanism.mechanism"><span class="table-cell-clamp">{{ mechanism.mechanism }}</span></td>
+                                            <td><span class="table-cell-clamp">{{ mechanism.createdBy }}</span></td>
+                                            <td><span class="table-cell-clamp">{{ mechanism.updatedAt }}</span></td>
+                                            <td><span class="category-state" [class.category-inactive]="mechanism.status !== 'Aktif'"><span></span>{{ mechanism.status }}</span></td>
+                                            <td><div class="category-actions"><button class="row-action edit" type="button" [attr.aria-label]="'Edit ' + mechanism.name"><i class="ri-edit-line" aria-hidden="true"></i></button><button class="row-action delete" type="button" [attr.aria-label]="'Hapus ' + mechanism.name"><i class="ri-delete-bin-line" aria-hidden="true"></i></button></div></td>
+                                        </tr>
+                                    } @empty {
+                                        <tr><td class="product-empty-state" colspan="8">Mekanisme farmakologi tidak ditemukan. Ubah kata kunci atau filter.</td></tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <footer class="table-footer"><span>Menampilkan {{ filteredPharmacologyMechanisms.length }} dari {{ pharmacologyMechanisms.length }} mekanisme</span><span class="table-demo-note"><i class="ri-information-line" aria-hidden="true"></i> Data contoh pengaturan produk</span></footer>
+                    </article>
+                } @else if (selectedProductSection() === 'Cara Pemberian') {
+                    <div class="product-list-toolbar">
+                        <label class="product-list-search"><i class="ri-search-line" aria-hidden="true"></i><input type="search" placeholder="Cari kode, cara, KFA, definisi, atau sediaan..." aria-label="Cari cara pemberian" [ngModel]="productDataSearch()" (ngModelChange)="productDataSearch.set($event)" [ngModelOptions]="{standalone: true}"></label>
+                        <label class="product-list-filter"><span>Status</span><select aria-label="Filter status cara pemberian" [ngModel]="productDataStatusFilter()" (ngModelChange)="productDataStatusFilter.set($event)" [ngModelOptions]="{standalone: true}"><option value="">Semua status</option><option value="Aktif">Aktif</option><option value="Nonaktif">Nonaktif</option></select></label>
+                    </div>
+                    <article class="settings-card category-card administration-route-card">
+                        <header class="card-heading">
+                            <div><h2>Daftar Cara Pemberian</h2><p>Kelola metode pemberian dan klasifikasi KFA (SNOMED)</p></div>
+                            <span class="drug-class-count">{{ filteredAdministrationRoutes.length }} cara pemberian</span>
+                        </header>
+                        <div class="table-scroll category-table-scroll">
+                            <table class="category-table category-list-table administration-route-table">
+                                <thead><tr><th scope="col">Kode</th><th scope="col">Nama Cara</th><th scope="col">Nama Lengkap</th><th scope="col">KFA (SNOMED)</th><th scope="col">Definisi</th><th scope="col">Contoh Sediaan</th><th scope="col">Dibuat Oleh</th><th scope="col">Tanggal Update</th><th scope="col">Status</th><th scope="col">Aksi</th></tr></thead>
+                                <tbody>
+                                    @for (route of filteredAdministrationRoutes; track route.code) {
+                                        <tr>
+                                            <td><span class="category-code">{{ route.code }}</span></td>
+                                            <td class="category-name"><span class="table-cell-clamp">{{ route.name }}</span></td>
+                                            <td><span class="table-cell-clamp">{{ route.fullName }}</span></td>
+                                            <td><span class="route-kfa-code">{{ route.kfaCode }}</span></td>
+                                            <td class="route-definition" [title]="route.definition"><span class="table-cell-clamp">{{ route.definition }}</span></td>
+                                            <td><span class="table-cell-clamp">{{ route.dosageForms }}</span></td>
+                                            <td><span class="table-cell-clamp">{{ route.createdBy }}</span></td>
+                                            <td><span class="table-cell-clamp">{{ route.updatedAt }}</span></td>
+                                            <td><span class="category-state" [class.category-inactive]="route.status !== 'Aktif'"><span></span>{{ route.status }}</span></td>
+                                            <td><div class="category-actions"><button class="row-action edit" type="button" [attr.aria-label]="'Edit ' + route.name"><i class="ri-edit-line" aria-hidden="true"></i></button><button class="row-action delete" type="button" [attr.aria-label]="'Hapus ' + route.name"><i class="ri-delete-bin-line" aria-hidden="true"></i></button></div></td>
+                                        </tr>
+                                    } @empty {
+                                        <tr><td class="product-empty-state" colspan="10">Cara pemberian tidak ditemukan. Ubah kata kunci atau filter.</td></tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <footer class="table-footer"><span>Menampilkan {{ filteredAdministrationRoutes.length }} dari {{ administrationRoutes.length }} cara pemberian</span><span class="table-demo-note"><i class="ri-information-line" aria-hidden="true"></i> Data contoh pengaturan produk</span></footer>
+                    </article>
+                } @else if (selectedProductSection() === 'Sediaan') {
+                    <div class="product-list-toolbar">
+                        <label class="product-list-search"><i class="ri-search-line" aria-hidden="true"></i><input type="search" placeholder="Cari kode, sediaan, varian, atau KFA..." aria-label="Cari sediaan" [ngModel]="productDataSearch()" (ngModelChange)="productDataSearch.set($event)" [ngModelOptions]="{standalone: true}"></label>
+                        <label class="product-list-filter"><span>Status</span><select aria-label="Filter status sediaan" [ngModel]="productDataStatusFilter()" (ngModelChange)="productDataStatusFilter.set($event)" [ngModelOptions]="{standalone: true}"><option value="">Semua status</option><option value="Aktif">Aktif</option><option value="Nonaktif">Nonaktif</option></select></label>
+                    </div>
+                    <article class="settings-card category-card dosage-form-card">
+                        <header class="card-heading">
+                            <div><h2>Daftar Sediaan</h2><p>Kelola bentuk sediaan dan klasifikasi produk farmasi</p></div>
+                            <span class="drug-class-count">{{ filteredDosageForms.length }} sediaan</span>
+                        </header>
+                        <div class="table-scroll category-table-scroll">
+                            <table class="category-table category-list-table dosage-form-table">
+                                <thead><tr><th scope="col">Kode</th><th scope="col">Nama Sediaan</th><th scope="col">Varian</th><th scope="col">Kode KFA</th><th scope="col">Jenis Fisik</th><th scope="col">Dibuat Oleh</th><th scope="col">Tanggal Update</th><th scope="col">Status</th><th scope="col">Aksi</th></tr></thead>
+                                <tbody>
+                                    @for (form of filteredDosageForms; track form.code) {
+                                        <tr>
+                                            <td><span class="category-code">{{ form.code }}</span></td>
+                                            <td class="category-name"><span class="table-cell-clamp">{{ form.name }}</span></td>
+                                            <td><span class="table-cell-clamp">{{ form.variant }}</span></td>
+                                            <td><span class="dosage-kfa-code">{{ form.kfaCode }}</span></td>
+                                            <td><span class="physical-type">{{ form.physicalType }}</span></td>
+                                            <td><span class="table-cell-clamp">{{ form.createdBy }}</span></td>
+                                            <td><span class="table-cell-clamp">{{ form.updatedAt }}</span></td>
+                                            <td><span class="category-state" [class.category-inactive]="form.status !== 'Aktif'"><span></span>{{ form.status }}</span></td>
+                                            <td><div class="category-actions"><button class="row-action edit" type="button" [attr.aria-label]="'Edit ' + form.name"><i class="ri-edit-line" aria-hidden="true"></i></button><button class="row-action delete" type="button" [attr.aria-label]="'Hapus ' + form.name"><i class="ri-delete-bin-line" aria-hidden="true"></i></button></div></td>
+                                        </tr>
+                                    } @empty {
+                                        <tr><td class="product-empty-state" colspan="9">Sediaan tidak ditemukan. Ubah kata kunci atau filter.</td></tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <footer class="table-footer"><span>Menampilkan {{ filteredDosageForms.length }} dari {{ dosageForms.length }} sediaan</span><span class="table-demo-note"><i class="ri-information-line" aria-hidden="true"></i> Data contoh pengaturan produk</span></footer>
+                    </article>
+                } @else if (selectedProductSection() === 'Kemasan') {
+                    <div class="product-list-toolbar">
+                        <label class="product-list-search"><i class="ri-search-line" aria-hidden="true"></i><input type="search" placeholder="Cari kode, nama, tipe, atau deskripsi kemasan..." aria-label="Cari kemasan" [ngModel]="productDataSearch()" (ngModelChange)="productDataSearch.set($event)" [ngModelOptions]="{standalone: true}"></label>
+                        <label class="product-list-filter"><span>Status</span><select aria-label="Filter status kemasan" [ngModel]="productDataStatusFilter()" (ngModelChange)="productDataStatusFilter.set($event)" [ngModelOptions]="{standalone: true}"><option value="">Semua status</option><option value="Aktif">Aktif</option><option value="Nonaktif">Nonaktif</option></select></label>
+                    </div>
+                    <article class="settings-card category-card packaging-card">
+                        <header class="card-heading"><div><h2>Daftar Kemasan</h2><p>Kelola tipe kemasan dan kontak langsung dengan obat</p></div><span class="drug-class-count">{{ filteredPackagingTypes.length }} kemasan</span></header>
+                        <div class="table-scroll category-table-scroll">
+                            <table class="category-table category-list-table packaging-table">
+                                <thead><tr><th scope="col">Kode</th><th scope="col">Nama Kemasan</th><th scope="col">Tipe Kemasan</th><th scope="col">Deskripsi</th><th scope="col">Kontak Langsung Obat</th><th scope="col">Dibuat Oleh</th><th scope="col">Tanggal Update</th><th scope="col">Status</th><th scope="col">Aksi</th></tr></thead>
+                                <tbody>
+                                    @for (packaging of filteredPackagingTypes; track packaging.code) {
+                                        <tr>
+                                            <td><span class="category-code">{{ packaging.code }}</span></td>
+                                            <td class="category-name"><span class="table-cell-clamp">{{ packaging.name }}</span></td>
+                                            <td><span class="physical-type">{{ packaging.type }}</span></td>
+                                            <td class="packaging-description" [title]="packaging.description"><span class="table-cell-clamp">{{ packaging.description }}</span></td>
+                                            <td><span class="contact-badge" [class.contact-yes]="packaging.directContact === 'Ya'">{{ packaging.directContact }}</span></td>
+                                            <td><span class="table-cell-clamp">{{ packaging.createdBy }}</span></td>
+                                            <td><span class="table-cell-clamp">{{ packaging.updatedAt }}</span></td>
+                                            <td><span class="category-state" [class.category-inactive]="packaging.status !== 'Aktif'"><span></span>{{ packaging.status }}</span></td>
+                                            <td><div class="category-actions"><button class="row-action edit" type="button" [attr.aria-label]="'Edit ' + packaging.name"><i class="ri-edit-line" aria-hidden="true"></i></button><button class="row-action delete" type="button" [attr.aria-label]="'Hapus ' + packaging.name"><i class="ri-delete-bin-line" aria-hidden="true"></i></button></div></td>
+                                        </tr>
+                                    } @empty {
+                                        <tr><td class="product-empty-state" colspan="9">Kemasan tidak ditemukan. Ubah kata kunci atau filter.</td></tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <footer class="table-footer"><span>Menampilkan {{ filteredPackagingTypes.length }} dari {{ packagingTypes.length }} kemasan</span><span class="table-demo-note"><i class="ri-information-line" aria-hidden="true"></i> Data contoh pengaturan produk</span></footer>
+                    </article>
+                } @else if (selectedProductSection() === 'Satuan') {
+                    <div class="product-list-toolbar">
+                        <label class="product-list-search"><i class="ri-search-line" aria-hidden="true"></i><input type="search" placeholder="Cari kode, nama satuan, KFA, atau SNOMED..." aria-label="Cari satuan" [ngModel]="productDataSearch()" (ngModelChange)="productDataSearch.set($event)" [ngModelOptions]="{standalone: true}"></label>
+                        <label class="product-list-filter"><span>Status</span><select aria-label="Filter status satuan" [ngModel]="productDataStatusFilter()" (ngModelChange)="productDataStatusFilter.set($event)" [ngModelOptions]="{standalone: true}"><option value="">Semua status</option><option value="Aktif">Aktif</option><option value="Nonaktif">Nonaktif</option></select></label>
+                    </div>
+                    <article class="settings-card category-card product-unit-card">
+                        <header class="card-heading"><div><h2>Daftar Satuan</h2><p>Kelola satuan produk dan kode referensi KFA/SNOMED</p></div><span class="drug-class-count">{{ filteredProductUnits.length }} satuan</span></header>
+                        <div class="table-scroll category-table-scroll">
+                            <table class="category-table category-list-table product-unit-table">
+                                <thead><tr><th scope="col">Kode</th><th scope="col">Nama Satuan</th><th scope="col">Kode Satuan KFA</th><th scope="col">Kode SNOMED</th><th scope="col">Definisi</th><th scope="col">Dibuat Oleh</th><th scope="col">Tanggal Update</th><th scope="col">Status</th><th scope="col">Aksi</th></tr></thead>
+                                <tbody>
+                                    @for (unit of filteredProductUnits; track unit.code) {
+                                        <tr>
+                                            <td><span class="category-code">{{ unit.code }}</span></td>
+                                            <td class="category-name"><span class="table-cell-clamp">{{ unit.name }}</span></td>
+                                            <td><span class="dosage-kfa-code">{{ unit.kfaUnitCode }}</span></td>
+                                            <td><span class="dosage-kfa-code">{{ unit.snomedCode }}</span></td>
+                                            <td class="unit-definition" [title]="unit.definition"><span class="table-cell-clamp">{{ unit.definition }}</span></td>
+                                            <td><span class="table-cell-clamp">{{ unit.createdBy }}</span></td>
+                                            <td><span class="table-cell-clamp">{{ unit.updatedAt }}</span></td>
+                                            <td><span class="category-state" [class.category-inactive]="unit.status !== 'Aktif'"><span></span>{{ unit.status }}</span></td>
+                                            <td><div class="category-actions"><button class="row-action edit" type="button" [attr.aria-label]="'Edit ' + unit.name"><i class="ri-edit-line" aria-hidden="true"></i></button><button class="row-action delete" type="button" [attr.aria-label]="'Hapus ' + unit.name"><i class="ri-delete-bin-line" aria-hidden="true"></i></button></div></td>
+                                        </tr>
+                                    } @empty {
+                                        <tr><td class="product-empty-state" colspan="9">Satuan tidak ditemukan. Ubah kata kunci atau filter.</td></tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <footer class="table-footer"><span>Menampilkan {{ filteredProductUnits.length }} dari {{ productUnits.length }} satuan</span><span class="table-demo-note"><i class="ri-information-line" aria-hidden="true"></i> Data contoh pengaturan produk</span></footer>
+                    </article>
+                } @else if (selectedProductSection() === 'Manufacturer') {
+                    <div class="product-list-toolbar">
+                        <label class="product-list-search"><i class="ri-search-line" aria-hidden="true"></i><input type="search" placeholder="Cari kode, manufacturer, alamat, atau sertifikat..." aria-label="Cari manufacturer" [ngModel]="productDataSearch()" (ngModelChange)="productDataSearch.set($event)" [ngModelOptions]="{standalone: true}"></label>
+                        <label class="product-list-filter"><span>Status</span><select aria-label="Filter status manufacturer" [ngModel]="productDataStatusFilter()" (ngModelChange)="productDataStatusFilter.set($event)" [ngModelOptions]="{standalone: true}"><option value="">Semua status</option><option value="Aktif">Aktif</option><option value="Nonaktif">Nonaktif</option></select></label>
+                    </div>
+                    <article class="settings-card category-card manufacturer-card">
+                        <header class="card-heading"><div><h2>Daftar Manufacturer</h2><p>Kelola produsen, sertifikat CPOB, dan kategori produk</p></div><span class="drug-class-count">{{ filteredManufacturers.length }} manufacturer</span></header>
+                        <div class="table-scroll category-table-scroll">
+                            <table class="category-table category-list-table manufacturer-table">
+                                <thead><tr><th scope="col">Kode</th><th scope="col">Nama Manufacturer</th><th scope="col">Jenis Perusahaan</th><th scope="col">Alamat</th><th scope="col">No. Sertifikat CPOB</th><th scope="col">Status CPOB</th><th scope="col">Kategori</th><th scope="col">Tanggal Update</th><th scope="col">Status</th><th scope="col">Aksi</th></tr></thead>
+                                <tbody>
+                                    @for (manufacturer of filteredManufacturers; track manufacturer.code) {
+                                        <tr>
+                                            <td><span class="category-code">{{ manufacturer.code }}</span></td>
+                                            <td class="category-name"><span class="table-cell-clamp">{{ manufacturer.name }}</span></td>
+                                            <td><span class="table-cell-clamp">{{ manufacturer.companyType }}</span></td>
+                                            <td class="manufacturer-address" [title]="manufacturer.address"><span class="table-cell-clamp">{{ manufacturer.address }}</span></td>
+                                            <td><span class="manufacturer-certificate">{{ manufacturer.cpobCertificate }}</span></td>
+                                            <td><span class="cpob-status" [class.cpob-valid]="manufacturer.cpobStatus === 'Berlaku'">{{ manufacturer.cpobStatus }}</span></td>
+                                            <td><span class="table-cell-clamp">{{ manufacturer.category }}</span></td>
+                                            <td><span class="table-cell-clamp">{{ manufacturer.updatedAt }}</span></td>
+                                            <td><span class="category-state" [class.category-inactive]="manufacturer.status !== 'Aktif'"><span></span>{{ manufacturer.status }}</span></td>
+                                            <td><div class="category-actions"><button class="row-action edit" type="button" [attr.aria-label]="'Edit ' + manufacturer.name"><i class="ri-edit-line" aria-hidden="true"></i></button><button class="row-action delete" type="button" [attr.aria-label]="'Hapus ' + manufacturer.name"><i class="ri-delete-bin-line" aria-hidden="true"></i></button></div></td>
+                                        </tr>
+                                    } @empty {
+                                        <tr><td class="product-empty-state" colspan="10">Manufacturer tidak ditemukan. Ubah kata kunci atau filter.</td></tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <footer class="table-footer"><span>Menampilkan {{ filteredManufacturers.length }} dari {{ manufacturers.length }} manufacturer</span><span class="table-demo-note"><i class="ri-information-line" aria-hidden="true"></i> Data contoh pengaturan produk</span></footer>
+                    </article>
+                } @else {
+                    <div class="product-list-toolbar">
+                        <label class="product-list-search"><i class="ri-search-line" aria-hidden="true"></i><input type="search" placeholder="Cari nama atau keterangan..." [attr.aria-label]="'Cari ' + selectedProductSection()" [ngModel]="productDataSearch()" (ngModelChange)="productDataSearch.set($event)" [ngModelOptions]="{standalone: true}"></label>
+                        <label class="product-list-filter"><span>Status</span><select [attr.aria-label]="'Filter status ' + selectedProductSection()" [ngModel]="productDataStatusFilter()" (ngModelChange)="productDataStatusFilter.set($event)" [ngModelOptions]="{standalone: true}"><option value="">Semua status</option><option value="Aktif">Aktif</option><option value="Nonaktif">Nonaktif</option></select></label>
+                    </div>
+                    <article class="settings-card category-card">
+                        <header class="card-heading"><div><h2>Daftar {{ selectedProductSection() }}</h2><p>Kelola data {{ selectedProductSection().toLowerCase() }} produk farmasi</p></div></header>
+                        <div class="table-scroll"><table class="category-table"><thead><tr><th>No</th><th>Nama</th><th>Keterangan</th><th>Status</th><th>Aksi</th></tr></thead>
+                            <tbody>@for (category of filteredSectionProducts; track category.code; let i = $index) {<tr><td>{{ i + 1 }}</td><td><span class="table-cell-clamp">{{ category.name }}</span></td><td><span class="table-cell-clamp">{{ category.description }}</span></td><td><span class="category-state" [class.category-inactive]="category.status !== 'Aktif'"><span></span>{{ category.status }}</span></td><td><button class="row-action edit" type="button" aria-label="Edit data"><i class="ri-edit-line"></i></button></td></tr>} @empty {<tr><td class="product-empty-state" colspan="5">Data tidak ditemukan. Ubah kata kunci atau filter.</td></tr>}</tbody>
+                        </table></div>
+                    </article>
+                }
+            </div>
+        </div>
+    }
+
+    @if (activeTab() === 'hak-akses') {
+        <section class="access-management" role="tabpanel" aria-labelledby="tab-hak-akses">
+            <article class="settings-card access-card">
+                <header class="access-heading">
+                    <div>
+                        <span class="access-heading-icon"><i class="ri-shield-user-line" aria-hidden="true"></i></span>
+                        <span><h2>Daftar Pengguna</h2><p>Kelola akun dan hak akses pengguna berdasarkan peran RBAC.</p></span>
+                    </div>
+                    <button class="button button-primary" type="button" (click)="openAddAccessUser()"><i class="ri-user-add-line" aria-hidden="true"></i> Tambah Pengguna</button>
+                </header>
+
+                <div class="access-role-summary" aria-label="Ringkasan pengguna berdasarkan peran">
+                    @for (role of accessRoles; track role) {
+                        <button type="button" [class.selected]="accessRoleFilter() === role" (click)="accessRoleFilter.set(accessRoleFilter() === role ? '' : role); onAccessFilterChange()">
+                            <span>{{ role }}</span><strong>{{ getAccessRoleCount(role) }}</strong>
+                        </button>
+                    }
+                </div>
+
+                <div class="access-toolbar">
+                    <label class="access-search"><i class="ri-search-line" aria-hidden="true"></i><input type="search" placeholder="Cari nama, email, ID, atau peran..." aria-label="Cari pengguna" [ngModel]="accessSearch()" (ngModelChange)="accessSearch.set($event); onAccessFilterChange()" [ngModelOptions]="{standalone: true}"></label>
+                    <label class="access-filter"><span>Peran</span><select aria-label="Filter peran" [ngModel]="accessRoleFilter()" (ngModelChange)="accessRoleFilter.set($event); onAccessFilterChange()" [ngModelOptions]="{standalone: true}"><option value="">Semua peran</option>@for (role of accessRoles; track role) {<option [value]="role">{{ role }}</option>}</select></label>
+                    <label class="access-filter"><span>Status</span><select aria-label="Filter status pengguna" [ngModel]="accessStatusFilter()" (ngModelChange)="accessStatusFilter.set($event); onAccessFilterChange()" [ngModelOptions]="{standalone: true}"><option value="">Semua status</option><option value="Aktif">Aktif</option><option value="Nonaktif">Nonaktif</option></select></label>
+                </div>
+
+                <div class="table-scroll access-table-scroll">
+                    <table class="access-user-table">
+                        <thead><tr><th scope="col">Pengguna</th><th scope="col">ID Pengguna</th><th scope="col">Peran RBAC</th><th scope="col">No. Telepon</th><th scope="col">Terakhir Masuk</th><th scope="col">Status</th><th scope="col">Aksi</th></tr></thead>
+                        <tbody>
+                            @for (user of paginatedAccessUsers; track user.id) {
+                                <tr>
+                                    <td><div class="access-user-cell"><span class="access-avatar">{{ user.name.charAt(0) }}</span><span><strong class="table-cell-clamp">{{ user.name }}</strong><small class="table-cell-clamp">{{ user.email }}</small></span></div></td>
+                                    <td><span class="category-code">{{ user.id }}</span></td>
+                                    <td><span class="access-role-badge" [class]="user.role.toLowerCase().replace(' ', '-')"><i class="ri-shield-user-line" aria-hidden="true"></i>{{ user.role }}</span></td>
+                                    <td><span class="table-cell-clamp">{{ user.phone }}</span></td><td><span class="table-cell-clamp">{{ user.lastLogin }}</span></td>
+                                    <td><span class="category-state" [class.category-inactive]="user.status !== 'Aktif'"><span></span>{{ user.status }}</span></td>
+                                    <td><div class="category-actions"><button class="row-action access-detail-action" type="button" [attr.aria-label]="'Detail ' + user.name" title="Detail" (click)="openAccessUserDetails(user)"><i class="ri-eye-line" aria-hidden="true"></i></button><button class="row-action edit" type="button" [attr.aria-label]="'Edit ' + user.name" title="Edit" (click)="openEditAccessUser(user)"><i class="ri-edit-line" aria-hidden="true"></i></button><button class="row-action delete" type="button" [attr.aria-label]="'Hapus ' + user.name" title="Hapus" (click)="openDeleteAccessUser(user.id)"><i class="ri-delete-bin-line" aria-hidden="true"></i></button></div></td>
+                                </tr>
+                            } @empty {
+                                <tr><td class="access-empty-state" colspan="7"><i class="ri-user-search-line" aria-hidden="true"></i><strong>Pengguna tidak ditemukan</strong><span>Ubah kata kunci pencarian atau filter yang dipilih.</span></td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <footer class="access-pagination">
+                    <span>Menampilkan {{ accessPageStart }}–{{ accessPageEnd }} dari {{ filteredAccessUsers.length }} pengguna</span>
+                    <div>
+                        <label>Baris per halaman<select aria-label="Jumlah pengguna per halaman" [ngModel]="accessPageSize()" (ngModelChange)="accessPageSize.set(+$event); onAccessFilterChange()" [ngModelOptions]="{standalone: true}"><option [ngValue]="5">5</option><option [ngValue]="10">10</option><option [ngValue]="20">20</option></select></label>
+                        <button type="button" aria-label="Halaman sebelumnya" [disabled]="accessPage() <= 1" (click)="setAccessPage(accessPage() - 1)"><i class="ri-arrow-left-s-line" aria-hidden="true"></i></button>
+                        <span class="access-page-indicator">Halaman {{ accessPage() }} dari {{ accessPageCount }}</span>
+                        <button type="button" aria-label="Halaman berikutnya" [disabled]="accessPage() >= accessPageCount" (click)="setAccessPage(accessPage() + 1)"><i class="ri-arrow-right-s-line" aria-hidden="true"></i></button>
+                    </div>
+                </footer>
+            </article>
+        </section>
+    }
+
+    @if (activeTab() === 'master-katalog') {
+        <section class="catalog-page" role="tabpanel" aria-labelledby="tab-master-katalog">
+            <header class="catalog-page-heading">
+                <div><h2>Master Katalog Produk</h2><p>Kelola identitas produk, referensi pengaturan, dan informasi klinis.</p></div>
+                <button class="button button-primary" type="button" (click)="openAddCatalogProduct()"><i class="ri-add-line" aria-hidden="true"></i> Tambah Produk Baru</button>
+            </header>
+            <div class="catalog-toolbar">
+                <label class="catalog-search"><i class="ri-search-line" aria-hidden="true"></i><input type="search" placeholder="Cari nama produk, NIE BPOM, kategori, atau komposisi..." aria-label="Cari produk katalog" [ngModel]="catalogSearch()" (ngModelChange)="catalogSearch.set($event); onCatalogFilterChange()" [ngModelOptions]="{standalone: true}"></label>
+                <label class="catalog-filter"><span>Kategori</span><select aria-label="Filter kategori produk" [ngModel]="catalogCategoryFilter()" (ngModelChange)="catalogCategoryFilter.set($event); onCatalogFilterChange()" [ngModelOptions]="{standalone: true}"><option value="">Semua kategori</option>@for (category of categories(); track category.code) {<option [value]="category.code">{{ category.name }}</option>}</select></label>
+                <label class="catalog-filter"><span>Status</span><select aria-label="Filter status produk" [ngModel]="catalogStatusFilter()" (ngModelChange)="catalogStatusFilter.set($event); onCatalogFilterChange()" [ngModelOptions]="{standalone: true}"><option value="">Semua status</option><option value="Aktif">Aktif</option><option value="Nonaktif">Nonaktif</option></select></label>
+                <div class="catalog-view-toggle" role="group" aria-label="Mode tampilan produk">
+                    <button type="button" aria-label="Tampilan grid" title="Tampilan grid" [attr.aria-pressed]="catalogView() === 'grid'" [class.active]="catalogView() === 'grid'" (click)="catalogView.set('grid')"><i class="ri-grid-fill" aria-hidden="true"></i><span>Grid</span></button>
+                    <button type="button" aria-label="Tampilan list" title="Tampilan list" [attr.aria-pressed]="catalogView() === 'list'" [class.active]="catalogView() === 'list'" (click)="catalogView.set('list')"><i class="ri-list-check" aria-hidden="true"></i><span>List</span></button>
+                </div>
+            </div>
+            <div class="catalog-results-heading"><strong>Menampilkan {{ catalogPageStart }}–{{ catalogPageEnd }} dari {{ filteredCatalogProducts.length }} produk</strong><span>Informasi produk pada katalog ini merupakan data demo lokal.</span></div>
+            <div class="catalog-product-grid" [class.catalog-list-view]="catalogView() === 'list'">
+                @for (product of paginatedCatalogProducts; track product.code) {
+                    <article class="catalog-product-card">
+                        <div class="catalog-product-thumbnail">
+                            @if (product.thumbnail) {
+                                <img [src]="product.thumbnail" [alt]="'Thumbnail ' + product.name">
+                            } @else {
+                                <span class="catalog-product-placeholder"><i class="ri-capsule-line" aria-hidden="true"></i></span>
+                            }
+                            <span class="catalog-product-status" [class.inactive]="product.status !== 'Aktif'">{{ product.status }}</span>
+                        </div>
+                        <div class="catalog-product-copy">
+                            <span class="catalog-product-category">{{ getProductCategoryName(product.categoryCode) }}</span>
+                            <h3>{{ product.name }}</h3>
+                            <p class="catalog-product-registration"><i class="ri-shield-check-line" aria-hidden="true"></i> NIE BPOM: {{ product.bpomNumber }}</p>
+                            <p class="catalog-product-description">{{ product.description }}</p>
+                            <button class="catalog-detail-button" type="button" (click)="openCatalogProductDetails(product)">Lihat Detail Produk <i class="ri-arrow-right-line" aria-hidden="true"></i></button>
+                        </div>
+                    </article>
+                } @empty {
+                    <div class="catalog-empty-state"><i class="ri-search-line" aria-hidden="true"></i><strong>Produk tidak ditemukan</strong><span>Ubah pencarian atau filter, atau tambahkan produk baru.</span></div>
+                }
+            </div>
+            <nav class="catalog-pagination" aria-label="Pagination katalog produk">
+                <span>{{ catalogPageStart }}–{{ catalogPageEnd }} dari {{ filteredCatalogProducts.length }} produk</span>
+                <div>
+                    <button type="button" aria-label="Halaman sebelumnya" [disabled]="catalogPage() <= 1" (click)="setCatalogPage(catalogPage() - 1)"><i class="ri-arrow-left-s-line" aria-hidden="true"></i><span>Sebelumnya</span></button>
+                    <span class="catalog-page-indicator">Halaman {{ catalogPage() }} dari {{ catalogPageCount }}</span>
+                    <button type="button" aria-label="Halaman berikutnya" [disabled]="catalogPage() >= catalogPageCount" (click)="setCatalogPage(catalogPage() + 1)"><span>Berikutnya</span><i class="ri-arrow-right-s-line" aria-hidden="true"></i></button>
+                </div>
+            </nav>
+        </section>
+    }
+
+    @if (catalogModal() === 'form') {
+        <div class="category-modal-backdrop catalog-modal-backdrop" (click)="closeCatalogModal()">
+            <section class="category-modal catalog-form-modal" role="dialog" aria-modal="true" aria-labelledby="catalog-form-title" (click)="$event.stopPropagation()">
+                <header class="category-modal-header">
+                    <div><span class="category-modal-icon"><i class="ri-medicine-bottle-line" aria-hidden="true"></i></span><div><h2 id="catalog-form-title">Tambah Produk Baru</h2><p>Lengkapi identitas, klasifikasi, dan informasi klinis produk.</p></div></div>
+                    <button class="category-modal-close" type="button" aria-label="Tutup form produk" (click)="closeCatalogModal()"><i class="ri-close-line" aria-hidden="true"></i></button>
+                </header>
+                <form class="category-modal-form catalog-product-form" (ngSubmit)="submitCatalogProduct()">
+                    <div class="catalog-thumbnail-field">
+                        <div class="catalog-thumbnail-preview">
+                            @if (catalogProductDraft.thumbnail) {<img [src]="catalogProductDraft.thumbnail" alt="Preview thumbnail produk">} @else {<i class="ri-image-add-line" aria-hidden="true"></i>}
+                        </div>
+                        <label class="field"><span>Thumbnail Produk</span><input type="file" accept="image/*" (change)="onCatalogThumbnailChange($event)"><small>Format gambar, maksimal 2 MB. Thumbnail bersifat lokal pada sesi ini.</small></label>
+                    </div>
+                    <div class="catalog-form-section"><h3>Identitas Produk</h3><div class="catalog-form-grid">
+                        <label class="field"><span>Nama Produk <b>*</b></span><input name="catalogName" [(ngModel)]="catalogProductDraft.name" required maxlength="120" placeholder="Masukkan nama produk"></label>
+                        <label class="field"><span>NIE BPOM <b>*</b></span><input name="catalogBpom" [(ngModel)]="catalogProductDraft.bpomNumber" required maxlength="60" placeholder="Masukkan nomor izin edar"></label>
+                        <label class="field"><span>Kategori Produk <b>*</b></span><select name="catalogCategory" [(ngModel)]="catalogProductDraft.categoryCode" required><option value="">Pilih kategori</option>@for (category of categories(); track category.code) {<option [value]="category.code">{{ category.name }}</option>}</select></label>
+                        <label class="field"><span>Golongan Obat</span><select name="catalogDrugClass" [(ngModel)]="catalogProductDraft.drugClassCode"><option value="">Pilih golongan</option>@for (item of drugClasses(); track item.code) {<option [value]="item.code">{{ item.name }}</option>}</select></label>
+                        <label class="field"><span>Kategori Farmakologi</span><select name="catalogPharmacology" [(ngModel)]="catalogProductDraft.pharmacologyCategoryCode"><option value="">Pilih kategori farmakologi</option>@for (item of pharmacologyCategories; track item.code) {<option [value]="item.code">{{ item.name }}</option>}</select></label>
+                        <label class="field"><span>Mekanisme Farmakologi</span><select name="catalogMechanism" [(ngModel)]="catalogProductDraft.mechanismCode"><option value="">Pilih mekanisme</option>@for (item of pharmacologyMechanisms; track item.code) {<option [value]="item.code">{{ item.name }}</option>}</select></label>
+                        <label class="field"><span>Cara Pemberian</span><select name="catalogRoute" [(ngModel)]="catalogProductDraft.routeCode"><option value="">Pilih cara pemberian</option>@for (item of administrationRoutes; track item.code) {<option [value]="item.code">{{ item.name }}</option>}</select></label>
+                        <label class="field"><span>Sediaan</span><select name="catalogDosageForm" [(ngModel)]="catalogProductDraft.dosageFormCode"><option value="">Pilih sediaan</option>@for (item of dosageForms; track item.code) {<option [value]="item.code">{{ item.name }}</option>}</select></label>
+                        <label class="field"><span>Kemasan</span><select name="catalogPackaging" [(ngModel)]="catalogProductDraft.packagingCode"><option value="">Pilih kemasan</option>@for (item of packagingTypes; track item.code) {<option [value]="item.code">{{ item.name }}</option>}</select></label>
+                        <label class="field"><span>Satuan</span><select name="catalogUnit" [(ngModel)]="catalogProductDraft.unitCode"><option value="">Pilih satuan</option>@for (item of productUnits; track item.code) {<option [value]="item.code">{{ item.name }}</option>}</select></label>
+                        <label class="field"><span>Manufacturer</span><select name="catalogManufacturer" [(ngModel)]="catalogProductDraft.manufacturerCode"><option value="">Pilih manufacturer</option>@for (item of manufacturers; track item.code) {<option [value]="item.code">{{ item.name }}</option>}</select></label>
+                        <label class="field"><span>Status</span><select name="catalogStatus" [(ngModel)]="catalogProductDraft.status"><option value="Aktif">Aktif</option><option value="Nonaktif">Nonaktif</option></select></label>
+                        <label class="field catalog-form-wide"><span>Deskripsi <b>*</b></span><textarea name="catalogDescription" [(ngModel)]="catalogProductDraft.description" required rows="2" maxlength="500" placeholder="Deskripsi produk"></textarea></label>
+                    </div></div>
+                    <div class="catalog-form-section"><h3>Komposisi</h3><div class="catalog-form-grid">
+                        <label class="field"><span>Bahan Aktif <b>*</b></span><textarea name="activeIngredients" [(ngModel)]="catalogProductDraft.activeIngredients" required rows="2" maxlength="1000" placeholder="Nama bahan aktif dan kadar"></textarea></label>
+                        <label class="field"><span>Bahan Tambahan <b>*</b></span><textarea name="additionalIngredients" [(ngModel)]="catalogProductDraft.additionalIngredients" required rows="2" maxlength="1000" placeholder="Daftar bahan tambahan"></textarea></label>
+                    </div></div>
+                    <div class="catalog-form-section"><h3>Informasi Klinis</h3><div class="catalog-form-grid">
+                        <label class="field"><span>Indikasi Klinis &amp; Manfaat Terapi <b>*</b></span><textarea name="clinicalBenefits" [(ngModel)]="catalogProductDraft.clinicalBenefits" required rows="3" maxlength="1500" placeholder="Indikasi yang telah disetujui dan manfaat terapi"></textarea></label>
+                        <label class="field"><span>Dosis &amp; Petunjuk Pemakaian <b>*</b></span><textarea name="dosageInstructions" [(ngModel)]="catalogProductDraft.dosageInstructions" required rows="3" maxlength="1500" placeholder="Dosis dan petunjuk sesuai label resmi"></textarea></label>
+                        <label class="field"><span>Potensi Efek Samping <b>*</b></span><textarea name="sideEffects" [(ngModel)]="catalogProductDraft.sideEffects" required rows="3" maxlength="1500" placeholder="Efek samping yang perlu diinformasikan"></textarea></label>
+                        <label class="field"><span>Interaksi dengan Obat &amp; Makanan Lain <b>*</b></span><textarea name="interactions" [(ngModel)]="catalogProductDraft.interactions" required rows="3" maxlength="1500" placeholder="Informasi interaksi yang diketahui"></textarea></label>
+                        <label class="field catalog-form-wide"><span>Kontraindikasi &amp; Peringatan Khusus <b>*</b></span><textarea name="contraindicationsWarnings" [(ngModel)]="catalogProductDraft.contraindicationsWarnings" required rows="3" maxlength="1500" placeholder="Kontraindikasi dan peringatan khusus"></textarea></label>
+                    </div></div>
+                    @if (catalogFormError()) {<p class="category-form-error" role="alert"><i class="ri-error-warning-line" aria-hidden="true"></i>{{ catalogFormError() }}</p>}
+                    <footer class="category-modal-actions"><button class="button button-secondary" type="button" (click)="closeCatalogModal()">Batal</button><button class="button button-primary" type="submit"><i class="ri-save-line" aria-hidden="true"></i> Simpan Produk</button></footer>
+                </form>
+            </section>
+        </div>
+    }
+
+    @if (catalogModal() === 'detail' && selectedCatalogProduct; as product) {
+        <div class="category-modal-backdrop catalog-modal-backdrop" (click)="closeCatalogModal()">
+            <section class="category-modal catalog-detail-modal" role="dialog" aria-modal="true" aria-labelledby="catalog-detail-title" (click)="$event.stopPropagation()">
+                <header class="category-modal-header">
+                    <div><span class="category-modal-icon"><i class="ri-capsule-line" aria-hidden="true"></i></span><div><h2 id="catalog-detail-title">Detail Produk</h2><p>{{ product.code }} · NIE BPOM {{ product.bpomNumber }}</p></div></div>
+                    <button class="category-modal-close" type="button" aria-label="Tutup detail produk" (click)="closeCatalogModal()"><i class="ri-close-line" aria-hidden="true"></i></button>
+                </header>
+                <div class="catalog-detail-content">
+                    <div class="catalog-detail-identity">
+                        <div class="catalog-detail-thumbnail">@if (product.thumbnail) {<img [src]="product.thumbnail" [alt]="'Thumbnail ' + product.name">} @else {<i class="ri-capsule-line" aria-hidden="true"></i>}</div>
+                        <div><span class="catalog-product-category">{{ getProductCategoryName(product.categoryCode) }}</span><h3>{{ product.name }}</h3><span class="catalog-product-status detail-status" [class.inactive]="product.status !== 'Aktif'">{{ product.status }}</span></div>
+                    </div>
+                    <div class="catalog-reference-summary">
+                        <div><small>Golongan Obat</small><strong>{{ getProductReferenceName('drugClass', product.drugClassCode) }}</strong></div>
+                        <div><small>Kategori Farmakologi</small><strong>{{ getProductReferenceName('pharmacology', product.pharmacologyCategoryCode) }}</strong></div>
+                        <div><small>Mekanisme</small><strong>{{ getProductReferenceName('mechanism', product.mechanismCode) }}</strong></div>
+                        <div><small>Cara Pemberian</small><strong>{{ getProductReferenceName('route', product.routeCode) }}</strong></div>
+                        <div><small>Sediaan</small><strong>{{ getProductReferenceName('dosageForm', product.dosageFormCode) }}</strong></div>
+                        <div><small>Kemasan / Satuan</small><strong>{{ getProductReferenceName('packaging', product.packagingCode) }} / {{ getProductReferenceName('unit', product.unitCode) }}</strong></div>
+                        <div><small>Manufacturer</small><strong>{{ getProductReferenceName('manufacturer', product.manufacturerCode) }}</strong></div>
+                        <div><small>Tanggal Update</small><strong>{{ product.updatedAt }}</strong></div>
+                    </div>
+                    <div class="catalog-detail-sections">
+                        <section><h4>Deskripsi</h4><p>{{ product.description }}</p></section>
+                        <section><h4>Komposisi Bahan Aktif</h4><p>{{ product.activeIngredients }}</p></section>
+                        <section><h4>Komposisi Bahan Tambahan</h4><p>{{ product.additionalIngredients }}</p></section>
+                        <section><h4>Indikasi Klinis &amp; Manfaat Terapi</h4><p>{{ product.clinicalBenefits }}</p></section>
+                        <section><h4>Dosis &amp; Petunjuk Pemakaian</h4><p>{{ product.dosageInstructions }}</p></section>
+                        <section><h4>Potensi Efek Samping</h4><p>{{ product.sideEffects }}</p></section>
+                        <section><h4>Interaksi dengan Obat &amp; Makanan Lain</h4><p>{{ product.interactions }}</p></section>
+                        <section><h4>Kontraindikasi &amp; Peringatan Khusus</h4><p>{{ product.contraindicationsWarnings }}</p></section>
+                    </div>
+                    <p class="catalog-clinical-notice"><i class="ri-information-line" aria-hidden="true"></i> Data demo untuk keperluan tampilan. Informasi klinis dan NIE harus diverifikasi terhadap sumber resmi sebelum digunakan.</p>
+                </div>
+                <footer class="category-modal-actions"><button class="button button-secondary" type="button" (click)="closeCatalogModal()">Tutup</button></footer>
+            </section>
+        </div>
+    }
+
+    @if (productModal() === 'form') {
+        <div class="category-modal-backdrop" (click)="closeProductModal()">
+            <section class="category-modal" role="dialog" aria-modal="true" aria-labelledby="category-modal-title" (click)="$event.stopPropagation()">
+                <header class="category-modal-header">
+                    <div><span class="category-modal-icon"><i class="ri-folder-add-line" aria-hidden="true"></i></span><div><h2 id="category-modal-title">{{ editingCategoryCode() ? 'Edit Kategori' : 'Tambah Kategori' }}</h2><p>Lengkapi informasi kategori produk farmasi.</p></div></div>
+                    <button class="category-modal-close" type="button" aria-label="Tutup modal" (click)="closeProductModal()"><i class="ri-close-line" aria-hidden="true"></i></button>
+                </header>
+                <form class="category-modal-form" (ngSubmit)="submitCategory()">
+                    <div class="category-modal-fields">
+                        <label class="field"><span>Kode Kategori <b>*</b></span><input name="code" [(ngModel)]="categoryDraft.code" required maxlength="20" placeholder="Contoh: KAT-011" autocomplete="off"></label>
+                        <label class="field"><span>Nama Kategori <b>*</b></span><input name="name" [(ngModel)]="categoryDraft.name" required maxlength="80" placeholder="Masukkan nama kategori"></label>
+                        <label class="field"><span>Slug <b>*</b></span><input name="slug" [(ngModel)]="categoryDraft.slug" required maxlength="30" placeholder="Contoh: OB"></label>
+                        <label class="field"><span>Status</span><select name="status" [(ngModel)]="categoryDraft.status"><option>Aktif</option><option>Nonaktif</option></select></label>
+                        <label class="field category-description-field"><span>Deskripsi</span><textarea name="description" [(ngModel)]="categoryDraft.description" rows="3" maxlength="240" placeholder="Jelaskan kategori produk ini"></textarea><small>{{ categoryDraft.description.length }}/240 karakter</small></label>
+                    </div>
+                    @if (categoryFormError()) {<p class="category-form-error" role="alert"><i class="ri-error-warning-line" aria-hidden="true"></i>{{ categoryFormError() }}</p>}
+                    <footer class="category-modal-actions"><button class="button button-secondary" type="button" (click)="closeProductModal()">Batal</button><button class="button button-primary" type="submit"><i [class]="editingCategoryCode() ? 'ri-save-line' : 'ri-add-line'" aria-hidden="true"></i>{{ editingCategoryCode() ? 'Simpan Perubahan' : 'Tambah Kategori' }}</button></footer>
+                </form>
+            </section>
+        </div>
+    }
+
+    @if (productModal() === 'delete') {
+        <div class="category-modal-backdrop" (click)="closeProductModal()">
+            <section class="category-modal category-delete-modal" role="alertdialog" aria-modal="true" aria-labelledby="delete-category-title" (click)="$event.stopPropagation()">
+                <header class="category-modal-header">
+                    <div><span class="category-delete-icon"><i class="ri-delete-bin-line" aria-hidden="true"></i></span><div><h2 id="delete-category-title">Hapus Kategori</h2><p>Tindakan ini tidak dapat dibatalkan.</p></div></div>
+                    <button class="category-modal-close" type="button" aria-label="Tutup modal" (click)="closeProductModal()"><i class="ri-close-line" aria-hidden="true"></i></button>
+                </header>
+                <p class="category-delete-copy">Apakah Anda yakin ingin menghapus kategori <strong>{{ deletingCategoryName }}</strong>?</p>
+                <footer class="category-modal-actions"><button class="button button-secondary" type="button" (click)="closeProductModal()">Batal</button><button class="button category-delete-confirm" type="button" (click)="deleteCategory()"><i class="ri-delete-bin-line" aria-hidden="true"></i> Hapus Kategori</button></footer>
+            </section>
+        </div>
+    }
+
+    @if (drugClassModal() === 'form') {
+        <div class="category-modal-backdrop" (click)="closeDrugClassModal()">
+            <section class="category-modal" role="dialog" aria-modal="true" aria-labelledby="drug-class-modal-title" (click)="$event.stopPropagation()">
+                <header class="category-modal-header">
+                    <div><span class="category-modal-icon drug-class-modal-icon"><i class="ri-capsule-line" aria-hidden="true"></i></span><div><h2 id="drug-class-modal-title">{{ editingDrugClassCode() ? 'Edit Golongan Obat' : 'Tambah Golongan Obat' }}</h2><p>Atur identitas dan ketentuan klasifikasi obat.</p></div></div>
+                    <button class="category-modal-close" type="button" aria-label="Tutup modal" (click)="closeDrugClassModal()"><i class="ri-close-line" aria-hidden="true"></i></button>
+                </header>
+                <form class="category-modal-form" (ngSubmit)="submitDrugClass()">
+                    <div class="category-modal-fields">
+                        <label class="field"><span>Kode Golongan <b>*</b></span><input name="drugClassCode" [(ngModel)]="drugClassDraft.code" required maxlength="20" placeholder="Contoh: GOL-006" autocomplete="off"></label>
+                        <label class="field"><span>Nama Golongan <b>*</b></span><input name="drugClassName" [(ngModel)]="drugClassDraft.name" required maxlength="80" placeholder="Masukkan nama golongan"></label>
+                        <label class="field"><span>Simbol <b>*</b></span><input name="drugClassSymbol" [(ngModel)]="drugClassDraft.symbol" required maxlength="100" placeholder="Contoh: Lingkaran hijau"></label>
+                        <label class="field"><span>Butuh Resep</span><select name="prescriptionRequired" [(ngModel)]="drugClassDraft.prescriptionRequired"><option [ngValue]="false">Tidak</option><option [ngValue]="true">Ya</option></select></label>
+                        <label class="field"><span>Status</span><select name="drugClassStatus" [(ngModel)]="drugClassDraft.status"><option>Aktif</option><option>Nonaktif</option></select></label>
+                        <label class="field category-description-field"><span>Peringatan</span><textarea name="drugClassWarning" [(ngModel)]="drugClassDraft.warning" rows="2" maxlength="240" placeholder="Masukkan peringatan pemakaian"></textarea><small>{{ drugClassDraft.warning.length }}/240 karakter</small></label>
+                        <label class="field category-description-field"><span>Penandaan Kemasan</span><textarea name="drugClassPackaging" [(ngModel)]="drugClassDraft.packagingMark" rows="2" maxlength="160" placeholder="Masukkan penandaan yang harus tercantum pada kemasan"></textarea><small>{{ drugClassDraft.packagingMark.length }}/160 karakter</small></label>
+                    </div>
+                    @if (drugClassFormError()) {<p class="category-form-error" role="alert"><i class="ri-error-warning-line" aria-hidden="true"></i>{{ drugClassFormError() }}</p>}
+                    <footer class="category-modal-actions"><button class="button button-secondary" type="button" (click)="closeDrugClassModal()">Batal</button><button class="button button-primary" type="submit"><i [class]="editingDrugClassCode() ? 'ri-save-line' : 'ri-add-line'" aria-hidden="true"></i>{{ editingDrugClassCode() ? 'Simpan Perubahan' : 'Tambah Golongan' }}</button></footer>
+                </form>
+            </section>
+        </div>
+    }
+
+    @if (drugClassModal() === 'delete') {
+        <div class="category-modal-backdrop" (click)="closeDrugClassModal()">
+            <section class="category-modal category-delete-modal" role="alertdialog" aria-modal="true" aria-labelledby="delete-drug-class-title" (click)="$event.stopPropagation()">
+                <header class="category-modal-header">
+                    <div><span class="category-delete-icon"><i class="ri-delete-bin-line" aria-hidden="true"></i></span><div><h2 id="delete-drug-class-title">Hapus Golongan Obat</h2><p>Tindakan ini tidak dapat dibatalkan.</p></div></div>
+                    <button class="category-modal-close" type="button" aria-label="Tutup modal" (click)="closeDrugClassModal()"><i class="ri-close-line" aria-hidden="true"></i></button>
+                </header>
+                <p class="category-delete-copy">Apakah Anda yakin ingin menghapus golongan obat <strong>{{ deletingDrugClassName }}</strong>?</p>
+                <footer class="category-modal-actions"><button class="button button-secondary" type="button" (click)="closeDrugClassModal()">Batal</button><button class="button category-delete-confirm" type="button" (click)="deleteDrugClass()"><i class="ri-delete-bin-line" aria-hidden="true"></i> Hapus Golongan</button></footer>
+            </section>
+        </div>
+    }
+
+    @if (accessModal() === 'form') {
+        <div class="category-modal-backdrop" (click)="closeAccessModal()">
+            <section class="category-modal access-user-modal" role="dialog" aria-modal="true" aria-labelledby="access-user-modal-title" (click)="$event.stopPropagation()">
+                <header class="category-modal-header">
+                    <div><span class="category-modal-icon access-modal-icon"><i class="ri-user-settings-line" aria-hidden="true"></i></span><div><h2 id="access-user-modal-title">{{ editingAccessUserId() ? 'Edit Pengguna' : 'Tambah Pengguna' }}</h2><p>{{ editingAccessUserId() ? 'Perbarui informasi akun dan peran pengguna.' : 'Buat akun dan tentukan peran akses pengguna.' }}</p></div></div>
+                    <button class="category-modal-close" type="button" aria-label="Tutup modal" (click)="closeAccessModal()"><i class="ri-close-line" aria-hidden="true"></i></button>
+                </header>
+                <form class="category-modal-form" (ngSubmit)="submitAccessUser()">
+                    <div class="category-modal-fields">
+                        <label class="field access-field-wide"><span>Nama Lengkap <b>*</b></span><input name="accessName" [(ngModel)]="accessUserDraft.name" required maxlength="100" placeholder="Masukkan nama lengkap"></label>
+                        <label class="field"><span>Email <b>*</b></span><input name="accessEmail" type="email" [(ngModel)]="accessUserDraft.email" required maxlength="120" placeholder="nama@perusahaan.co.id"></label>
+                        <label class="field"><span>No. Telepon</span><input name="accessPhone" type="tel" [(ngModel)]="accessUserDraft.phone" maxlength="20" placeholder="08xxxxxxxxxx"></label>
+                        <label class="field"><span>Peran RBAC <b>*</b></span><select name="accessRole" [(ngModel)]="accessUserDraft.role" required>@for (role of accessRoles; track role) {<option [value]="role">{{ role }}</option>}</select></label>
+                        <label class="field"><span>Status Akun</span><select name="accessStatus" [(ngModel)]="accessUserDraft.status"><option>Aktif</option><option>Nonaktif</option></select></label>
+                    </div>
+                    <p class="access-rbac-note"><i class="ri-information-line" aria-hidden="true"></i> Hak akses dan izin fitur mengikuti peran RBAC yang dipilih.</p>
+                    @if (accessFormError()) {<p class="category-form-error" role="alert"><i class="ri-error-warning-line" aria-hidden="true"></i>{{ accessFormError() }}</p>}
+                    <footer class="category-modal-actions"><button class="button button-secondary" type="button" (click)="closeAccessModal()">Batal</button><button class="button button-primary" type="submit"><i [class]="editingAccessUserId() ? 'ri-save-line' : 'ri-user-add-line'" aria-hidden="true"></i>{{ editingAccessUserId() ? 'Simpan Perubahan' : 'Tambah Pengguna' }}</button></footer>
+                </form>
+            </section>
+        </div>
+    }
+
+    @if (accessModal() === 'detail' && selectedAccessUser; as user) {
+        <div class="category-modal-backdrop" (click)="closeAccessModal()">
+            <section class="category-modal access-detail-modal" role="dialog" aria-modal="true" aria-labelledby="access-detail-title" (click)="$event.stopPropagation()">
+                <header class="category-modal-header">
+                    <div><span class="access-detail-avatar">{{ user.name.charAt(0) }}</span><div><h2 id="access-detail-title">Detail Pengguna</h2><p>Informasi akun dan hak akses RBAC.</p></div></div>
+                    <button class="category-modal-close" type="button" aria-label="Tutup modal" (click)="closeAccessModal()"><i class="ri-close-line" aria-hidden="true"></i></button>
+                </header>
+                <div class="access-detail-content">
+                    <div class="access-detail-name"><strong>{{ user.name }}</strong><span class="category-state" [class.category-inactive]="user.status !== 'Aktif'"><span></span>{{ user.status }}</span></div>
+                    <dl><div><dt>ID Pengguna</dt><dd>{{ user.id }}</dd></div><div><dt>Email</dt><dd>{{ user.email }}</dd></div><div><dt>No. Telepon</dt><dd>{{ user.phone || 'Belum diisi' }}</dd></div><div><dt>Peran RBAC</dt><dd><span class="access-role-badge" [class]="user.role.toLowerCase().replace(' ', '-')">{{ user.role }}</span></dd></div><div><dt>Terakhir Masuk</dt><dd>{{ user.lastLogin }}</dd></div><div><dt>Hak Akses</dt><dd>Diatur oleh peran {{ user.role }}</dd></div></dl>
+                </div>
+                <footer class="category-modal-actions"><button class="button button-secondary" type="button" (click)="closeAccessModal()">Tutup</button><button class="button button-primary" type="button" (click)="openEditAccessUser(user)"><i class="ri-edit-line" aria-hidden="true"></i> Edit Pengguna</button></footer>
+            </section>
+        </div>
+    }
+
+    @if (accessModal() === 'delete') {
+        <div class="category-modal-backdrop" (click)="closeAccessModal()">
+            <section class="category-modal category-delete-modal" role="alertdialog" aria-modal="true" aria-labelledby="delete-access-user-title" (click)="$event.stopPropagation()">
+                <header class="category-modal-header"><div><span class="category-delete-icon"><i class="ri-user-unfollow-line" aria-hidden="true"></i></span><div><h2 id="delete-access-user-title">Hapus Pengguna</h2><p>Akses pengguna akan dicabut.</p></div></div><button class="category-modal-close" type="button" aria-label="Tutup modal" (click)="closeAccessModal()"><i class="ri-close-line" aria-hidden="true"></i></button></header>
+                <p class="category-delete-copy">Apakah Anda yakin ingin menghapus pengguna <strong>{{ deletingAccessUser?.name }}</strong>?</p>
+                <footer class="category-modal-actions"><button class="button button-secondary" type="button" (click)="closeAccessModal()">Batal</button><button class="button category-delete-confirm" type="button" (click)="deleteAccessUser()"><i class="ri-delete-bin-line" aria-hidden="true"></i> Hapus Pengguna</button></footer>
+            </section>
+        </div>
+    }
+</section>

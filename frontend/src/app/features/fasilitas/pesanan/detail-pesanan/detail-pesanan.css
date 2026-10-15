@@ -1,0 +1,2299 @@
+/* ============================================================
+   DETAIL PESANAN FASILITAS COMPONENT STYLES
+   ============================================================ */
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.detail-pesanan-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+/* ============================================================
+   1. TOP PATIENT / ORDER PROFILE SUMMARY CARD
+   ============================================================ */
+.profile-summary-card {
+  background-color: var(--surface-card, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 12px;
+  padding: 24px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  flex-wrap: wrap;
+}
+
+.avatar-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.profile-avatar {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: #f1f5f9;
+  border: 2px solid #e2e8f0;
+}
+
+.badge-status-aktif {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  background-color: #dcfce7;
+  color: #059669;
+}
+
+.info-main-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 160px;
+}
+
+.patient-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  margin: 0;
+}
+
+.patient-pills {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 2px 0;
+}
+
+.pill-gender {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11.5px;
+  font-weight: 500;
+  background-color: #e0f2fe;
+  color: #0284c7;
+}
+
+.pill-age {
+  font-size: 12px;
+  color: var(--text-secondary, #64748b);
+  font-weight: 500;
+}
+
+.patient-nik {
+  font-size: 12px;
+  color: var(--text-secondary, #64748b);
+}
+
+.patient-type {
+  font-size: 11.5px;
+  color: #94a3b8;
+}
+
+/* Point Health Widget */
+.point-health-widget {
+  background-color: #fffbeb;
+  border: 1px solid #fef3c7;
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.point-icon-box {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background-color: #fef3c7;
+  color: #d97706;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.point-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.point-title {
+  font-size: 11.5px;
+  color: #92400e;
+  font-weight: 500;
+}
+
+.point-number {
+  font-size: 17px;
+  font-weight: 700;
+  color: #78350f;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.point-trend-badge {
+  font-size: 10.5px;
+  color: #059669;
+  font-weight: 600;
+}
+
+/* Contact Details */
+.contact-details-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-secondary, #475569);
+  max-width: 250px;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.contact-item i {
+  color: #94a3b8;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.contact-item span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Summary Stats */
+.summary-stats-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.stat-card-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.stat-icon-wrapper {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.stat-icon-wrapper.teal {
+  background-color: #e6f7f5;
+  color: #0ab39c;
+}
+
+.stat-icon-wrapper.blue {
+  background-color: #e0f2fe;
+  color: #0284c7;
+}
+
+.stat-icon-wrapper.orange {
+  background-color: #fff7ed;
+  color: #ea580c;
+}
+
+.stat-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.stat-value {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+}
+
+/* ============================================================
+   2. MAIN 2-COLUMN ORDER GRID
+   ============================================================ */
+.order-grid {
+  display: grid;
+  grid-template-columns: 1.55fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.order-left-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.order-table-card {
+  background-color: var(--surface-card, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ============================================================
+   1.5 SOURCE FLOW CARD (KONSULTASI VS MARKETPLACE)
+   ============================================================ */
+.source-flow-card {
+  border-radius: 12px;
+  padding: 18px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: all 0.2s ease;
+}
+
+.source-flow-card.flow-resep {
+  background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+  border: 1px solid #fed7aa;
+  border-left: 4px solid #ea580c;
+}
+
+.source-flow-card.flow-nonresep {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border: 1px solid #bae6fd;
+  border-left: 4px solid #0284c7;
+}
+
+.flow-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.flow-icon-circle {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.flow-icon-circle.resep {
+  background-color: #ea580c;
+  color: #ffffff;
+}
+
+.flow-icon-circle.marketplace {
+  background-color: #0284c7;
+  color: #ffffff;
+}
+
+.flow-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+}
+
+.flow-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 2px;
+}
+
+.badge-type-resep {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background-color: #ffedd5;
+  color: #c2410c;
+}
+
+.badge-type-nonresep {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+
+.badge-penebusan-active {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.badge-not-available {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+.flow-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  margin: 0;
+}
+
+.flow-desc {
+  font-size: 12.5px;
+  color: var(--text-secondary, #475569);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.flow-tags-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(0, 0, 0, 0.1);
+  flex-wrap: wrap;
+}
+
+.flow-tag-item {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.tag-label {
+  color: var(--text-secondary, #64748b);
+}
+
+.tag-value {
+  color: var(--text-primary, #0f172a);
+  font-weight: 600;
+}
+
+.tag-value.text-muted {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.tag-value.text-amber {
+  color: #d97706;
+  font-weight: 600;
+}
+
+.btn-flow-resep-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  padding: 0;
+  color: #0ab39c;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.btn-flow-resep-link:hover {
+  color: #088b79;
+}
+
+/* Header With Back and Preview Toggle */
+.card-header-with-back {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.title-with-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-card-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  margin: 0;
+}
+
+.order-header-type-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.order-header-type-badge.type-resep {
+  background-color: #ffedd5;
+  color: #c2410c;
+}
+
+.order-header-type-badge.type-nonresep {
+  background-color: #e0f2fe;
+  color: #0284c7;
+}
+
+.header-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.type-preview-pill {
+  display: flex;
+  align-items: center;
+  background-color: #f1f5f9;
+  border-radius: 8px;
+  padding: 3px;
+  gap: 3px;
+}
+
+.pill-btn {
+  border: none;
+  background: transparent;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pill-btn:hover {
+  color: #0f172a;
+}
+
+.pill-btn.active {
+  background-color: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  background-color: var(--surface-card, #ffffff);
+  border: 1px solid var(--border-color, #cbd5e1);
+  color: var(--text-primary, #334155);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-back:hover {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+}
+
+/* Product Table */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 8px;
+}
+
+.detail-product-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+
+.detail-product-table thead {
+  background-color: #f8fafc;
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+}
+
+.detail-product-table th {
+  padding: 10px 12px;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-secondary, #475569);
+  white-space: nowrap;
+}
+
+.detail-product-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--border-color, #f1f5f9);
+  vertical-align: middle;
+  color: var(--text-primary, #334155);
+}
+
+.th-no, .td-no {
+  width: 32px;
+  text-align: center;
+  color: #94a3b8;
+}
+
+.product-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 160px;
+}
+
+.product-thumb {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  object-fit: contain;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
+.product-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.product-name {
+  font-weight: 600;
+  color: var(--text-primary, #0f172a);
+}
+
+.product-desc {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.resep-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  white-space: nowrap;
+}
+
+.resep-id {
+  font-weight: 500;
+  color: var(--text-primary, #1e293b);
+}
+
+.resep-doc {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.resep-cell-otc {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.otc-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background-color: #f1f5f9;
+  color: #64748b;
+  width: fit-content;
+}
+
+.otc-caption {
+  font-size: 10.5px;
+  color: #94a3b8;
+  font-style: italic;
+}
+
+.td-harga, .td-qwt {
+  white-space: nowrap;
+}
+
+.td-jumlah {
+  white-space: nowrap;
+  font-weight: 600;
+  color: var(--text-primary, #0f172a);
+}
+
+/* Pricing Breakdown Totals (Right Aligned) */
+.pricing-summary-container {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.pricing-summary-box {
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12.5px;
+}
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.price-label {
+  color: var(--text-secondary, #64748b);
+}
+
+.price-val {
+  font-weight: 500;
+  color: var(--text-primary, #1e293b);
+}
+
+.text-red {
+  color: #ef4444;
+}
+
+.total-highlight-row {
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-color, #e2e8f0);
+}
+
+.total-amount-teal {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0ab39c;
+}
+
+/* Apothecary Verification Banner */
+.verification-banner {
+  background-color: #f0fdf9;
+  border: 1px solid #a7f3d0;
+  border-radius: 10px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.banner-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.banner-icon {
+  font-size: 20px;
+  color: #0ab39c;
+}
+
+.banner-text {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #065f46;
+}
+
+.banner-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.apoteker-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #6ee7b7;
+}
+
+.apoteker-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.apoteker-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #065f46;
+}
+
+.apoteker-role {
+  font-size: 11px;
+  color: #047857;
+}
+
+/* Notes Boxes */
+.note-box {
+  background-color: #f8fafc;
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 8px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.note-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+  margin: 0;
+}
+
+.note-content {
+  font-size: 12px;
+  color: var(--text-secondary, #64748b);
+  margin: 0;
+}
+
+.bottom-note-card {
+  background-color: var(--surface-card, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 12px;
+  padding: 18px 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bottom-note-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  margin: 0;
+}
+
+.bottom-note-content {
+  font-size: 12.5px;
+  color: var(--text-secondary, #64748b);
+  margin: 0;
+}
+
+/* ============================================================
+   3. RIGHT COLUMN: SIDEBAR CARDS
+   ============================================================ */
+.order-right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sidebar-card {
+  background-color: var(--surface-card, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 12px;
+  padding: 20px 22px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sidebar-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sidebar-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  margin: 0;
+}
+
+/* Badges */
+.badge-dikirim {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11.5px;
+  font-weight: 600;
+  background-color: #e6f7f5;
+  color: #0ab39c;
+}
+
+.badge-lunas {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11.5px;
+  font-weight: 600;
+  background-color: #dcfce7;
+  color: #059669;
+}
+
+/* Delivery Details */
+.courier-logo-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.courier-logo {
+  height: 28px;
+  object-fit: contain;
+}
+
+.delivery-details-list, .payment-details-list {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  font-size: 12.5px;
+}
+
+.del-row, .pay-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.del-label, .pay-label {
+  color: var(--text-secondary, #64748b);
+  flex-shrink: 0;
+}
+
+.del-val, .pay-val {
+  font-weight: 500;
+  color: var(--text-primary, #1e293b);
+  text-align: right;
+}
+
+.btn-track-delivery {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 14px;
+  background-color: #f0fdf9;
+  border: 1px solid #0ab39c;
+  color: #0ab39c;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 6px;
+}
+
+.btn-track-delivery:hover {
+  background-color: #0ab39c;
+  color: #ffffff;
+}
+
+/* Payment Totals */
+.pay-divider {
+  height: 1px;
+  background-color: var(--border-color, #e2e8f0);
+  margin: 4px 0;
+}
+
+.total-pay-row {
+  margin-bottom: 4px;
+}
+
+.total-teal {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0ab39c;
+}
+
+.font-bold {
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+}
+
+.font-semibold {
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+}
+
+.meta-bottom {
+  font-size: 12px;
+}
+
+/* Timeline Stepper */
+.order-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.timeline-step {
+  display: flex;
+  gap: 12px;
+  position: relative;
+  min-height: 48px;
+}
+
+.timeline-step.is-last {
+  min-height: 24px;
+}
+
+.step-indicator-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 20px;
+}
+
+.step-icon {
+  color: #059669;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.step-line {
+  width: 2px;
+  flex: 1;
+  background-color: #cbd5e1;
+  margin: 4px 0;
+}
+
+.step-body-col {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex: 1;
+  padding-bottom: 14px;
+  gap: 8px;
+}
+
+.step-name {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text-primary, #1e293b);
+}
+
+.step-time {
+  font-size: 11.5px;
+  color: var(--text-secondary, #64748b);
+  white-space: nowrap;
+}
+
+/* ============================================================
+   6. CLICKABLE RESEP ID
+   ============================================================ */
+.resep-id.clickable {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #0ab39c;
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+
+.resep-id.clickable:hover {
+  color: #087f6f;
+  text-decoration: underline;
+}
+
+/* ============================================================
+   7. MODAL COMMON STYLES (TRACKING & RESEP)
+   ============================================================ */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: modalFadeIn 0.2s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalScaleUp {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.modal-dialog {
+  background-color: var(--surface-card, #ffffff);
+  border-radius: 16px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modalScaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid var(--border-color, #e2e8f0);
+}
+
+.modal-tracking-dialog {
+  max-width: 660px;
+}
+
+.modal-resep-dialog {
+  max-width: 620px;
+}
+
+.modal-header {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--surface-card, #ffffff);
+}
+
+.modal-title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.modal-badge-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background-color: #e6f7f5;
+  color: #0ab39c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.modal-badge-icon.tracking-icon-bg {
+  background-color: #e0f2fe;
+  color: #0284c7;
+}
+
+.modal-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  margin: 0;
+}
+
+.modal-subtitle {
+  font-size: 12px;
+  color: var(--text-secondary, #64748b);
+  margin: 0;
+}
+
+.btn-modal-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  background-color: transparent;
+  color: var(--text-secondary, #64748b);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-modal-close:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+.modal-body {
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border-color, #e2e8f0);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  background-color: var(--surface-card, #ffffff);
+}
+
+.btn-modal-secondary {
+  padding: 8px 18px;
+  border-radius: 8px;
+  background-color: transparent;
+  border: 1px solid var(--border-color, #cbd5e1);
+  color: var(--text-primary, #334155);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-modal-secondary:hover {
+  background-color: #f1f5f9;
+}
+
+.btn-modal-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: 8px;
+  background-color: #0ab39c;
+  border: 1px solid #0ab39c;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-modal-primary:hover {
+  background-color: #099885;
+}
+
+/* ============================================================
+   8. TRACKING MODAL SPECIFIC STYLES
+   ============================================================ */
+.tracking-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.tracking-summary-banner {
+  background-color: #f8fafc;
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.banner-courier-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.banner-courier-logo {
+  height: 32px;
+  object-fit: contain;
+}
+
+.banner-resi-box {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.banner-resi-label {
+  font-size: 11.5px;
+  color: var(--text-secondary, #64748b);
+}
+
+.resi-copy-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.banner-resi-num {
+  font-size: 14px;
+  color: var(--text-primary, #0f172a);
+  font-family: monospace;
+}
+
+.btn-copy-resi {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  background-color: #e2e8f0;
+  border: none;
+  border-radius: 4px;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-copy-resi:hover {
+  background-color: #cbd5e1;
+}
+
+.text-green {
+  color: #059669;
+}
+
+.banner-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background-color: #e6f7f5;
+  border: 1px solid #a7f3d0;
+  border-radius: 20px;
+}
+
+.status-live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #0ab39c;
+  animation: pulseDot 1.5s infinite;
+}
+
+@keyframes pulseDot {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(10, 179, 156, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(10, 179, 156, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(10, 179, 156, 0); }
+}
+
+.status-live-text {
+  font-size: 12px;
+  font-weight: 700;
+  color: #047857;
+}
+
+/* Route Origin - Destination Card */
+.tracking-route-card {
+  background-color: var(--surface-card, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 16px;
+}
+
+.route-node {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.node-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.origin-icon {
+  background-color: #e0f2fe;
+  color: #0284c7;
+}
+
+.destination-icon {
+  background-color: #dcfce7;
+  color: #059669;
+}
+
+.node-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.node-caption {
+  font-size: 11px;
+  color: var(--text-secondary, #64748b);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.node-title {
+  font-size: 13px;
+  color: var(--text-primary, #0f172a);
+}
+
+.node-desc {
+  font-size: 11.5px;
+  color: var(--text-secondary, #64748b);
+}
+
+.route-connector-arrow {
+  color: #94a3b8;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Tracking History Stepper */
+.tracking-history-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.history-section-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  margin: 0;
+}
+
+.tracking-events-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.event-item {
+  display: flex;
+  gap: 14px;
+  position: relative;
+  min-height: 64px;
+}
+
+.event-indicator-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 28px;
+}
+
+.event-circle-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  flex-shrink: 0;
+  z-index: 2;
+}
+
+.event-circle-dot.active-dot {
+  background-color: #0ab39c;
+  border-color: #0ab39c;
+  color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(10, 179, 156, 0.2);
+}
+
+.event-line {
+  width: 2px;
+  flex: 1;
+  background-color: #e2e8f0;
+  margin: 4px 0;
+}
+
+.event-content-col {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  padding-bottom: 18px;
+}
+
+.event-time-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.event-timestamp {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-secondary, #64748b);
+}
+
+.event-location-badge {
+  font-size: 10.5px;
+  font-weight: 500;
+  padding: 1px 6px;
+  background-color: #f1f5f9;
+  color: #475569;
+  border-radius: 4px;
+}
+
+.event-status-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  margin: 0;
+}
+
+.event-item.is-latest .event-status-title {
+  color: #0ab39c;
+}
+
+.event-desc {
+  font-size: 12px;
+  color: var(--text-secondary, #64748b);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* ============================================================
+   9. RESEP PAPER MODAL STYLES (DETAIL PAGE)
+   ============================================================ */
+.resep-paper {
+  background-color: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  padding: 20px;
+}
+
+.prescription-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.doc-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  margin: 0;
+}
+
+.doc-sip {
+  display: block;
+  font-size: 11.5px;
+  color: var(--text-secondary, #64748b);
+  margin-top: 2px;
+}
+
+.clinic-name {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #0ab39c;
+  margin-top: 2px;
+}
+
+.doc-date-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+
+.resep-number-tag {
+  font-weight: 700;
+  font-size: 13px;
+  color: #0284c7;
+  background-color: #e0f2fe;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.resep-date-label {
+  font-size: 11.5px;
+  color: #64748b;
+}
+
+.paper-divider-double {
+  height: 4px;
+  border-top: 1px solid #cbd5e1;
+  border-bottom: 1px solid #cbd5e1;
+  margin: 14px 0;
+}
+
+.paper-divider {
+  height: 1px;
+  background-color: #e2e8f0;
+  margin: 12px 0;
+}
+
+.patient-rx-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12.5px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.rx-patient-cell {
+  display: flex;
+  gap: 6px;
+}
+
+.rx-label {
+  color: #64748b;
+}
+
+.rx-value {
+  color: #0f172a;
+}
+
+.rx-items-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 14px 0;
+}
+
+.rx-item-card {
+  display: flex;
+  gap: 12px;
+  padding: 10px 14px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.rx-symbol {
+  font-size: 20px;
+  font-weight: 900;
+  font-style: italic;
+  font-family: Georgia, serif;
+  color: #0ab39c;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.rx-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.rx-medicine-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.rx-med-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.rx-med-qty {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.rx-signa-line {
+  font-size: 12px;
+  color: #475569;
+  font-style: italic;
+}
+
+.rx-footer-stamp-box {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background-color: #f0fdf9;
+  border: 1px dashed #6ee7b7;
+  border-radius: 8px;
+}
+
+.stamp-verified {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.stamp-verified i {
+  font-size: 24px;
+  color: #059669;
+}
+
+.stamp-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.stamp-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #065f46;
+  letter-spacing: 0.5px;
+}
+
+.stamp-sub {
+  font-size: 12px;
+  font-weight: 600;
+  color: #047857;
+}
+
+.stamp-date {
+  font-size: 10.5px;
+  color: #059669;
+}
+
+/* ============================================================
+   10. COMPREHENSIVE DARK THEME OVERRIDES
+   ============================================================ */
+:host-context(html.dark-theme),
+:host-context([data-theme='dark']),
+:host-context(.dark) {
+  --surface-card: #1e293b;
+  --border-color: #334155;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+}
+
+:host-context(html.dark-theme) .profile-summary-card,
+:host-context([data-theme='dark']) .profile-summary-card,
+:host-context(.dark) .profile-summary-card,
+:host-context(html.dark-theme) .order-table-card,
+:host-context([data-theme='dark']) .order-table-card,
+:host-context(.dark) .order-table-card,
+:host-context(html.dark-theme) .bottom-note-card,
+:host-context([data-theme='dark']) .bottom-note-card,
+:host-context(.dark) .bottom-note-card,
+:host-context(html.dark-theme) .sidebar-card,
+:host-context([data-theme='dark']) .sidebar-card,
+:host-context(.dark) .sidebar-card,
+:host-context(html.dark-theme) .btn-back,
+:host-context([data-theme='dark']) .btn-back,
+:host-context(.dark) .btn-back {
+  background-color: #1e293b;
+  border-color: #334155;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+:host-context(html.dark-theme) .patient-name,
+:host-context([data-theme='dark']) .patient-name,
+:host-context(.dark) .patient-name,
+:host-context(html.dark-theme) .section-card-title,
+:host-context([data-theme='dark']) .section-card-title,
+:host-context(.dark) .section-card-title,
+:host-context(html.dark-theme) .bottom-note-title,
+:host-context([data-theme='dark']) .bottom-note-title,
+:host-context(.dark) .bottom-note-title,
+:host-context(html.dark-theme) .sidebar-card-title,
+:host-context([data-theme='dark']) .sidebar-card-title,
+:host-context(.dark) .sidebar-card-title,
+:host-context(html.dark-theme) .product-name,
+:host-context([data-theme='dark']) .product-name,
+:host-context(.dark) .product-name,
+:host-context(html.dark-theme) .resep-id,
+:host-context([data-theme='dark']) .resep-id,
+:host-context(.dark) .resep-id,
+:host-context(html.dark-theme) .td-jumlah,
+:host-context([data-theme='dark']) .td-jumlah,
+:host-context(.dark) .td-jumlah,
+:host-context(html.dark-theme) .font-bold,
+:host-context([data-theme='dark']) .font-bold,
+:host-context(.dark) .font-bold,
+:host-context(html.dark-theme) .step-name,
+:host-context([data-theme='dark']) .step-name,
+:host-context(.dark) .step-name {
+  color: #f1f5f9;
+}
+
+:host-context(html.dark-theme) .patient-nik,
+:host-context([data-theme='dark']) .patient-nik,
+:host-context(.dark) .patient-nik,
+:host-context(html.dark-theme) .patient-type,
+:host-context([data-theme='dark']) .patient-type,
+:host-context(.dark) .patient-type,
+:host-context(html.dark-theme) .contact-details-col,
+:host-context([data-theme='dark']) .contact-details-col,
+:host-context(.dark) .contact-details-col,
+:host-context(html.dark-theme) .product-desc,
+:host-context([data-theme='dark']) .product-desc,
+:host-context(.dark) .product-desc,
+:host-context(html.dark-theme) .resep-doc,
+:host-context([data-theme='dark']) .resep-doc,
+:host-context(.dark) .resep-doc,
+:host-context(html.dark-theme) .td-harga,
+:host-context([data-theme='dark']) .td-harga,
+:host-context(.dark) .td-harga,
+:host-context(html.dark-theme) .td-qwt,
+:host-context([data-theme='dark']) .td-qwt,
+:host-context(.dark) .td-qwt,
+:host-context(html.dark-theme) .price-label,
+:host-context([data-theme='dark']) .price-label,
+:host-context(.dark) .price-label,
+:host-context(html.dark-theme) .del-label,
+:host-context([data-theme='dark']) .del-label,
+:host-context(.dark) .del-label,
+:host-context(html.dark-theme) .pay-label,
+:host-context([data-theme='dark']) .pay-label,
+:host-context(.dark) .pay-label,
+:host-context(html.dark-theme) .step-time,
+:host-context([data-theme='dark']) .step-time,
+:host-context(.dark) .step-time,
+:host-context(html.dark-theme) .note-content,
+:host-context([data-theme='dark']) .note-content,
+:host-context(.dark) .note-content,
+:host-context(html.dark-theme) .bottom-note-content,
+:host-context([data-theme='dark']) .bottom-note-content,
+:host-context(.dark) .bottom-note-content {
+  color: #94a3b8;
+}
+
+:host-context(html.dark-theme) .point-health-widget,
+:host-context([data-theme='dark']) .point-health-widget,
+:host-context(.dark) .point-health-widget {
+  background-color: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.25);
+}
+
+:host-context(html.dark-theme) .point-number,
+:host-context([data-theme='dark']) .point-number,
+:host-context(.dark) .point-number {
+  color: #fbbf24;
+}
+
+:host-context(html.dark-theme) .point-title,
+:host-context([data-theme='dark']) .point-title,
+:host-context(.dark) .point-title {
+  color: #fde68a;
+}
+
+:host-context(html.dark-theme) .profile-avatar,
+:host-context([data-theme='dark']) .profile-avatar,
+:host-context(.dark) .profile-avatar,
+:host-context(html.dark-theme) .product-thumb,
+:host-context([data-theme='dark']) .product-thumb,
+:host-context(.dark) .product-thumb {
+  background-color: #334155;
+  border-color: #475569;
+}
+
+:host-context(html.dark-theme) .detail-product-table thead,
+:host-context([data-theme='dark']) .detail-product-table thead,
+:host-context(.dark) .detail-product-table thead {
+  background-color: #0f172a;
+  border-color: #334155;
+}
+
+:host-context(html.dark-theme) .detail-product-table th,
+:host-context([data-theme='dark']) .detail-product-table th,
+:host-context(.dark) .detail-product-table th {
+  color: #94a3b8;
+}
+
+:host-context(html.dark-theme) .detail-product-table td,
+:host-context([data-theme='dark']) .detail-product-table td,
+:host-context(.dark) .detail-product-table td {
+  border-color: #334155;
+}
+
+:host-context(html.dark-theme) .verification-banner,
+:host-context([data-theme='dark']) .verification-banner,
+:host-context(.dark) .verification-banner {
+  background-color: rgba(10, 179, 156, 0.12);
+  border-color: rgba(10, 179, 156, 0.3);
+}
+
+:host-context(html.dark-theme) .banner-text,
+:host-context([data-theme='dark']) .banner-text,
+:host-context(.dark) .banner-text,
+:host-context(html.dark-theme) .apoteker-name,
+:host-context([data-theme='dark']) .apoteker-name,
+:host-context(.dark) .apoteker-name {
+  color: #2dd4bf;
+}
+
+:host-context(html.dark-theme) .apoteker-role,
+:host-context([data-theme='dark']) .apoteker-role,
+:host-context(.dark) .apoteker-role {
+  color: #5eead4;
+}
+
+:host-context(html.dark-theme) .note-box,
+:host-context([data-theme='dark']) .note-box,
+:host-context(.dark) .note-box {
+  background-color: #0f172a;
+  border-color: #334155;
+}
+
+:host-context(html.dark-theme) .note-title,
+:host-context([data-theme='dark']) .note-title,
+:host-context(.dark) .note-title {
+  color: #e2e8f0;
+}
+
+:host-context(html.dark-theme) .price-val,
+:host-context([data-theme='dark']) .price-val,
+:host-context(.dark) .price-val,
+:host-context(html.dark-theme) .del-val,
+:host-context([data-theme='dark']) .del-val,
+:host-context(.dark) .del-val,
+:host-context(html.dark-theme) .pay-val,
+:host-context([data-theme='dark']) .pay-val,
+:host-context(.dark) .pay-val,
+:host-context(html.dark-theme) .font-semibold,
+:host-context([data-theme='dark']) .font-semibold,
+:host-context(.dark) .font-semibold {
+  color: #e2e8f0;
+}
+
+:host-context(html.dark-theme) .pay-divider,
+:host-context([data-theme='dark']) .pay-divider,
+:host-context(.dark) .pay-divider,
+:host-context(html.dark-theme) .total-highlight-row,
+:host-context([data-theme='dark']) .total-highlight-row,
+:host-context(.dark) .total-highlight-row {
+  border-color: #334155;
+}
+
+:host-context(html.dark-theme) .btn-track-delivery,
+:host-context([data-theme='dark']) .btn-track-delivery,
+:host-context(.dark) .btn-track-delivery {
+  background-color: rgba(45, 212, 191, 0.1);
+  border-color: #2dd4bf;
+  color: #2dd4bf;
+}
+
+:host-context(html.dark-theme) .btn-track-delivery:hover,
+:host-context([data-theme='dark']) .btn-track-delivery:hover,
+:host-context(.dark) .btn-track-delivery:hover {
+  background-color: #2dd4bf;
+  color: #0f172a;
+}
+
+:host-context(html.dark-theme) .step-line,
+:host-context([data-theme='dark']) .step-line,
+:host-context(.dark) .step-line {
+  background-color: #475569;
+}
+
+:host-context(html.dark-theme) .resep-id.clickable,
+:host-context([data-theme='dark']) .resep-id.clickable,
+:host-context(.dark) .resep-id.clickable {
+  color: #2dd4bf;
+}
+
+:host-context(html.dark-theme) .source-flow-card.flow-resep,
+:host-context([data-theme='dark']) .source-flow-card.flow-resep,
+:host-context(.dark) .source-flow-card.flow-resep {
+  background: linear-gradient(135deg, rgba(234, 88, 12, 0.12) 0%, rgba(15, 23, 42, 0.6) 100%);
+  border-color: rgba(234, 88, 12, 0.3);
+  border-left-color: #ea580c;
+}
+
+:host-context(html.dark-theme) .source-flow-card.flow-nonresep,
+:host-context([data-theme='dark']) .source-flow-card.flow-nonresep,
+:host-context(.dark) .source-flow-card.flow-nonresep {
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.12) 0%, rgba(15, 23, 42, 0.6) 100%);
+  border-color: rgba(2, 132, 199, 0.3);
+  border-left-color: #0284c7;
+}
+
+:host-context(html.dark-theme) .flow-title,
+:host-context([data-theme='dark']) .flow-title,
+:host-context(.dark) .flow-title {
+  color: #f1f5f9;
+}
+
+:host-context(html.dark-theme) .flow-desc,
+:host-context([data-theme='dark']) .flow-desc,
+:host-context(.dark) .flow-desc {
+  color: #cbd5e1;
+}
+
+:host-context(html.dark-theme) .flow-tags-row,
+:host-context([data-theme='dark']) .flow-tags-row,
+:host-context(.dark) .flow-tags-row {
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+:host-context(html.dark-theme) .tag-label,
+:host-context([data-theme='dark']) .tag-label,
+:host-context(.dark) .tag-label {
+  color: #94a3b8;
+}
+
+:host-context(html.dark-theme) .tag-value,
+:host-context([data-theme='dark']) .tag-value,
+:host-context(.dark) .tag-value {
+  color: #f1f5f9;
+}
+
+:host-context(html.dark-theme) .tag-value.text-muted,
+:host-context([data-theme='dark']) .tag-value.text-muted,
+:host-context(.dark) .tag-value.text-muted {
+  color: #94a3b8;
+}
+
+:host-context(html.dark-theme) .tag-value.text-amber,
+:host-context([data-theme='dark']) .tag-value.text-amber,
+:host-context(.dark) .tag-value.text-amber {
+  color: #fbbf24;
+}
+
+:host-context(html.dark-theme) .type-preview-pill,
+:host-context([data-theme='dark']) .type-preview-pill,
+:host-context(.dark) .type-preview-pill {
+  background-color: #0f172a;
+}
+
+:host-context(html.dark-theme) .pill-btn,
+:host-context([data-theme='dark']) .pill-btn,
+:host-context(.dark) .pill-btn {
+  color: #94a3b8;
+}
+
+:host-context(html.dark-theme) .pill-btn:hover,
+:host-context([data-theme='dark']) .pill-btn:hover,
+:host-context(.dark) .pill-btn:hover {
+  color: #f1f5f9;
+}
+
+:host-context(html.dark-theme) .pill-btn.active,
+:host-context([data-theme='dark']) .pill-btn.active,
+:host-context(.dark) .pill-btn.active {
+  background-color: #1e293b;
+  color: #f1f5f9;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+:host-context(html.dark-theme) .otc-badge-pill,
+:host-context([data-theme='dark']) .otc-badge-pill,
+:host-context(.dark) .otc-badge-pill {
+  background-color: #334155;
+  color: #cbd5e1;
+}
+
+:host-context(html.dark-theme) .order-header-type-badge.type-resep,
+:host-context([data-theme='dark']) .order-header-type-badge.type-resep,
+:host-context(.dark) .order-header-type-badge.type-resep {
+  background-color: rgba(234, 88, 12, 0.2);
+  color: #fb923c;
+}
+
+:host-context(html.dark-theme) .order-header-type-badge.type-nonresep,
+:host-context([data-theme='dark']) .order-header-type-badge.type-nonresep,
+:host-context(.dark) .order-header-type-badge.type-nonresep {
+  background-color: rgba(2, 132, 199, 0.2);
+  color: #38bdf8;
+}
+
+/* Modals Dark Theme */
+:host-context(html.dark-theme) .modal-dialog,
+:host-context([data-theme='dark']) .modal-dialog,
+:host-context(.dark) .modal-dialog {
+  background-color: #1e293b;
+  border-color: #334155;
+}
+
+:host-context(html.dark-theme) .modal-header,
+:host-context([data-theme='dark']) .modal-header,
+:host-context(.dark) .modal-header,
+:host-context(html.dark-theme) .modal-footer,
+:host-context([data-theme='dark']) .modal-footer,
+:host-context(.dark) .modal-footer {
+  background-color: #1e293b;
+  border-color: #334155;
+}
+
+:host-context(html.dark-theme) .modal-title,
+:host-context([data-theme='dark']) .modal-title,
+:host-context(.dark) .modal-title,
+:host-context(html.dark-theme) .banner-resi-num,
+:host-context([data-theme='dark']) .banner-resi-num,
+:host-context(.dark) .banner-resi-num,
+:host-context(html.dark-theme) .node-title,
+:host-context([data-theme='dark']) .node-title,
+:host-context(.dark) .node-title,
+:host-context(html.dark-theme) .history-section-title,
+:host-context([data-theme='dark']) .history-section-title,
+:host-context(.dark) .history-section-title,
+:host-context(html.dark-theme) .doc-name,
+:host-context([data-theme='dark']) .doc-name,
+:host-context(.dark) .doc-name,
+:host-context(html.dark-theme) .rx-value,
+:host-context([data-theme='dark']) .rx-value,
+:host-context(.dark) .rx-value,
+:host-context(html.dark-theme) .rx-med-name,
+:host-context([data-theme='dark']) .rx-med-name,
+:host-context(.dark) .rx-med-name {
+  color: #f1f5f9;
+}
+
+:host-context(html.dark-theme) .event-status-title,
+:host-context([data-theme='dark']) .event-status-title,
+:host-context(.dark) .event-status-title {
+  color: #e2e8f0;
+}
+
+:host-context(html.dark-theme) .modal-subtitle,
+:host-context([data-theme='dark']) .modal-subtitle,
+:host-context(.dark) .modal-subtitle,
+:host-context(html.dark-theme) .banner-resi-label,
+:host-context([data-theme='dark']) .banner-resi-label,
+:host-context(.dark) .banner-resi-label,
+:host-context(html.dark-theme) .node-desc,
+:host-context([data-theme='dark']) .node-desc,
+:host-context(.dark) .node-desc,
+:host-context(html.dark-theme) .event-desc,
+:host-context([data-theme='dark']) .event-desc,
+:host-context(.dark) .event-desc,
+:host-context(html.dark-theme) .event-timestamp,
+:host-context([data-theme='dark']) .event-timestamp,
+:host-context(.dark) .event-timestamp,
+:host-context(html.dark-theme) .doc-sip,
+:host-context([data-theme='dark']) .doc-sip,
+:host-context(.dark) .doc-sip,
+:host-context(html.dark-theme) .rx-label,
+:host-context([data-theme='dark']) .rx-label,
+:host-context(.dark) .rx-label,
+:host-context(html.dark-theme) .rx-med-qty,
+:host-context([data-theme='dark']) .rx-med-qty,
+:host-context(.dark) .rx-med-qty,
+:host-context(html.dark-theme) .rx-signa-line,
+:host-context([data-theme='dark']) .rx-signa-line,
+:host-context(.dark) .rx-signa-line {
+  color: #94a3b8;
+}
+
+:host-context(html.dark-theme) .btn-modal-close:hover,
+:host-context([data-theme='dark']) .btn-modal-close:hover,
+:host-context(.dark) .btn-modal-close:hover {
+  background-color: #334155;
+  color: #f1f5f9;
+}
+
+:host-context(html.dark-theme) .tracking-summary-banner,
+:host-context([data-theme='dark']) .tracking-summary-banner,
+:host-context(.dark) .tracking-summary-banner,
+:host-context(html.dark-theme) .tracking-route-card,
+:host-context([data-theme='dark']) .tracking-route-card,
+:host-context(.dark) .tracking-route-card,
+:host-context(html.dark-theme) .resep-paper,
+:host-context([data-theme='dark']) .resep-paper,
+:host-context(.dark) .resep-paper {
+  background-color: #0f172a;
+  border-color: #334155;
+}
+
+:host-context(html.dark-theme) .btn-copy-resi,
+:host-context([data-theme='dark']) .btn-copy-resi,
+:host-context(.dark) .btn-copy-resi {
+  background-color: #334155;
+  color: #e2e8f0;
+}
+
+:host-context(html.dark-theme) .btn-copy-resi:hover,
+:host-context([data-theme='dark']) .btn-copy-resi:hover,
+:host-context(.dark) .btn-copy-resi:hover {
+  background-color: #475569;
+}
+
+:host-context(html.dark-theme) .banner-status-pill,
+:host-context([data-theme='dark']) .banner-status-pill,
+:host-context(.dark) .banner-status-pill {
+  background-color: rgba(10, 179, 156, 0.15);
+  border-color: rgba(10, 179, 156, 0.3);
+}
+
+:host-context(html.dark-theme) .status-live-text,
+:host-context([data-theme='dark']) .status-live-text,
+:host-context(.dark) .status-live-text {
+  color: #2dd4bf;
+}
+
+:host-context(html.dark-theme) .origin-icon,
+:host-context([data-theme='dark']) .origin-icon,
+:host-context(.dark) .origin-icon {
+  background-color: rgba(2, 132, 199, 0.15);
+  color: #38bdf8;
+}
+
+:host-context(html.dark-theme) .destination-icon,
+:host-context([data-theme='dark']) .destination-icon,
+:host-context(.dark) .destination-icon {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+}
+
+:host-context(html.dark-theme) .event-circle-dot,
+:host-context([data-theme='dark']) .event-circle-dot,
+:host-context(.dark) .event-circle-dot {
+  background-color: #0f172a;
+  border-color: #475569;
+  color: #94a3b8;
+}
+
+:host-context(html.dark-theme) .event-circle-dot.active-dot,
+:host-context([data-theme='dark']) .event-circle-dot.active-dot,
+:host-context(.dark) .event-circle-dot.active-dot {
+  background-color: #0ab39c;
+  border-color: #0ab39c;
+  color: #ffffff;
+}
+
+:host-context(html.dark-theme) .event-line,
+:host-context([data-theme='dark']) .event-line,
+:host-context(.dark) .event-line {
+  background-color: #334155;
+}
+
+:host-context(html.dark-theme) .event-location-badge,
+:host-context([data-theme='dark']) .event-location-badge,
+:host-context(.dark) .event-location-badge {
+  background-color: #334155;
+  color: #cbd5e1;
+}
+
+:host-context(html.dark-theme) .paper-divider-double,
+:host-context([data-theme='dark']) .paper-divider-double,
+:host-context(.dark) .paper-divider-double {
+  border-color: #334155;
+}
+
+:host-context(html.dark-theme) .paper-divider,
+:host-context([data-theme='dark']) .paper-divider,
+:host-context(.dark) .paper-divider {
+  background-color: #334155;
+}
+
+:host-context(html.dark-theme) .rx-item-card,
+:host-context([data-theme='dark']) .rx-item-card,
+:host-context(.dark) .rx-item-card {
+  background-color: #1e293b;
+  border-color: #334155;
+}
+
+:host-context(html.dark-theme) .rx-footer-stamp-box,
+:host-context([data-theme='dark']) .rx-footer-stamp-box,
+:host-context(.dark) .rx-footer-stamp-box {
+  background-color: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+:host-context(html.dark-theme) .stamp-title,
+:host-context([data-theme='dark']) .stamp-title,
+:host-context(.dark) .stamp-title,
+:host-context(html.dark-theme) .stamp-sub,
+:host-context([data-theme='dark']) .stamp-sub,
+:host-context(.dark) .stamp-sub,
+:host-context(html.dark-theme) .stamp-date,
+:host-context([data-theme='dark']) .stamp-date,
+:host-context(.dark) .stamp-date {
+  color: #34d399;
+}
+
+:host-context(html.dark-theme) .btn-modal-secondary,
+:host-context([data-theme='dark']) .btn-modal-secondary,
+:host-context(.dark) .btn-modal-secondary {
+  border-color: #334155;
+  color: #cbd5e1;
+}
+
+:host-context(html.dark-theme) .btn-modal-secondary:hover,
+:host-context([data-theme='dark']) .btn-modal-secondary:hover,
+:host-context(.dark) .btn-modal-secondary:hover {
+  background-color: #334155;
+}
+
+/* ============================================================
+   11. MULTI-DEVICE RESPONSIVENESS
+   ============================================================ */
+@media (max-width: 1300px) {
+  .order-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 1024px) {
+  .profile-summary-card {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-summary-card,
+  .order-table-card,
+  .sidebar-card,
+  .bottom-note-card {
+    padding: 16px;
+  }
+
+  .pricing-summary-container {
+    justify-content: stretch;
+  }
+
+  .pricing-summary-box {
+    width: 100%;
+  }
+
+  .verification-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .tracking-route-card {
+    grid-template-columns: 1fr;
+  }
+
+  .route-connector-arrow {
+    transform: rotate(90deg);
+  }
+}

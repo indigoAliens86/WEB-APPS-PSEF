@@ -1,0 +1,315 @@
+@if (!showingDetails()) {
+<div class="pasien-page-container">
+  <!-- Top Stat Cards (4 Cards) -->
+  <section class="stats-overview" aria-label="Ringkasan Statistik Pasien">
+    @for (card of statCards; track card.title) {
+      <article class="stat-card">
+        <div class="stat-icon-box" [ngClass]="card.color">
+          <i [class]="card.icon" aria-hidden="true"></i>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">{{ card.title }}</span>
+          <strong class="stat-number">{{ card.value }}</strong>
+          <div class="stat-trend-row">
+            <span class="trend-pill" [ngClass]="card.color">
+              <i [class]="card.trendIcon || 'ri-arrow-up-line'" aria-hidden="true"></i> {{ card.percentage }}
+            </span>
+            <span class="trend-subtext">{{ card.period }}</span>
+          </div>
+        </div>
+      </article>
+    }
+  </section>
+
+  <!-- Main Directory Card -->
+  <section class="pasien-card" aria-labelledby="pasien-heading">
+    <!-- Header with Title and Action Buttons -->
+    <header class="card-header">
+      <div class="card-title-block">
+        <h1 id="pasien-heading" class="card-title">Daftar Pasien</h1>
+      </div>
+
+      <div class="card-header-actions">
+        <button
+          type="button"
+          class="btn-icon-export"
+          (click)="exportData()"
+          aria-label="Export Data Excel"
+          title="Export Excel"
+        >
+          <i class="ri-file-excel-2-line" aria-hidden="true"></i>
+        </button>
+
+        <button
+          type="button"
+          class="btn-primary-add"
+          (click)="openAdd()"
+          aria-label="Tambah Pasien Baru"
+        >
+          <i class="ri-add-line" aria-hidden="true"></i>
+          <span>Tambah Pasien</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Toolbar Filters Row -->
+    <div class="card-toolbar">
+      <div class="search-box">
+        <i class="ri-search-line search-icon" aria-hidden="true"></i>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Cari Pasien..."
+          [(ngModel)]="searchQuery"
+          aria-label="Cari Pasien"
+        />
+      </div>
+
+      <div class="toolbar-filters">
+        <div class="date-picker-wrap">
+          <input
+            type="text"
+            class="filter-date-input"
+            placeholder="dd-mm-yyyy"
+            [(ngModel)]="selectedDate"
+            aria-label="Filter Tanggal"
+          />
+          <i class="ri-calendar-line date-icon" aria-hidden="true"></i>
+        </div>
+
+        <div class="select-wrapper">
+          <select
+            class="filter-select"
+            [(ngModel)]="selectedGender"
+            aria-label="Filter Jenis Kelamin"
+          >
+            <option value="">Pilih Jenis Kelamin</option>
+            <option value="Laki-laki">Laki-laki</option>
+            <option value="Perempuan">Perempuan</option>
+          </select>
+          <i class="ri-arrow-down-s-line select-arrow" aria-hidden="true"></i>
+        </div>
+
+        <div class="select-wrapper">
+          <select
+            class="filter-select"
+            [(ngModel)]="selectedStatus"
+            aria-label="Filter Status"
+          >
+            <option value="">Pilih Status</option>
+            <option value="Aktif">Aktif</option>
+            <option value="Non-Aktif">Non-Aktif</option>
+          </select>
+          <i class="ri-arrow-down-s-line select-arrow" aria-hidden="true"></i>
+        </div>
+
+        <button
+          type="button"
+          class="btn-filters"
+          (click)="resetFilters()"
+          aria-label="Reset Filter"
+          title="Reset semua filter"
+        >
+          <i class="ri-equalizer-line" aria-hidden="true"></i>
+          <span>Filters</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Table Container -->
+    <div class="table-container">
+      <table class="pasien-table directory-table" aria-label="Tabel Data Pasien">
+        <thead>
+          <tr>
+            <th scope="col" class="th-no">No</th>
+            <th scope="col" class="th-nik">NIK</th>
+            <th scope="col" class="th-nama">Nama Lengkap</th>
+            <th scope="col" class="th-gender">Jenis Kelamin</th>
+            <th scope="col" class="th-birth">Tanggal Lahir</th>
+            <th scope="col" class="th-kontak">Kontak</th>
+            <th scope="col" class="th-email">Email</th>
+            <th scope="col" class="th-bergabung">Tanggal Bergabung</th>
+            <th scope="col" class="th-tipe">Tipe</th>
+            <th scope="col" class="th-aksi">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of paginatedRecords(); track item.id; let idx = $index) {
+            <tr class="table-row">
+              <td class="td-no">{{ (page() - 1) * pageSize() + idx + 1 }}</td>
+              <td class="td-nik">{{ item.nik }}</td>
+              <td class="td-nama">
+                <span class="patient-name">{{ item.name }}</span>
+              </td>
+              <td class="td-gender">{{ item.gender }}</td>
+              <td class="td-birth">{{ item.birthDate }}</td>
+              <td class="td-kontak">{{ item.phone }}</td>
+              <td class="td-email">{{ item.email }}</td>
+              <td class="td-bergabung">{{ item.joinedDate }}</td>
+              <td class="td-tipe">{{ item.tipe }}</td>
+              <td class="td-aksi">
+                <div class="actions-wrapper">
+                  <button
+                    type="button"
+                    class="btn-action-view"
+                    (click)="openDetail(item)"
+                    [attr.aria-label]="'Detail ' + item.name"
+                    title="Lihat Detail Pasien"
+                  >
+                    <i class="ri-eye-line" aria-hidden="true"></i>
+                  </button>
+                  <button
+                    type="button"
+                    class="btn-action-edit"
+                    (click)="openEdit(item)"
+                    [attr.aria-label]="'Edit ' + item.name"
+                    title="Edit Pasien"
+                  >
+                    <i class="ri-edit-line" aria-hidden="true"></i>
+                  </button>
+                  <button
+                    type="button"
+                    class="btn-action-delete"
+                    (click)="openDelete(item)"
+                    [attr.aria-label]="'Hapus ' + item.name"
+                    title="Hapus Pasien"
+                  >
+                    <i class="ri-delete-bin-line" aria-hidden="true"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="10" class="table-empty">
+                <div class="empty-state">
+                  <i class="ri-search-line empty-icon" aria-hidden="true"></i>
+                  <p class="empty-title">Data tidak ditemukan</p>
+                  <span class="empty-desc">Tidak ada pasien yang cocok dengan kriteria pencarian atau filter.</span>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination Footer -->
+    <footer class="card-pagination">
+      <div class="pagination-info">
+        Menampilkan {{ (page() - 1) * pageSize() + 1 }}-{{ (page() - 1) * pageSize() + paginatedRecords().length }} dari 12.458 pasien
+      </div>
+      <div class="pagination-controls">
+        <button
+          type="button"
+          class="page-btn page-arrow"
+          aria-label="Halaman sebelumnya"
+          [disabled]="page() <= 1"
+          (click)="setPage(page() - 1)"
+        >
+          <i class="ri-arrow-left-s-line" aria-hidden="true"></i>
+        </button>
+
+        <button
+          type="button"
+          class="page-btn"
+          [class.active]="page() === 1"
+          (click)="setPage(1)"
+        >
+          1
+        </button>
+
+        @if (totalPages() >= 2) {
+          <button
+            type="button"
+            class="page-btn"
+            [class.active]="page() === 2"
+            (click)="setPage(2)"
+          >
+            2
+          </button>
+        }
+
+        @if (totalPages() >= 3) {
+          <button
+            type="button"
+            class="page-btn"
+            [class.active]="page() === 3"
+            (click)="setPage(3)"
+          >
+            3
+          </button>
+        }
+
+        @if (totalPages() >= 4) {
+          <button
+            type="button"
+            class="page-btn"
+            [class.active]="page() === 4"
+            (click)="setPage(4)"
+          >
+            4
+          </button>
+        }
+
+        <span class="page-ellipsis">...</span>
+
+        <button
+          type="button"
+          class="page-btn"
+          [class.active]="page() === 1246"
+          (click)="setPage(1246)"
+        >
+          1.246
+        </button>
+
+        <button
+          type="button"
+          class="page-btn page-arrow"
+          aria-label="Halaman berikutnya"
+          [disabled]="page() >= totalPages()"
+          (click)="setPage(page() + 1)"
+        >
+          <i class="ri-arrow-right-s-line" aria-hidden="true"></i>
+        </button>
+
+        <div class="page-size-picker">
+          <select
+            class="select-page-size"
+            [value]="pageSize()"
+            (change)="setPageSize(+$any($event.target).value)"
+            aria-label="Jumlah baris per halaman"
+          >
+            <option value="10">10/halaman</option>
+            <option value="25">25/halaman</option>
+            <option value="50">50/halaman</option>
+          </select>
+          <i class="ri-arrow-down-s-line page-size-arrow" aria-hidden="true"></i>
+        </div>
+      </div>
+    </footer>
+  </section>
+</div>
+}
+
+<router-outlet (activate)="showingDetails.set(true)" (deactivate)="showingDetails.set(false)"></router-outlet>
+
+<!-- Modal Hapus Pasien -->
+@if (activeModal() === 'delete' && selectedPatient(); as p) {
+  <div class="modal-backdrop" (click)="closeModal()">
+    <div class="modal-dialog modal-delete" (click)="$event.stopPropagation()">
+      <div class="delete-icon-box">
+        <i class="ri-delete-bin-line" aria-hidden="true"></i>
+      </div>
+      <h2 class="delete-title">Hapus Data Pasien?</h2>
+      <p class="delete-desc">
+        Apakah Anda yakin ingin menghapus data pasien <strong>{{ p.name }}</strong> (NIK: {{ p.nik }})? Tindakan ini tidak dapat dibatalkan.
+      </p>
+
+      <footer class="modal-footer delete-footer">
+        <button type="button" class="btn-secondary" (click)="closeModal()">Batal</button>
+        <button type="button" class="btn-danger" (click)="confirmDelete()">Ya, Hapus Pasien</button>
+      </footer>
+    </div>
+  </div>
+}

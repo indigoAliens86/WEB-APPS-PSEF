@@ -1,0 +1,56 @@
+<div class="konten-page-container">
+  <!-- Child Router Outlet for Detail, Tambah, and Edit Artikel Pages -->
+  <router-outlet (activate)="onChildActivated()" (deactivate)="onChildDeactivated()"></router-outlet>
+
+  <!-- Main Konten Views with Tabs (Shown only when not viewing child route) -->
+  <ng-container *ngIf="!showingChildRoute()">
+    <!-- Top Page Header -->
+    <header class="page-header">
+      <div class="header-left">
+        <div class="header-icon-box">
+          <i class="ri-file-text-line"></i>
+        </div>
+        <div>
+          <h1 class="page-title">Manajemen Konten & Regulasi PSEF</h1>
+          <p class="page-subtitle">
+            Pusat kendali publikasi artikel kesehatan, banner promosi, pusat bantuan pasien, kepatuhan regulasi Kemenkes RI, dan profil kemitraan apotek.
+          </p>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <div class="compliance-status-pill">
+          <i class="ri-shield-check-fill"></i>
+          <span>Sistem PSEF Terdaftar Kemenkes RI</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Top-Level Navigation Tabs -->
+    <nav class="main-tabs-nav-card" aria-label="Menu Modul Konten">
+      <div class="main-tabs-wrapper">
+        <button
+          *ngFor="let tab of tabs"
+          type="button"
+          class="main-tab-btn"
+          [class.active]="activeTab() === tab.id"
+          (click)="setTab(tab.id)"
+          [title]="tab.description"
+        >
+          <i [class]="tab.icon" class="tab-icon"></i>
+          <span class="tab-label">{{ tab.label }}</span>
+          <span *ngIf="tab.badgeCount" class="tab-badge-count">{{ tab.badgeCount }}</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Main Dynamic Tab Content Section -->
+    <main class="main-content-display">
+      <app-artikel *ngIf="activeTab() === 'artikel'"></app-artikel>
+      <app-banner *ngIf="activeTab() === 'banner'"></app-banner>
+      <app-bantuan *ngIf="activeTab() === 'bantuan'"></app-bantuan>
+      <app-legal *ngIf="activeTab() === 'legal'"></app-legal>
+      <app-perusahaan *ngIf="activeTab() === 'perusahaan'"></app-perusahaan>
+    </main>
+  </ng-container>
+</div>
